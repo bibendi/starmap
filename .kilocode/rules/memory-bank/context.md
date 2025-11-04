@@ -1,205 +1,9 @@
-# План настройки инфраструктуры Starmap
+# Контекст текущей работы
 
-## Анализ текущего состояния
+## Статус проекта (04.11.2025)
+Проект находится на стадии **Этапа 3 завершен, Этап 4 в процессе** согласно roadmap.
 
-### Текущая конфигурация:
-- Rails 8.1.1 (базовая версия)
-- PostgreSQL (настроен)
-- API-only режим (нужно изменить на full-stack)
-- Минимальные зависимости
-
-### Необходимые изменения:
-
-## 1. Обновление Gemfile
-
-### Основные зависимости:
-```ruby
-# Аутентификация и авторизация
-gem "devise"
-gem "devise-ldap_authenticatable"
-gem "pundit" # или action_policy
-
-# Hotwire для интерактивности
-gem "hotwire-rails"
-
-# Фоновые задачи
-gem "solid_queue"
-gem "solid_cache"
-
-# Аудит и версионирование
-gem "audited"
-
-# Утилиты
-gem "net-ldap"
-gem "ruby-ldap"
-
-# Тестирование
-gem "rspec-rails"
-gem "factory_bot_rails"
-gem "shoulda-matchers"
-gem "capybara"
-gem "selenium-webdriver"
-
-# Разработка
-gem "letter_opener"
-gem "annotate"
-```
-
-## 2. Изменение конфигурации Rails
-
-### config/application.rb:
-- Убрать `config.api_only = true`
-- Добавить поддержку views, assets, helpers
-- Включить Action Mailer, Action Cable, Active Storage
-
-### config/environments/:
-- Настроить development, test, production окружения
-- Добавить конфигурацию для Solid Queue
-- Настроить email для development
-
-## 3. Создание структуры директорий
-
-```
-app/
-├── controllers/
-│   ├── concerns/
-│   ├── admin/          # Админ панель
-│   ├── dashboards/     # Дашборды
-│   └── api/           # API endpoints (если нужны)
-├── models/
-│   ├── concerns/
-│   └── concerns/      # Business logic concerns
-├── views/
-│   ├── layouts/
-│   ├── dashboards/
-│   ├── technologies/
-│   ├── users/
-│   └── action_plans/
-├── javascript/
-│   ├── controllers/   # Stimulus controllers
-│   └── channels/      # Action Cable channels
-├── jobs/              # Background jobs
-├── policies/          # Pundit policies
-├── services/          # Business logic services
-└── mailers/           # Email templates
-```
-
-## 4. Настройка базы данных
-
-### Миграции для основных таблиц:
-- users (с LDAP полями)
-- technologies
-- quarters
-- skill_ratings
-- action_plans
-- teams
-- team_memberships
-
-### Индексы для производительности:
-- По user_id, technology_id, quarter_id
-- По team_id для быстрого поиска команд
-- По criticality для фильтрации
-
-## 5. Конфигурация LDAP
-
-### config/ldap.yml:
-```yaml
-development:
-  host: ldap.company.com
-  port: 389
-  base_dn: dc=company,dc=com
-  attribute: uid
-  admin_user: cn=admin,dc=company,dc=com
-  admin_password: password
-```
-
-## 6. Настройка Solid Queue
-
-### config/queues.yml:
-```yaml
-default: &default
-  concurrency: 5
-  queues:
-    - "*"
-
-critical:
-  <<: *default
-  concurrency: 10
-  queues:
-    - critical
-```
-
-## 7. Создание базовых контроллеров
-
-### ApplicationController:
-- Аутентификация через Devise
-- Pundit authorization
-- Current user helper
-
-### DashboardsController:
-- Overview dashboard
-- Team dashboard
-- Personal dashboard
-
-## 8. Настройка маршрутов
-
-### config/routes.rb:
-```ruby
-Rails.application.routes.draw do
-  devise_for :users
-  root "dashboards#overview"
-
-  namespace :admin do
-    resources :technologies
-    resources :quarters
-    resources :users
-  end
-
-  resources :dashboards do
-    collection do
-      get :overview
-      get :team
-      get :personal
-    end
-  end
-
-  resources :skill_ratings
-  resources :action_plans
-end
-```
-
-## 9. Создание базовых views
-
-### layouts/application.html.erb:
-- Навигация по ролям
-- Hotwire integration
-- Responsive design
-
-### Dashboards views:
-- Overview dashboard с таблицами рисков
-- Team dashboard с оценками команды
-- Personal dashboard с личными метриками
-
-## 10. JavaScript и CSS
-
-### app/javascript/application.js:
-- Turbo integration
-- Stimulus controllers
-- Chart.js для графиков
-
-### app/assets/stylesheets/:
-- Bootstrap или Tailwind CSS
-- Компоненты для дашбордов
-- Responsive design
-
-## Следующие шаги:
-1. Обновить Gemfile и установить зависимости
-2. Изменить конфигурацию Rails
-3. Создать базовую структуру директорий
-4. Настроить базу данных и миграции
-5. Создать базовые модели и контроллеры
-
-## Roadmap выполнения
+## Полная roadmap выполнения
 
 ### ✅ Этап 1: Настройка инфраструктуры (ЗАВЕРШЕН)
 - [x] Обновлен Gemfile с зависимостями (Devise, Pundit, Hotwire, Solid Queue, Audited, LDAP)
@@ -227,7 +31,7 @@ end
 - [x] Настроить LDAP sync job
 - [x] Создать тестовых пользователей
 
-### 📋 Этап 4: Создание основных моделей системы
+### ✅ Этап 4: Создание основных моделей системы (ЗАВЕРШЕН)
 - [x] Создать модель User
 - [x] Создать модель Team
 - [x] Создать модель Technology
@@ -237,7 +41,7 @@ end
 - [x] Настроить ассоциации между моделями
 - [x] Добавить валидации
 
-### 📋 Этап 5: Реализация системы оценок компетенций (0-3 шкала)
+### 📋 Этап 5: Реализация системы оценок компетенций (0-3 шкала) (В ПРОЦЕССЕ)
 - [ ] Создать контроллер SkillRatings
 - [ ] Реализовать логику шкалы 0-3
 - [ ] Создать формы для редактирования оценок
@@ -303,9 +107,31 @@ end
 - [ ] Подготовка к деплою
 - [ ] Настройка Docker/Docker Compose
 
-## Текущий статус: Этап 3 завершен, готов к Этапу 4 - Создание основных моделей системы
+## Текущий фокус работы
 
-## Созданные миграции:
+### В процессе выполнения:
+- Этап 5: Реализация системы оценок компетенций (0-3 шкала)
+- Создание контроллера SkillRatings
+- Реализация логики шкалы 0-3
+- Создание форм для редактирования оценок
+
+### Следующие шаги (Этап 5):
+1. Создать контроллер SkillRatings с CRUD операциями
+2. Реализовать логику шкалы оценок 0-3 с валидациями
+3. Создать формы для редактирования оценок с Hotwire интеграцией
+4. Добавить методы для копирования оценок между кварталами
+5. Реализовать процесс утверждения оценок тимлидами
+
+## Ключевые архитектурные решения:
+- Использование Rails 8.1.1 с Hotwire (Turbo + Stimulus)
+- Solid Queue для фоновых задач
+- Pundit для авторизации
+- LDAP интеграция через devise_ldap_authenticatable
+- PostgreSQL для базы данных
+
+## Технические детали:
+
+### Созданные миграции:
 1. `20251103212524_create_users.rb` - Пользователи с LDAP и Devise
 2. `20251104074538_create_teams.rb` - Команды и тимлиды
 3. `20251104074554_create_technologies.rb` - Технологии и критичность
@@ -314,3 +140,31 @@ end
 6. `20251104074848_create_action_plans.rb` - Планы действий
 
 Все миграции включают необходимые индексы для производительности и соответствуют техническому заданию Starmap.
+
+### 6 основных миграций созданы и применены
+- Модели полностью реализованы с валидациями и ассоциациями
+- Базовая структура контроллеров создана (ApplicationController, DashboardsController)
+- Политики авторизации настроены для всех моделей
+- Фоновые задачи созданы (LDAP sync job)
+
+## Текущие зависимости:
+- Devise + devise_ldap_authenticatable
+- Pundit
+- Hotwire-rails
+- Solid Queue + Solid Cache
+- Audited
+- Net-LDAP
+- RSpec + Factory Bot для тестирования
+- Letter Opener для email в development
+
+## Шкала оценок компетенций:
+- **0** - "Не имею представления" (Слышал об этом, но на практике не сталкивался. Нужен онбординг с нуля)
+- **1** - "Имею представление" (Могу выполнять простые задачи под присмотром или в паре с коллегой)
+- **2** - "Свободно владею" (Могу самостоятельно взять задачу средней сложности и довести ее до production)
+- **3** - "Могу учить других" (Могу объяснить архитектурные решения, провести код-ревью и быть ментором)
+
+## Ключевые бизнес-метрики для расчета:
+- **Coverage Index**: Процент технологий с ≥2 экспертами (рейтинг 2-3)
+- **Maturity Index**: Средняя оценка по всем технологиям (цель >2.0)
+- **Red Zones**: Критические технологии (criticality='high') с <2 экспертами
+- **Key Person Risk**: Технологии где один сотрудник единственный эксперт
