@@ -1,0 +1,115 @@
+- # Получаем информацию о текущем пользователе и его правах
+- can_edit = policy(skill_rating).edit?
+- can_approve = policy(skill_rating).approve?
+- can_submit = policy(skill_rating).submit?
+- can_reject = policy(skill_rating).reject?
+
+.bg-white.rounded-lg.border.border-gray-200.shadow-sm.hover:shadow-md.transition-shadow.duration-200
+  .p-4
+    .flex.items-start.justify-between.mb-3
+      .flex-1
+        .flex.items-center.space-x-2.mb-1
+          %h3.text-lg.font-semibold.text-gray-900
+            = skill_rating.user.display_name
+          - if skill_rating.approved?
+            .inline-flex.items-center.px-2.5.py-0.5.rounded-full.text-xs.font-medium.bg-green-100.text-green-800
+              Утверждена
+          - elsif skill_rating.submitted?
+            .inline-flex.items-center.px-2.5.py-0.5.rounded-full.text-xs.font-medium.bg-yellow-100.text-yellow-800
+              На утверждении
+          - else
+            .inline-flex.items-center.px-2.5.py-0.5.rounded-full.text-xs.font-medium.bg-gray-100.text-gray-800
+              Черновик
+
+        - if skill_rating.approved_by
+          .text-sm.text-gray-600.mb-2
+            Утверждена:
+            %span.font-medium= skill_rating.approved_by.display_name
+            - if skill_rating.approved_at
+              %span.text-gray-500= l(skill_rating.approved_at, format: :short)
+
+      .flex.items-center.space-x-2
+        - if can_edit
+          = link_to edit_skill_rating_path(skill_rating),
+                    data: { turbo_frame: "skill_rating_form" },
+                    class: "text-blue-600 hover:text-blue-800 text-sm font-medium",
+                    title: "Редактировать"
+            %i.fas.fa-edit
+        - if can_approve
+          = button_to approve_skill_rating_path(skill_rating),
+                     method: :patch,
+                     class: "text-green-600 hover:text-green-800 text-sm font-medium ml-2",
+                     title: "Утвердить",
+                     form: { data: { turbo_confirm: "Вы уверены, что хотите утвердить эту оценку?" } } do
+            %i.fas.fa-check-circle
+        - if can_reject
+          = button_to reject_skill_rating_path(skill_rating),
+                     method: :patch,
+                     class: "text-red-600 hover:text-red-800 text-sm font-medium ml-2",
+                     title: "Отклонить",
+                     form: { data: { turbo_confirm: "Вы уверены, что хотите отклонить эту оценку?" } } do
+            %i.fas.fa-times-circle
+
+    .grid.grid-cols-1.md:grid-cols-2.gap-4.mb-4
+      .space-y-3
+        %div
+          %label.text-sm.font-medium.text-gray-700 Технология:
+          %div.text-sm.text-gray-900.font-medium= skill_rating.technology.name
+
+        %div
+          %label.text-sm.font-medium.text-gray-700 Критичность:
+          - criticality_class = {
+              'high' => 'text-red-600 bg-red-50',
+              'normal' => 'text-yellow-600 bg-yellow-50',
+              'low' => 'text-green-600 bg-green-50'
+            }[skill_rating.technology.criticality]
+          %span.inline-flex.items-center.px-2.py-1.rounded-full.text-xs.font-medium{ class: criticality_class }
+            = {
+              'high' => 'Высокая',
+              'normal' => 'Обычная',
+              'low' => 'Низкая'
+            }[skill_rating.technology.criticality]
+
+      .space-y-3
+        %div
+          %label.text-sm.font-medium.text-gray-700 Оценка:
+          - rating_colors = {
+              0 => 'text-gray-600 bg-gray-50',
+              1 => 'text-blue-600 bg-blue-50',
+              2 => 'text-green-600 bg-green-50',
+              3 => 'text-purple-600 bg-purple-50'
+            }
+          - rating_labels = {
+              0 => 'Не имею представления',
+              1 => 'Имею представление',
+              2 => 'Свободно владею',
+              3 => 'Могу учить других'
+            }
+          %div.flex.items-center.space-x-2.mt-1
+            - (1..3).each do |level|
+              - is_filled = skill_rating.rating >= level
+              %div{
+                class: [
+                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2",
+                  is_filled ? rating_colors[skill_rating.rating] : "text-gray-300 bg-white border-gray-200"
+                ]
+              }
+                = level
+            %span.ml-2.text-sm.font-medium.text-gray-700
+              = rating_labels[skill_rating.rating]
+
+        %div
+          %label.text-sm.font-medium.text-gray-700 Квартал:
+          %div.text-sm.text-gray-900= "#{skill_rating.quarter.year} Q#{skill_rating.quarter.quarter_number}"
+
+    - if skill_rating.comment.present?
+      .mt-4.p-3.bg-gray-50.rounded-md
+        %label.text-sm.font-medium.text-gray-700 Комментарий:
+        %p.text-sm.text-gray-600.mt-1.whitespace-pre-wrap= skill_rating.comment
+
+    .mt-4.text-xs.text-gray-500
+      - if skill_rating.audits.any?
+        - last_audit = skill_rating.audits.reorder(created_at: :desc).first
+        Последнее изменение: #{l(last_audit.created_at, format: :short)} #{last_audit.user&.display_name || 'Система'}
+      - else
+        Создана: #{l(skill_rating.created_at, format: :short)}

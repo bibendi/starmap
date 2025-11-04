@@ -1,0 +1,137 @@
+- provide :title, "Управление оценками компетенций"
+
+.page-header.flex.items-center.justify-between.mb-6
+  %div
+    %h1.text-2xl.font-bold.text-gray-900 Управление оценками компетенций
+    - if @quarter
+      %p.text-sm.text-gray-600.mt-1 Квартал: #{@quarter.year} Q#{@quarter.quarter_number}
+      %span.inline-flex.items-center.px-2.5.py-0.5.rounded-full.text-xs.font-medium.mt-2{
+        class: {
+          'draft' => 'bg-gray-100 text-gray-800',
+          'active' => 'bg-green-100 text-green-800',
+          'closed' => 'bg-yellow-100 text-yellow-800',
+          'archived' => 'bg-red-100 text-red-800'
+        }[@quarter.status]
+      }
+        = {
+          'draft' => 'Черновик',
+          'active' => 'Активный',
+          'closed' => 'Завершен',
+          'archived' => 'Архивирован'
+        }[@quarter.status]
+  - if @quarter && policy(SkillRating.new(quarter: @quarter)).create?
+    .actions
+      = link_to new_skill_rating_path(quarter_id: @quarter.id),
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                data: { turbo_frame: "skill_rating_form" } do
+        %i.fas.fa-plus-circle.mr-2
+        Добавить оценку
+
+- # Контейнер для Hotwire Turbo Frame
+%turbo-frame#skill_ratings_list{ "data-turbo-target": "skill_ratings_list" }
+- # Фильтры и поиск
+.bg-white.rounded-lg.shadow.mb-6.p-4{
+  data: {
+    controller: "filters",
+    "filters-auto-submit-value": "true",
+    "filters-debounce-ms-value": "500"
+  }
+}
+  = form_with url: skill_ratings_path, method: :get, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do |form|
+    .md:col-span-2
+      = form.label :search, "Поиск", class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.text_field :search, value: params[:search],
+                       placeholder: "Поиск по пользователю или технологии...",
+                       class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                       data: { "filters-target": "search" }
+
+      .md:col-span-1
+        = form.label :user_id, "Пользователь", class: "block text-sm font-medium text-gray-700 mb-1"
+        = form.collection_select :user_id, @users, :id, :full_name,
+                                { include_blank: "Все пользователи" },
+                                {
+                                  class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                                  data: { "filters-target": "user" }
+                                }
+
+      .md:col-span-1
+        = form.label :status, "Статус", class: "block text-sm font-medium text-gray-700 mb-1"
+        = form.select :status,
+                     options_for_select([
+                       ["Все статусы", ""],
+                       ["Черновик", "draft"],
+                       ["На утверждении", "submitted"],
+                       ["Утверждено", "approved"],
+                       ["Отклонено", "rejected"]
+                     ], params[:status]),
+                     {
+                       class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                       data: { "filters-target": "status" }
+                     }
+
+      .md:col-span-4.flex.justify-end.space-x-3
+        - if params[:search].present? || params[:user_id].present? || params[:status].present?
+          = link_to "Сбросить", skill_ratings_path,
+                    class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50",
+                    data: { action: "filters#clearFilters" }
+        = form.submit "Фильтр",
+                      class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700",
+                      data: { "filters-target": "submit" }
+
+      .md:col-span-4.flex.justify-end.space-x-3
+        - if params[:search].present? || params[:user_id].present? || params[:status].present?
+          = link_to "Сбросить", skill_ratings_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+        = form.submit "Фильтр", class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+
+- # Статистика
+.stats-grid.grid.grid-cols-1.md:grid-cols-4.gap-4.mb-6
+  - # Общее количество
+  .bg-white.rounded-lg.shadow.p-4
+    .flex.items-center
+      .flex-shrink-0
+        %i.fas.fa-clipboard-list.text-blue-500.text-2xl
+      .ml-3
+        %p.text-sm.font-medium.text-gray-500 Всего оценок
+        %p.text-2xl.font-semibold.text-gray-900= @skill_ratings.total_count
+
+  - # На утверждении
+  .bg-white.rounded-lg.shadow.p-4
+    .flex.items-center
+      .flex-shrink-0
+        %i.fas.fa-clock.text-yellow-500.text-2xl
+      .ml-3
+        %p.text-sm.font-medium.text-gray-500 На утверждении
+        %p.text-2xl.font-semibold.text-gray-900= @skill_ratings_submitted_count
+
+  - # Утверждено
+  .bg-white.rounded-lg.shadow.p-4
+    .flex.items-center
+      .flex-shrink-0
+        %i.fas.fa-check-circle.text-green-500.text-2xl
+      .ml-3
+        %p.text-sm.font-medium.text-gray-500 Утверждено
+        %p.text-2xl.font-semibold.text-gray-900= @skill_ratings_approved_count
+
+  - # Средняя оценка
+  .bg-white.rounded-lg.shadow.p-4
+    .flex.items-center
+      .flex-shrink-0
+        %i.fas.fa-star.text-purple-500.text-2xl
+      .ml-3
+        %p.text-sm.font-medium.text-gray-500 Средняя оценка
+        %p.text-2xl.font-semibold.text-gray-900= (@average_rating || 0).round(1)
+
+- # Turbo Frame для формы создания/редактирования
+%turbo-frame#skill_rating_form
+  - # Форма появится здесь при необходимости
+
+- # Список оценок
+.skill-ratings-list
+  = render partial: "list", locals: { skill_ratings: @skill_ratings }
+
+- # Бэкап на случай если JavaScript отключен
+%noscript
+  .mt-6.p-4.bg-yellow-50.rounded-md
+    %p.text-yellow-800
+      Для полной функциональности рекомендуется включить JavaScript.
+      = link_to "Страница без JavaScript", skill_ratings_path(format: :html), class: "text-yellow-800 underline"

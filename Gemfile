@@ -31,6 +31,9 @@ gem "audited"
 # LDAP utilities
 gem "net-ldap"
 
+# Template engine
+gem "haml-rails"
+
 # Email handling
 gem "letter_opener", group: :development
 

@@ -1,0 +1,14 @@
+- if skill_ratings.empty?
+  .bg-white.rounded-lg.shadow.p-8.text-center
+    %p.text-gray-500.mb-4 Оценки не найдены
+    - if @quarter && (@quarter.draft? || @quarter.active?)
+      %p.text-sm.text-gray-400= link_to "Добавить первую оценку", new_skill_rating_path(quarter_id: @quarter.id), data: { turbo_frame: "skill_rating_form" }, class: "text-blue-600 hover:text-blue-800"
+- else
+  .space-y-4
+    - skill_ratings.each do |skill_rating|
+      = render partial: "skill_ratings/rating_card", locals: { skill_rating: skill_rating }
+
+    - if skill_ratings.respond_to?(:total_count) && skill_ratings.total_count > skill_ratings.count
+      .mt-6.p-4.bg-gray-50.rounded-lg.text-center
+        %p.text-sm.text-gray-600
+          Показано #{skill_ratings.offset_value + 1}-#{skill_ratings.offset_value + skill_ratings.count} из #{skill_ratings.total_count} записей

@@ -1,12 +1,9 @@
 # User model for Starmap application
 # Integrates Devise for authentication and LDAP for user management
 class User < ApplicationRecord
-  # TODO: Include Devise modules when properly configured
-  # devise :ldap_authenticatable, :database_authenticatable, :registerable,
-  #        :recoverable, :rememberable, :trackable, :validatable
-
-  # Include LdapHelper methods
-  # include LdapHelper
+  # Include Devise modules for authentication
+  devise :ldap_authenticatable, :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
 
   # Associations
   belongs_to :team, optional: true

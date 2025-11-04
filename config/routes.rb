@@ -12,13 +12,9 @@ Rails.application.routes.draw do
   root "dashboards#overview"
 
   # Dashboards routes
-  namespace :dashboards do
-    collection do
-      get :overview
-      get :team
-      get :personal
-    end
-  end
+  get 'dashboards/overview', to: 'dashboards#overview', as: :overview_dashboard
+  get 'dashboards/team', to: 'dashboards#team', as: :team_dashboard
+  get 'dashboards/personal', to: 'dashboards#personal', as: :personal_dashboard
 
   # Admin routes
   namespace :admin do
@@ -53,8 +49,4 @@ Rails.application.routes.draw do
     end
   end
 
-  # Localized routes
-  scope "(:locale)", locale: /en|ru/ do
-    # All routes above will be available with locale prefix
   end
-end
