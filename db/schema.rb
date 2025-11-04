@@ -16,44 +16,48 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
 
   create_table "action_plans", force: :cascade do |t|
     t.boolean "active", default: true
-    t.integer "assigned_to_id"
+    t.bigint "assigned_to_id"
     t.date "completed_at"
     t.text "completion_notes"
     t.datetime "created_at", null: false
-    t.integer "created_by_id"
+    t.bigint "created_by_id"
     t.text "description"
     t.date "due_date"
     t.string "priority", default: "medium", null: false
     t.integer "progress_percentage", default: 0
-    t.integer "quarter_id"
+    t.bigint "quarter_id"
     t.string "status", default: "active", null: false
-    t.integer "technology_id"
+    t.bigint "technology_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
+    t.bigint "user_id"
     t.index ["active"], name: "index_action_plans_on_active"
     t.index ["assigned_to_id"], name: "index_action_plans_on_assigned_to_id"
     t.index ["created_by_id"], name: "index_action_plans_on_created_by_id"
     t.index ["due_date"], name: "index_action_plans_on_due_date"
     t.index ["priority"], name: "index_action_plans_on_priority"
+    t.index ["quarter_id"], name: "index_action_plans_on_quarter_id"
     t.index ["status"], name: "index_action_plans_on_status"
+    t.index ["technology_id"], name: "index_action_plans_on_technology_id"
+    t.index ["user_id"], name: "index_action_plans_on_user_id"
   end
 
   create_table "quarters", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "created_by_id"
+    t.bigint "created_by_id"
     t.text "description"
     t.date "end_date", null: false
     t.date "evaluation_end_date"
     t.date "evaluation_start_date"
     t.boolean "is_current", default: false
     t.string "name", null: false
-    t.integer "previous_quarter_id"
+    t.bigint "previous_quarter_id"
     t.integer "quarter_number", null: false
     t.date "start_date", null: false
     t.string "status", default: "active", null: false
     t.datetime "updated_at", null: false
     t.integer "year", null: false
+    t.index ["created_by_id"], name: "index_quarters_on_created_by_id"
     t.index ["end_date"], name: "index_quarters_on_end_date"
     t.index ["is_current"], name: "index_quarters_on_is_current"
     t.index ["previous_quarter_id"], name: "index_quarters_on_previous_quarter_id"
@@ -64,24 +68,26 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
 
   create_table "skill_ratings", force: :cascade do |t|
     t.datetime "approved_at"
-    t.integer "approved_by_id"
+    t.bigint "approved_by_id"
     t.text "comment"
     t.datetime "created_at", null: false
-    t.integer "created_by_id"
+    t.bigint "created_by_id"
     t.boolean "locked", default: false
     t.bigint "quarter_id", null: false
     t.integer "rating", null: false
     t.string "status", default: "draft", null: false
     t.bigint "technology_id", null: false
     t.datetime "updated_at", null: false
-    t.integer "updated_by_id"
+    t.bigint "updated_by_id"
     t.bigint "user_id", null: false
     t.index ["approved_by_id"], name: "index_skill_ratings_on_approved_by_id"
+    t.index ["created_by_id"], name: "index_skill_ratings_on_created_by_id"
     t.index ["locked"], name: "index_skill_ratings_on_locked"
     t.index ["quarter_id"], name: "index_skill_ratings_on_quarter_id"
     t.index ["rating"], name: "index_skill_ratings_on_rating"
     t.index ["status"], name: "index_skill_ratings_on_status"
     t.index ["technology_id"], name: "index_skill_ratings_on_technology_id"
+    t.index ["updated_by_id"], name: "index_skill_ratings_on_updated_by_id"
     t.index ["user_id", "technology_id", "quarter_id"], name: "idx_on_user_id_technology_id_quarter_id_2dd6e152f0", unique: true
     t.index ["user_id"], name: "index_skill_ratings_on_user_id"
   end
@@ -93,7 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.string "ldap_group_dn"
     t.string "name", null: false
     t.integer "sort_order", default: 0
-    t.integer "team_lead_id"
+    t.bigint "team_lead_id"
     t.string "unit_name"
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_teams_on_active"
@@ -164,9 +170,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.index ["team_id"], name: "index_users_on_team_id"
   end
 
+  add_foreign_key "action_plans", "quarters"
+  add_foreign_key "action_plans", "technologies"
+  add_foreign_key "action_plans", "users"
+  add_foreign_key "action_plans", "users", column: "assigned_to_id"
+  add_foreign_key "action_plans", "users", column: "created_by_id"
+  add_foreign_key "quarters", "quarters", column: "previous_quarter_id"
+  add_foreign_key "quarters", "users", column: "created_by_id"
   add_foreign_key "skill_ratings", "quarters"
   add_foreign_key "skill_ratings", "technologies"
   add_foreign_key "skill_ratings", "users"
+  add_foreign_key "skill_ratings", "users", column: "approved_by_id"
+  add_foreign_key "skill_ratings", "users", column: "created_by_id"
+  add_foreign_key "skill_ratings", "users", column: "updated_by_id"
+  add_foreign_key "teams", "users", column: "team_lead_id"
   add_foreign_key "technologies", "users", column: "created_by_id"
   add_foreign_key "technologies", "users", column: "updated_by_id"
+  add_foreign_key "users", "teams"
 end

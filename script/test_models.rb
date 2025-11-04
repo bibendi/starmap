@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Test script to verify model functionality
 
-require_relative 'config/environment'
+require_relative '../config/environment'
 
 puts "=== Testing Starmap Models ==="
 
