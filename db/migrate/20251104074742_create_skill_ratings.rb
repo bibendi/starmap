@@ -7,10 +7,10 @@ class CreateSkillRatings < ActiveRecord::Migration[8.1]
       t.integer :rating, null: false
       t.text :comment
       t.string :status, null: false, default: 'draft'
-      t.references :approved_by, foreign_key: { to_table: :users }
+      t.integer :approved_by_id  # Will add foreign key constraint later
       t.datetime :approved_at
-      t.references :created_by, foreign_key: { to_table: :users }
-      t.references :updated_by, foreign_key: { to_table: :users }
+      t.integer :created_by_id  # Will add foreign key constraint later
+      t.integer :updated_by_id  # Will add foreign key constraint later
       t.boolean :locked, default: false
 
       t.timestamps
@@ -20,9 +20,6 @@ class CreateSkillRatings < ActiveRecord::Migration[8.1]
     add_index :skill_ratings, [:user_id, :technology_id, :quarter_id], unique: true
 
     # Indexes for performance
-    add_index :skill_ratings, :user_id
-    add_index :skill_ratings, :technology_id
-    add_index :skill_ratings, :quarter_id
     add_index :skill_ratings, :rating
     add_index :skill_ratings, :status
     add_index :skill_ratings, :approved_by_id

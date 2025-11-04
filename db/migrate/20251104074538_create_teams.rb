@@ -4,7 +4,7 @@ class CreateTeams < ActiveRecord::Migration[8.1]
       t.string :name, null: false
       t.string :description
       t.string :unit_name
-      t.references :team_lead, foreign_key: { to_table: :users }
+      t.integer :team_lead_id  # Will add foreign key constraint later
       t.string :ldap_group_dn
       t.boolean :active, default: true
       t.integer :sort_order, default: 0

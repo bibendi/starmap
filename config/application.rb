@@ -48,6 +48,6 @@ module Starmap
     config.time_zone = "Europe/Moscow"
 
     # Set default locale
-    config.i18n.default_locale = :ru
+    config.i18n.default_locale = :en
   end
 end

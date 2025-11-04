@@ -7,19 +7,23 @@ puts "Creating teams..."
 teams = {
   backend: Team.find_or_create_by!(name: 'Backend Team') do |team|
     team.description = 'Backend development team'
-    team.ldap_group = 'cn=starmap-backend,ou=groups,dc=company,dc=com'
+    team.unit_name = 'Engineering'
+    team.ldap_group_dn = 'cn=starmap-backend,ou=groups,dc=company,dc=com'
   end,
   frontend: Team.find_or_create_by!(name: 'Frontend Team') do |team|
     team.description = 'Frontend development team'
-    team.ldap_group = 'cn=starmap-frontend,ou=groups,dc=company,dc=com'
+    team.unit_name = 'Engineering'
+    team.ldap_group_dn = 'cn=starmap-frontend,ou=groups,dc=company,dc=com'
   end,
   devops: Team.find_or_create_by!(name: 'DevOps Team') do |team|
     team.description = 'DevOps and infrastructure team'
-    team.ldap_group = 'cn=starmap-devops,ou=groups,dc=company,dc=com'
+    team.unit_name = 'Engineering'
+    team.ldap_group_dn = 'cn=starmap-devops,ou=groups,dc=company,dc=com'
   end,
   mobile: Team.find_or_create_by!(name: 'Mobile Team') do |team|
     team.description = 'Mobile development team'
-    team.ldap_group = 'cn=starmap-mobile,ou=groups,dc=company,dc=com'
+    team.unit_name = 'Engineering'
+    team.ldap_group_dn = 'cn=starmap-mobile,ou=groups,dc=company,dc=com'
   end
 }
 
@@ -64,27 +68,27 @@ technologies = {
   end,
   typescript: Technology.find_or_create_by!(name: 'TypeScript') do |tech|
     tech.description = 'Typed superset of JavaScript'
-    tech.criticality = 'medium'
+    tech.criticality = 'normal'
     tech.category = 'frontend'
   end,
   nodejs: Technology.find_or_create_by!(name: 'Node.js') do |tech|
     tech.description = 'JavaScript runtime environment'
-    tech.criticality = 'medium'
+    tech.criticality = 'normal'
     tech.category = 'backend'
   end,
   redis: Technology.find_or_create_by!(name: 'Redis') do |tech|
     tech.description = 'In-memory data structure store'
-    tech.criticality = 'medium'
+    tech.criticality = 'normal'
     tech.category = 'database'
   end,
   graphql: Technology.find_or_create_by!(name: 'GraphQL') do |tech|
     tech.description = 'Query language for APIs'
-    tech.criticality = 'medium'
+    tech.criticality = 'normal'
     tech.category = 'backend'
   end,
   terraform: Technology.find_or_create_by!(name: 'Terraform') do |tech|
     tech.description = 'Infrastructure as code tool'
-    tech.criticality = 'medium'
+    tech.criticality = 'normal'
     tech.category = 'devops'
   end,
   vuejs: Technology.find_or_create_by!(name: 'Vue.js') do |tech|
@@ -103,22 +107,32 @@ puts "Creating quarters..."
 
 # Create current and previous quarters
 current_quarter = Quarter.find_or_create_by!(
-  name: 'Q4 2024',
-  start_date: Date.new(2024, 10, 1),
-  end_date: Date.new(2024, 12, 31),
-  status: 'active'
+  year: 2024,
+  quarter_number: 4
 ) do |quarter|
+  quarter.name = 'Q4 2024'
+  quarter.start_date = Date.new(2024, 10, 1)
+  quarter.end_date = Date.new(2024, 12, 31)
+  quarter.status = 'active'
   quarter.description = 'Fourth quarter 2024'
+  quarter.is_current = true
 end
 
 previous_quarter = Quarter.find_or_create_by!(
-  name: 'Q3 2024',
-  start_date: Date.new(2024, 7, 1),
-  end_date: Date.new(2024, 9, 30),
-  status: 'closed'
+  year: 2024,
+  quarter_number: 3
 ) do |quarter|
+  quarter.name = 'Q3 2024'
+  quarter.start_date = Date.new(2024, 7, 1)
+  quarter.end_date = Date.new(2024, 9, 30)
+  quarter.status = 'closed'
   quarter.description = 'Third quarter 2024'
+  quarter.is_current = false
+  quarter.previous_quarter_id = nil  # No previous quarter
 end
+
+# Link quarters
+current_quarter.update!(previous_quarter_id: previous_quarter.id)
 
 puts "Creating test users..."
 
@@ -134,8 +148,9 @@ admin_user = User.find_or_create_by!(email: 'admin@company.com') do |user|
   user.phone = '+7 (999) 123-45-67'
   user.ldap_uid = 'admin'
   user.ldap_dn = 'cn=admin,ou=users,dc=company,dc=com'
-  user.encrypted_password = Devise.friendly_token
+  user.encrypted_password = 'password123'  # Simple password for testing
   user.active = true
+  user.team_id = nil
 end
 
 # Create unit lead
@@ -150,8 +165,9 @@ unit_lead_user = User.find_or_create_by!(email: 'unit.lead@company.com') do |use
   user.phone = '+7 (999) 123-45-68'
   user.ldap_uid = 'unit.lead'
   user.ldap_dn = 'cn=unit.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = Devise.friendly_token
+  user.encrypted_password = 'password123'  # Simple password for testing
   user.active = true
+  user.team_id = nil
 end
 
 # Create team leads
@@ -160,14 +176,14 @@ backend_team_lead = User.find_or_create_by!(email: 'backend.lead@company.com') d
   user.last_name = 'BackendLead'
   user.display_name = 'Bob BackendLead'
   user.role = 'team_lead'
-  user.team = teams[:backend]
+  user.team_id = teams[:backend].id
   user.employee_id = 'EMP003'
   user.department = 'Engineering'
   user.position = 'Senior Backend Developer'
   user.phone = '+7 (999) 123-45-69'
   user.ldap_uid = 'backend.lead'
   user.ldap_dn = 'cn=backend.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = Devise.friendly_token
+  user.encrypted_password = 'password123'  # Simple password for testing
   user.active = true
 end
 
@@ -176,14 +192,14 @@ frontend_team_lead = User.find_or_create_by!(email: 'frontend.lead@company.com')
   user.last_name = 'FrontendLead'
   user.display_name = 'Carol FrontendLead'
   user.role = 'team_lead'
-  user.team = teams[:frontend]
+  user.team_id = teams[:frontend].id
   user.employee_id = 'EMP004'
   user.department = 'Engineering'
   user.position = 'Senior Frontend Developer'
   user.phone = '+7 (999) 123-45-70'
   user.ldap_uid = 'frontend.lead'
   user.ldap_dn = 'cn=frontend.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = Devise.friendly_token
+  user.encrypted_password = 'password123'  # Simple password for testing
   user.active = true
 end
 
@@ -192,16 +208,21 @@ devops_team_lead = User.find_or_create_by!(email: 'devops.lead@company.com') do 
   user.last_name = 'DevOpsLead'
   user.display_name = 'David DevOpsLead'
   user.role = 'team_lead'
-  user.team = teams[:devops]
+  user.team_id = teams[:devops].id
   user.employee_id = 'EMP005'
   user.department = 'Engineering'
   user.position = 'DevOps Engineer'
   user.phone = '+7 (999) 123-45-71'
   user.ldap_uid = 'devops.lead'
   user.ldap_dn = 'cn=devops.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = Devise.friendly_token
+  user.encrypted_password = 'password123'  # Simple password for testing
   user.active = true
 end
+
+# Set team leads
+teams[:backend].update!(team_lead_id: backend_team_lead.id)
+teams[:frontend].update!(team_lead_id: frontend_team_lead.id)
+teams[:devops].update!(team_lead_id: devops_team_lead.id)
 
 # Create engineers
 engineers = [
@@ -211,7 +232,7 @@ engineers = [
     last_name: 'Doe',
     display_name: 'John Doe',
     role: 'engineer',
-    team: teams[:backend],
+    team_id: teams[:backend].id,
     employee_id: 'EMP006',
     department: 'Engineering',
     position: 'Backend Developer',
@@ -225,7 +246,7 @@ engineers = [
     last_name: 'Smith',
     display_name: 'Jane Smith',
     role: 'engineer',
-    team: teams[:frontend],
+    team_id: teams[:frontend].id,
     employee_id: 'EMP007',
     department: 'Engineering',
     position: 'Frontend Developer',
@@ -239,7 +260,7 @@ engineers = [
     last_name: 'Wilson',
     display_name: 'Mike Wilson',
     role: 'engineer',
-    team: teams[:devops],
+    team_id: teams[:devops].id,
     employee_id: 'EMP008',
     department: 'Engineering',
     position: 'DevOps Engineer',
@@ -253,7 +274,7 @@ engineers = [
     last_name: 'Brown',
     display_name: 'Sarah Brown',
     role: 'engineer',
-    team: teams[:backend],
+    team_id: teams[:backend].id,
     employee_id: 'EMP009',
     department: 'Engineering',
     position: 'Backend Developer',
@@ -267,7 +288,7 @@ engineers = [
     last_name: 'Johnson',
     display_name: 'Tom Johnson',
     role: 'engineer',
-    team: teams[:frontend],
+    team_id: teams[:frontend].id,
     employee_id: 'EMP010',
     department: 'Engineering',
     position: 'Frontend Developer',
@@ -281,7 +302,7 @@ engineers = [
     last_name: 'Davis',
     display_name: 'Lisa Davis',
     role: 'engineer',
-    team: teams[:mobile],
+    team_id: teams[:mobile].id,
     employee_id: 'EMP011',
     department: 'Engineering',
     position: 'Mobile Developer',
@@ -294,7 +315,7 @@ engineers = [
 engineers.each do |engineer_data|
   User.find_or_create_by!(email: engineer_data[:email]) do |user|
     user.assign_attributes(engineer_data)
-    user.encrypted_password = Devise.friendly_token
+    user.encrypted_password = 'password123'  # Simple password for testing
     user.active = true
   end
 end
@@ -302,8 +323,6 @@ end
 puts "Creating sample skill ratings..."
 
 # Create sample skill ratings for current quarter
-all_users = User.all
-all_technologies = Technology.all
 
 # Define skill levels for each user (0-3 scale)
 user_skills = {
@@ -387,16 +406,17 @@ engineer_skills = {
 
 # Create skill ratings
 user_skills.each do |user_id, skills|
-  skills.each do |tech_id, level|
+  skills.each do |tech_id, rating_level|
     SkillRating.find_or_create_by!(
       user_id: user_id,
       technology_id: tech_id,
       quarter_id: current_quarter.id
     ) do |rating|
-      rating.level = level
-      rating.approved = [user_id, backend_team_lead.id, frontend_team_lead.id, devops_team_lead.id].include?(user_id)
-      rating.approved_at = rating.approved ? Time.current : nil
-      rating.approved_by_id = rating.approved ? unit_lead_user.id : nil
+      rating.rating = rating_level
+      rating.status = 'approved'
+      rating.approved_at = Time.current
+      rating.approved_by_id = unit_lead_user.id
+      rating.locked = true
     end
   end
 end
@@ -405,14 +425,15 @@ engineer_skills.each do |email, skills|
   user = User.find_by(email: email)
   next unless user
 
-  skills.each do |tech_id, level|
+  skills.each do |tech_id, rating_level|
     SkillRating.find_or_create_by!(
       user_id: user.id,
       technology_id: tech_id,
       quarter_id: current_quarter.id
     ) do |rating|
-      rating.level = level
-      rating.approved = false
+      rating.rating = rating_level
+      rating.status = 'draft'
+      rating.locked = false
     end
   end
 end
@@ -437,7 +458,7 @@ ActionPlan.find_or_create_by!(
   user_id: User.find_by(email: 'sarah.brown@company.com')&.id,
   technology_id: technologies[:docker].id,
   quarter_id: current_quarter.id,
-  status: 'pending',
+  status: 'active',
   priority: 'medium',
   created_by_id: backend_team_lead.id
 )
@@ -462,5 +483,5 @@ puts "Backend Team Lead: backend.lead@company.com"
 puts "Frontend Team Lead: frontend.lead@company.com"
 puts "DevOps Team Lead: devops.lead@company.com"
 puts "Engineers: john.doe@company.com, jane.smith@company.com, mike.wilson@company.com, sarah.brown@company.com, tom.johnson@company.com, lisa.davis@company.com"
-puts "\nAll users have password: #{Devise.friendly_token[0, 8]}"
+puts "\nAll users have password: password123"
 puts "Note: In production, users will authenticate via LDAP"

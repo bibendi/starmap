@@ -33,7 +33,7 @@ class CreateUsers < ActiveRecord::Migration[8.1]
 
       # Role-based access control
       t.string :role, null: false, default: 'engineer'
-      t.references :team, foreign_key: true
+      t.integer :team_id  # Will add foreign key constraint later
 
       # Status and flags
       t.boolean :active, default: true
