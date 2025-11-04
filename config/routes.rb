@@ -5,6 +5,56 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Devise authentication routes
+  devise_for :users
+
+  # Root path - Overview Dashboard
+  root "dashboards#overview"
+
+  # Dashboards routes
+  namespace :dashboards do
+    collection do
+      get :overview
+      get :team
+      get :personal
+    end
+  end
+
+  # Admin routes
+  namespace :admin do
+    resources :technologies
+    resources :quarters
+    resources :users
+    resources :teams
+  end
+
+  # Skill ratings management
+  resources :skill_ratings do
+    member do
+      post :approve
+      post :reject
+    end
+  end
+
+  # Action plans management
+  resources :action_plans do
+    member do
+      post :complete
+      post :pause
+      post :resume
+    end
+  end
+
+  # API routes for AJAX/Hotwire updates
+  namespace :api do
+    namespace :v1 do
+      resources :metrics, only: [:index]
+      resources :notifications, only: [:index, :create]
+    end
+  end
+
+  # Localized routes
+  scope "(:locale)", locale: /en|ru/ do
+    # All routes above will be available with locale prefix
+  end
 end
