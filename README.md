@@ -1,24 +1,215 @@
-# README
+# Starmap
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+[![Ruby](https://img.shields.io/badge/ruby-%23CC342D.svg?style=for-the-badge&logo=ruby&logoColor=white)](https://www.ruby-lang.org/)
+[![Rails](https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white)](https://rubyonrails.org/)
+[![PostgreSQL](https://img.shields.io/badge/postgresql-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-Things you may want to cover:
+> **Открытое веб-приложение для управления техническими компетенциями команды**
 
-* Ruby version
+Starmap — это корпоративное веб-приложение, предназначенное для автоматизации процессов сбора, анализа и управления техническими компетенциями команды. Цель проекта — трансформировать управление скрытыми знаниями в проактивную и стратегическую деятельность, обеспечивая прозрачность, устойчивость и целенаправленное развитие.
 
-* System dependencies
+## 🎯 Проблемы, которые решает Starmap
 
-* Configuration
+- **Для разработчиков**: Отсутствие персонального навигатора для карьерного роста и понимания собственных компетенций
+- **Для тимлидов**: Сложность построения сбалансированных команд и объективной оценки знаний сотрудников
+- **Для Unit Lead/CTO**: Недостаточная прозрачность рисков команды и сложность обоснования инвестиций в обучение
 
-* Database creation
+## ✨ Ключевые функции
 
-* Database initialization
+### 📊 Система управления компетенциями
+- **Шкала оценок 0-3** с понятными описаниями каждого уровня
+- **Процесс утверждения**: Самооценка разработчика → утверждение тимлидом
+- **История изменений**: Отслеживание развития компетенций по кварталам
+- **Валидации**: Ограничения на основе ролей и статуса квартала
 
-* How to run the test suite
+### 🔄 Квартальные циклы
+- Автоматическое создание новых циклов с копированием предыдущих оценок
+- Управление статусами: draft → active → closed → archived
+- Ограничения редактирования для обеспечения целостности данных
 
-* Services (job queues, cache servers, search engines, etc.)
+### 📈 Три типа дашбордов
+- **Overview Dashboard**: Общие метрики и риски для руководителей
+- **Team Dashboard**: Детальный анализ компетенций команды для тимлидов
+- **Personal Dashboard**: Персональный прогресс для разработчиков
 
-* Deployment instructions
+### 🎯 Планы развития
+- Создание планов на основе выявленных пробелов в компетенциях
+- Отслеживание прогресса: active → completed/paused
+- Привязка к целевым кварталам для достижения целей
 
-* ...
+### 🔐 LDAP интеграция
+- Автоматическая синхронизация пользователей каждые 24 часа
+- Корпоративная аутентификация через LDAP
+- Маппинг LDAP групп на роли системы
+
+## 🏗️ Архитектура
+
+### Технологический стек
+- **Backend**: Ruby on Rails 8.1.1
+- **Frontend**: Hotwire (Turbo + Stimulus) для интерактивности без JavaScript фреймворков
+- **База данных**: PostgreSQL 15+
+- **Очереди**: Solid Queue (встроенная в Rails)
+- **Кеширование**: Solid Cache
+- **Аудит**: Audited gem для отслеживания изменений
+
+### Безопасность
+- **Аутентификация**: Devise + devise_ldap_authenticatable
+- **Авторизация**: Pundit с ролевой системой
+- **Защита данных**: CSRF, XSS, SQL injection protection
+- **Логирование**: Структурированные логи с фильтрацией чувствительных данных
+
+## 👥 Пользовательские роли
+
+### Engineer
+- Просмотр Personal dashboard и собственных оценок
+- Редактирование собственных оценок в черновиках/активных кварталах
+- Создание личных планов развития
+
+### Team Lead
+- Все права Engineer +
+- Просмотр Team dashboard и оценок всей команды
+- Утверждение оценок подчинённых
+- Создание командных планов развития
+
+### Unit Lead
+- Все права Team Lead +
+- Просмотр Overview dashboard и всех команд юнита
+- Стратегическое планирование развития юнита
+
+### Admin
+- Полные права на все ресурсы системы
+- Управление пользователями, технологиями, кварталами
+- Системные настройки и конфигурация
+
+## 📈 Бизнес-метрики
+
+### Coverage Index
+Процент технологий с ≥2 экспертами (рейтинг 2-3). Цель: >80% для стабильной команды.
+
+### Maturity Index
+Средняя оценка по всем технологиям (0.0 - 3.0). Цель: >2.0 для зрелой команды.
+
+### Red Zones
+Критические технологии (criticality='high') с недостаточным покрытием <2 экспертов.
+
+### Key Person Risk
+Технологии, где один сотрудник является единственным экспертом.
+
+## 🚀 Быстрый старт
+
+### Системные требования
+- Ruby 3.2+
+- PostgreSQL 15+
+
+### Установка
+
+1. **Клонирование репозитория**
+```bash
+git clone https://github.com/your-org/starmap.git
+cd starmap
+```
+
+2. **Установка зависимостей**
+```bash
+bundle install
+```
+
+3. **Настройка базы данных**
+```bash
+# Запуск базы через Docker Compose
+docker-compose up -d
+
+```bash
+# Создание базы данных и выполнение миграций
+bin/rails db:create db:migrate
+
+# Загрузка seed данных (опционально)
+bin/rails db:seed
+```
+
+4. **Настройка переменных окружения**
+```bash
+cp .env.example .env
+# Отредактируйте .env файл с вашими настройками
+```
+
+5. **Запуск сервера**
+```bash
+bin/dev
+```
+
+Приложение будет доступно по адресу: http://localhost:3000
+
+## ⚙️ Конфигурация
+
+### LDAP настройки
+Отредактируйте файл `config/ldap.yml`:
+
+```yaml
+development:
+  host: ldap.example.com
+  port: 636
+  ssl: true
+  base_dn: dc=example,dc=com
+  admin_user: cn=admin,dc=example,dc=com
+  admin_password: your_admin_password
+```
+
+### Переменные окружения
+Создайте файл `.env`:
+
+```env
+DATABASE_URL=postgresql://username:password@localhost:5432/starmap_development
+SECRET_KEY_BASE=your_secret_key_base
+LDAP_HOST=ldap.example.com
+LDAP_PORT=636
+LDAP_SSL=true
+```
+
+## 🧪 Тестирование
+
+```bash
+# Запуск всех тестов
+bin/rails test
+
+# Запуск тестов с покрытием
+COVERAGE=true bin/rails test
+
+# Запуск только unit тестов
+bin/rails test:units
+
+# Запуск integration тестов
+bin/rails test:integration
+```
+
+## 📚 Документация
+
+- [Архитектура проекта](docs/ARCHITECTURE.md)
+- [API документация](docs/API.md)
+- [Руководство разработчика](docs/DEVELOPMENT.md)
+
+## 🤝 Участие в разработке
+
+Мы приветствуем contributions! Пожалуйста, ознакомьтесь с нашим [Contributing Guide](CONTRIBUTING.md).
+
+### Процесс разработки
+1. Fork репозитория
+2. Создайте feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit изменения (`git commit -m 'Add amazing feature'`)
+4. Push в branch (`git push origin feature/amazing-feature`)
+5. Откройте Pull Request
+
+### Код-стайл
+- Используйте стандартный Ruby codestyle
+- Все изменения должны быть покрыты тестами
+- Обновите документацию при необходимости
+
+## 📄 Лицензия
+
+Этот проект распространяется под лицензией MIT. Смотрите файл [LICENSE](LICENSE) для подробностей.
+
+## 📞 Поддержка
+
+- **Issues**: [GitHub Issues](https://github.com/bibendi/starmap/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/starmap/discussions)
