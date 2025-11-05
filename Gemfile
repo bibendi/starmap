@@ -21,6 +21,9 @@ gem "pundit"
 # Hotwire for interactivity
 gem "hotwire-rails"
 
+# Vite for asset management
+gem "vite_rails", "~> 3.0"
+
 # Background jobs and caching
 gem "solid_queue"
 gem "solid_cache"

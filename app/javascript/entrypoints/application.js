@@ -1,11 +1,14 @@
 // Entry point for the webpacker bundle for Starmap application
 
-import { Turbo } from "@hotwired/turbo-rails"
-Turbo.start()
+// Import styles
+import "./application.css"
+
+import { session } from "@hotwired/turbo"
+session.start()
 
 // Import Stimulus controllers
-import "./controllers/filters_controller.js"
-import "./controllers/rating_scale_controller.js"
+import "../controllers/filters_controller.js"
+import "../controllers/rating_scale_controller.js"
 
 // Custom application JavaScript
 document.addEventListener('DOMContentLoaded', function() {

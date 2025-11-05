@@ -1,18 +1,26 @@
-%h2 Заголовок
-= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
-  = render "devise/shared/error_messages", resource: resource
-  .field
-    = f.label :email, "Email"
-    %br/
-    = f.email_field :email, autofocus: true, autocomplete: "email"
-  .field
-    = f.label :password, "Пароль"
-    %br/
-    = f.password_field :password, autocomplete: "current-password"
-  - if devise_mapping.rememberable?
-    .field
-      = f.check_box :remember_me
-      = f.label :remember_me, "Запомнить меня"
-  .actions
-    = f.submit "Войти"
-= render "devise/shared/links"
+.flex.min-h-full.flex-col.justify-center.py-12.sm:px-6.lg:px-8
+  .sm:mx-auto.sm:w-full.sm:max-w-md
+    %h2.mt-6.text-center.text-3xl.font-bold.tracking-tight.text-gray-900 Войти в Starmap
+  .mt-8.sm:mx-auto.sm:w-full.sm:max-w-md
+    .bg-white.py-8.px-4.shadow.sm:rounded-lg
+      = form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6 px-4 sm:px-10" }) do |f|
+        = render "devise/shared/error_messages", resource: resource
+        %div
+          = f.label :email, "Email", class: "block text-sm font-medium text-gray-700"
+          .mt-1
+            = f.email_field :email, autofocus: true, autocomplete: "email", class: "block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        %div
+          = f.label :password, "Пароль", class: "block text-sm font-medium text-gray-700"
+          .mt-1
+            = f.password_field :password, autocomplete: "current-password", class: "block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        - if devise_mapping.rememberable?
+          .flex.items-center.justify-between
+            .flex.items-center
+              = f.check_box :remember_me, class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              = f.label :remember_me, "Запомнить меня", class: "ml-2 block text-sm text-gray-900"
+            .text-sm
+              = link_to "Забыли пароль?", new_password_path(resource_name), class: "font-medium text-indigo-600 hover:text-indigo-500"
+        %div
+          = f.submit "Войти", class: "flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      .mt-6.text-center
+        = render "devise/shared/links"
