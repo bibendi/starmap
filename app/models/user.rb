@@ -1,8 +1,8 @@
 # User model for Starmap application
-# Integrates Devise for authentication and LDAP for user management
+# Integrates Devise for database authentication
 class User < ApplicationRecord
   # Include Devise modules for authentication
-  devise :ldap_authenticatable, :database_authenticatable, :registerable,
+  devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
   # Associations
@@ -16,11 +16,10 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validates :role, presence: true, inclusion: { in: %w[engineer team_lead unit_lead admin] }
   validates :email, presence: true, uniqueness: true
-  validates :ldap_uid, uniqueness: true, allow_blank: true
+
 
   # Callbacks
   before_validation :set_default_role, on: :create
-  after_update :sync_to_ldap, if: :ldap_sync_needed?
 
   # Scopes
   scope :active, -> { where(active: true) }
@@ -30,7 +29,7 @@ class User < ApplicationRecord
   scope :unit_leads, -> { where(role: 'unit_lead') }
   scope :admins, -> { where(role: 'admin') }
   scope :by_team, ->(team_id) { where(team_id: team_id) }
-  scope :needs_sync, -> { where('last_ldap_sync_at IS NULL OR last_ldap_sync_at < ?', 1.day.ago) }
+
 
   # Role checking methods
   def engineer?
@@ -59,22 +58,13 @@ class User < ApplicationRecord
     unit_lead? # For now, unit leads can see all units
   end
 
-  # LDAP data helpers
+  # Name helpers
   def full_name
     [first_name, last_name].compact.join(' ')
   end
 
   def display_name_or_full_name
     display_name.presence || full_name
-  end
-
-  # LDAP sync status
-  def last_ldap_sync_info
-    last_ldap_sync_at&.strftime('%d.%m.%Y %H:%M')
-  end
-
-  def needs_ldap_sync?
-    last_ldap_sync_at.nil? || last_ldap_sync_at < 1.day.ago
   end
 
   # Skill rating helpers
@@ -162,19 +152,5 @@ class User < ApplicationRecord
 
   def set_default_role
     self.role ||= 'engineer'
-  end
-
-  def sync_to_ldap
-    # This would sync user changes back to LDAP
-    # Implementation depends on LDAP server capabilities
-    update_column(:last_ldap_sync_at, Time.current)
-  end
-
-  def ldap_sync_needed?
-    saved_change_to_first_name? ||
-    saved_change_to_last_name? ||
-    saved_change_to_email? ||
-    saved_change_to_role? ||
-    saved_change_to_team_id?
   end
 end

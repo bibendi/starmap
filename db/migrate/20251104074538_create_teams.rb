@@ -5,7 +5,6 @@ class CreateTeams < ActiveRecord::Migration[8.1]
       t.string :description
       t.string :unit_name
       t.references :team_lead, foreign_key: { to_table: :users }
-      t.string :ldap_group_dn
       t.boolean :active, default: true
       t.integer :sort_order, default: 0
 

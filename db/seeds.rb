@@ -8,22 +8,18 @@ teams = {
   backend: Team.find_or_create_by!(name: 'Backend Team') do |team|
     team.description = 'Backend development team'
     team.unit_name = 'Engineering'
-    team.ldap_group_dn = 'cn=starmap-backend,ou=groups,dc=company,dc=com'
   end,
   frontend: Team.find_or_create_by!(name: 'Frontend Team') do |team|
     team.description = 'Frontend development team'
     team.unit_name = 'Engineering'
-    team.ldap_group_dn = 'cn=starmap-frontend,ou=groups,dc=company,dc=com'
   end,
   devops: Team.find_or_create_by!(name: 'DevOps Team') do |team|
     team.description = 'DevOps and infrastructure team'
     team.unit_name = 'Engineering'
-    team.ldap_group_dn = 'cn=starmap-devops,ou=groups,dc=company,dc=com'
   end,
   mobile: Team.find_or_create_by!(name: 'Mobile Team') do |team|
     team.description = 'Mobile development team'
     team.unit_name = 'Engineering'
-    team.ldap_group_dn = 'cn=starmap-mobile,ou=groups,dc=company,dc=com'
   end
 }
 
@@ -146,9 +142,8 @@ admin_user = User.find_or_create_by!(email: 'admin@company.com') do |user|
   user.department = 'IT'
   user.position = 'System Administrator'
   user.phone = '+7 (999) 123-45-67'
-  user.ldap_uid = 'admin'
-  user.ldap_dn = 'cn=admin,ou=users,dc=company,dc=com'
-  user.encrypted_password = 'password123'  # Simple password for testing
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
   user.active = true
   user.team_id = nil
 end
@@ -163,9 +158,8 @@ unit_lead_user = User.find_or_create_by!(email: 'unit.lead@company.com') do |use
   user.department = 'Engineering'
   user.position = 'Unit Lead'
   user.phone = '+7 (999) 123-45-68'
-  user.ldap_uid = 'unit.lead'
-  user.ldap_dn = 'cn=unit.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = 'password123'  # Simple password for testing
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
   user.active = true
   user.team_id = nil
 end
@@ -181,9 +175,8 @@ backend_team_lead = User.find_or_create_by!(email: 'backend.lead@company.com') d
   user.department = 'Engineering'
   user.position = 'Senior Backend Developer'
   user.phone = '+7 (999) 123-45-69'
-  user.ldap_uid = 'backend.lead'
-  user.ldap_dn = 'cn=backend.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = 'password123'  # Simple password for testing
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
   user.active = true
 end
 
@@ -197,9 +190,8 @@ frontend_team_lead = User.find_or_create_by!(email: 'frontend.lead@company.com')
   user.department = 'Engineering'
   user.position = 'Senior Frontend Developer'
   user.phone = '+7 (999) 123-45-70'
-  user.ldap_uid = 'frontend.lead'
-  user.ldap_dn = 'cn=frontend.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = 'password123'  # Simple password for testing
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
   user.active = true
 end
 
@@ -213,9 +205,8 @@ devops_team_lead = User.find_or_create_by!(email: 'devops.lead@company.com') do 
   user.department = 'Engineering'
   user.position = 'DevOps Engineer'
   user.phone = '+7 (999) 123-45-71'
-  user.ldap_uid = 'devops.lead'
-  user.ldap_dn = 'cn=devops.lead,ou=users,dc=company,dc=com'
-  user.encrypted_password = 'password123'  # Simple password for testing
+  user.password = 'password123'
+  user.password_confirmation = 'password123'
   user.active = true
 end
 
@@ -236,9 +227,7 @@ engineers = [
     employee_id: 'EMP006',
     department: 'Engineering',
     position: 'Backend Developer',
-    phone: '+7 (999) 123-45-72',
-    ldap_uid: 'john.doe',
-    ldap_dn: 'cn=john.doe,ou=users,dc=company,dc=com'
+    phone: '+7 (999) 123-45-72'
   },
   {
     email: 'jane.smith@company.com',
@@ -250,9 +239,7 @@ engineers = [
     employee_id: 'EMP007',
     department: 'Engineering',
     position: 'Frontend Developer',
-    phone: '+7 (999) 123-45-73',
-    ldap_uid: 'jane.smith',
-    ldap_dn: 'cn=jane.smith,ou=users,dc=company,dc=com'
+    phone: '+7 (999) 123-45-73'
   },
   {
     email: 'mike.wilson@company.com',
@@ -264,9 +251,7 @@ engineers = [
     employee_id: 'EMP008',
     department: 'Engineering',
     position: 'DevOps Engineer',
-    phone: '+7 (999) 123-45-74',
-    ldap_uid: 'mike.wilson',
-    ldap_dn: 'cn=mike.wilson,ou=users,dc=company,dc=com'
+    phone: '+7 (999) 123-45-74'
   },
   {
     email: 'sarah.brown@company.com',
@@ -278,9 +263,7 @@ engineers = [
     employee_id: 'EMP009',
     department: 'Engineering',
     position: 'Backend Developer',
-    phone: '+7 (999) 123-45-75',
-    ldap_uid: 'sarah.brown',
-    ldap_dn: 'cn=sarah.brown,ou=users,dc=company,dc=com'
+    phone: '+7 (999) 123-45-75'
   },
   {
     email: 'tom.johnson@company.com',
@@ -292,9 +275,7 @@ engineers = [
     employee_id: 'EMP010',
     department: 'Engineering',
     position: 'Frontend Developer',
-    phone: '+7 (999) 123-45-76',
-    ldap_uid: 'tom.johnson',
-    ldap_dn: 'cn=tom.johnson,ou=users,dc=company,dc=com'
+    phone: '+7 (999) 123-45-76'
   },
   {
     email: 'lisa.davis@company.com',
@@ -306,16 +287,15 @@ engineers = [
     employee_id: 'EMP011',
     department: 'Engineering',
     position: 'Mobile Developer',
-    phone: '+7 (999) 123-45-77',
-    ldap_uid: 'lisa.davis',
-    ldap_dn: 'cn=lisa.davis,ou=users,dc=company,dc=com'
+    phone: '+7 (999) 123-45-77'
   }
 ]
 
 engineers.each do |engineer_data|
   User.find_or_create_by!(email: engineer_data[:email]) do |user|
     user.assign_attributes(engineer_data)
-    user.encrypted_password = 'password123'  # Simple password for testing
+    user.password = 'password123'
+  user.password_confirmation = 'password123'
     user.active = true
   end
 end
@@ -484,4 +464,3 @@ puts "Frontend Team Lead: frontend.lead@company.com"
 puts "DevOps Team Lead: devops.lead@company.com"
 puts "Engineers: john.doe@company.com, jane.smith@company.com, mike.wilson@company.com, sarah.brown@company.com, tom.johnson@company.com, lisa.davis@company.com"
 puts "\nAll users have password: password123"
-puts "Note: In production, users will authenticate via LDAP"

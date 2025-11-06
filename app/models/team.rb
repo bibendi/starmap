@@ -1,5 +1,5 @@
 # Team model for Starmap application
-# Represents teams within units with team leads and LDAP group integration
+# Represents teams within units with team leads
 class Team < ApplicationRecord
   # Associations
   belongs_to :team_lead, class_name: 'User', optional: true
@@ -109,16 +109,7 @@ class Team < ApplicationRecord
     (high_skills.to_f / total_ratings * 100).round(2)
   end
 
-  # LDAP integration helpers
-  def ldap_group_name
-    ldap_group_dn&.split(',')&.first&.gsub('cn=', '')
-  end
 
-  def sync_with_ldap_group
-    # This would sync team members with LDAP group
-    # Implementation depends on LDAP server structure
-    true
-  end
 
   # Permission helpers
   def can_be_managed_by?(user)

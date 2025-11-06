@@ -15,7 +15,6 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Authentication and Authorization
 gem "devise"
-gem "devise_ldap_authenticatable"
 gem "pundit"
 
 # Hotwire for interactivity
@@ -30,9 +29,6 @@ gem "solid_cache"
 
 # Audit and versioning
 gem "audited"
-
-# LDAP utilities
-gem "net-ldap"
 
 # Template engine
 gem "haml-rails"

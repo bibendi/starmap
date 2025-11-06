@@ -96,7 +96,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "description"
-    t.string "ldap_group_dn"
     t.string "name", null: false
     t.integer "sort_order", default: 0
     t.bigint "team_lead_id"
@@ -145,13 +144,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.string "employee_id"
     t.string "encrypted_password", default: "", null: false
     t.string "first_name", null: false
-    t.datetime "last_ldap_sync_at"
     t.string "last_name", null: false
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
-    t.text "ldap_data"
-    t.string "ldap_dn"
-    t.string "ldap_uid"
     t.string "phone"
     t.string "position"
     t.datetime "remember_created_at"
@@ -164,8 +159,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_users_on_active"
     t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["ldap_dn"], name: "index_users_on_ldap_dn"
-    t.index ["ldap_uid"], name: "index_users_on_ldap_uid", unique: true
     t.index ["role"], name: "index_users_on_role"
     t.index ["team_id"], name: "index_users_on_team_id"
   end
