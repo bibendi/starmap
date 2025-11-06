@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
-/* Дополнительные цвета Tailwind по умолчанию */
+@source "../../../app/views/**/*.haml";
+@source "../../../app/views/**/*.html";
+@source "../../../app/views/**/*.erb";
+@source "../../../app/helpers/**/*.rb";
+@source "../../../app/controllers/**/*.rb";
+
 @theme {
   --font-family-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
