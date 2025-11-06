@@ -3,7 +3,8 @@
   "type": "module",
   "devDependencies": {
     "vite": "^5.4.21",
-    "vite-plugin-rails": "^0.1.0"
+    "vite-plugin-rails": "^0.1.0",
+    "rollup": "^4.0.0"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",

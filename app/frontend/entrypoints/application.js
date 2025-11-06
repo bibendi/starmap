@@ -1,4 +1,4 @@
-// Entry point for the webpacker bundle for Starmap application
+// Entry point for the Vite bundle for Starmap application
 
 // Import styles
 import "./application.css"
