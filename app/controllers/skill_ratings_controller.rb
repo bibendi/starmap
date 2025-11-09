@@ -264,14 +264,7 @@ class SkillRatingsController < ApplicationController
   def set_available_data
     @technologies = Technology.active.ordered
     @quarters = Quarter.ordered
-    @users = User.active.order(:first_name, :last_name)
-
-    # Filter users based on role permissions
-    if current_user.engineer?
-      @users = @users.where(id: current_user.id)
-    elsif current_user.team_lead?
-      @users = @users.where(team: current_user.team)
-    end
+    @users = policy_scope(User).active.order(:first_name, :last_name)
   end
 
   def skill_rating_params

@@ -98,54 +98,8 @@ class User < ApplicationRecord
 
   # Team management helpers
   def team_members
-    return User.none unless team_lead? || unit_lead? || admin?
-
-    if admin? || unit_lead?
-      User.where(team: team).where.not(id: id)
-    elsif team_lead?
-      User.where(team: team).where.not(id: id)
-    else
-      User.none
-    end
-  end
-
-  # Permission helpers for Pundit
-  def can_view_user?(other_user)
-    return true if admin? || unit_lead?
-    return true if other_user == self
-    return team_lead_of?(other_user.team) if team_lead?
-    false
-  end
-
-  def can_edit_user?(other_user)
-    return true if admin?
-    return other_user == self
-    return team_lead_of?(other_user.team) if team_lead?
-    false
-  end
-
-  def can_approve_skill_ratings?
-    team_lead? || unit_lead? || admin?
-  end
-
-  def can_manage_teams?
-    unit_lead? || admin?
-  end
-
-  def can_manage_technologies?
-    admin?
-  end
-
-  def can_manage_quarters?
-    admin?
-  end
-
-  def can_view_all_data?
-    admin? || unit_lead?
-  end
-
-  def can_view_team_data?
-    admin? || unit_lead? || team_lead?
+    return [] if team.blank?
+    team.users.where.not(id: id)
   end
 
   private

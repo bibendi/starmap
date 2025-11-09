@@ -1,21 +1,21 @@
 class DashboardPolicy < ApplicationPolicy
   def overview?
-    user&.active?
+    active_user?
   end
 
   def team?
-    user&.team_lead? || user&.unit_lead? || user&.admin?
+    team_lead? || unit_lead? || admin?
   end
 
   def personal?
-    record == user || user&.team_lead? || user&.unit_lead? || user&.admin?
+    record == user || team_lead? || unit_lead? || admin?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user&.unit_lead? || user&.admin?
+      if unit_lead? || admin?
         scope.all
-      elsif user&.team_lead?
+      elsif team_lead?
         scope.where(user: { team: user.team })
       else
         scope.where(user: user)

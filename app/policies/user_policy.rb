@@ -1,48 +1,53 @@
 # User policy for role-based access control
 class UserPolicy < ApplicationPolicy
   def index?
-    user&.active? && (user.admin? || user.unit_lead? || user.team_lead?)
+    active_user? && (admin? || unit_lead? || team_lead?)
   end
 
   def show?
-    return false unless user&.active?
+    return false unless active_user?
+    return false unless record
 
     # Users can see themselves
     return true if record == user
 
     # Admins and unit leads can see everyone
-    return true if user.admin? || user.unit_lead?
+    return true if admin? || unit_lead?
 
     # Team leads can see their team members
-    return user.team_lead_of?(record.team) if user.team_lead?
+    return team_lead_of?(record.team) if team_lead?
 
     false
   end
 
   def create?
-    user&.admin? || user&.unit_lead?
+    return false unless active_user?
+    admin? || unit_lead?
   end
 
   def update?
-    return false unless user&.active?
+    return false unless active_user?
+    return false unless record
 
     # Users can update themselves (limited fields)
     return true if record == user
 
     # Admins can update anyone
-    return true if user.admin?
+    return true if admin?
 
     # Unit leads can update anyone
-    return true if user.unit_lead?
+    return true if unit_lead?
 
     # Team leads can update their team members
-    return user.team_lead_of?(record.team) if user.team_lead?
+    return team_lead_of?(record.team) if team_lead?
 
     false
   end
 
   def destroy?
-    user&.admin?
+    return false unless active_user?
+    return false unless record
+    admin?
   end
 
   def edit?
@@ -53,22 +58,15 @@ class UserPolicy < ApplicationPolicy
     create?
   end
 
-  def approve_skill_ratings?
-    user&.can_approve_skill_ratings? &&
-    (user.admin? || user.unit_lead? || user.team_lead_of?(record.team))
-  end
-
-  def manage_team?
-    user&.can_manage_teams? &&
-    (user.admin? || user.unit_lead? || user.team_lead_of?(record.team))
-  end
-
   def view_sensitive_data?
-    user&.admin? || user&.unit_lead?
+    return false unless active_user?
+    admin? || unit_lead?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
+      return scope.none unless user
+
       if user.admin? || user.unit_lead?
         scope.all
       elsif user.team_lead?

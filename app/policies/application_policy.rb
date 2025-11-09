@@ -7,54 +7,6 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?
-    false
-  end
-
-  def show?
-    false
-  end
-
-  def create?
-    false
-  end
-
-  def new?
-    create?
-  end
-
-  def update?
-    false
-  end
-
-  def edit?
-    update?
-  end
-
-  def destroy?
-    false
-  end
-
-  def approve?
-    false
-  end
-
-  def reject?
-    false
-  end
-
-  def complete?
-    false
-  end
-
-  def pause?
-    false
-  end
-
-  def resume?
-    false
-  end
-
   class Scope
     attr_reader :user, :scope
 
@@ -64,8 +16,12 @@ class ApplicationPolicy
     end
 
     def resolve
-      scope.none
+      raise NotImplementedError, "You must implement #resolve"
     end
+
+    private
+
+    attr_reader :user, :scope
   end
 
   private
@@ -88,7 +44,7 @@ class ApplicationPolicy
   end
 
   def team_lead_of?(team)
-    team_lead? && user.team_id == team.id
+    team && team_lead? && user.team_id == team.id
   end
 
   def unit_lead_of_unit?(unit)

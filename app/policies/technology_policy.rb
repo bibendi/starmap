@@ -1,23 +1,23 @@
 # Technology policy for role-based access control
 class TechnologyPolicy < ApplicationPolicy
   def index?
-    user&.active?
+    active_user?
   end
 
   def show?
-    user&.active?
+    active_user?
   end
 
   def create?
-    user&.can_manage_technologies?
+    can_manage_technologies?
   end
 
   def update?
-    user&.can_manage_technologies?
+    can_manage_technologies?
   end
 
   def destroy?
-    user&.admin?
+    admin?
   end
 
   def edit?
@@ -29,15 +29,15 @@ class TechnologyPolicy < ApplicationPolicy
   end
 
   def manage_criticality?
-    user&.can_manage_technologies?
+    can_manage_technologies?
   end
 
   def view_technology_metrics?
-    user&.active?
+    active_user?
   end
 
   def bulk_update?
-    user&.can_manage_technologies?
+    can_manage_technologies?
   end
 
   class Scope < ApplicationPolicy::Scope

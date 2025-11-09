@@ -1,20 +1,20 @@
 # ActionPlan policy for role-based access control
 class ActionPlanPolicy < ApplicationPolicy
   def index?
-    user&.active?
+    active_user?
   end
 
   def show?
-    return false unless user&.active?
+    return false unless active_user?
 
     # Users can see their own action plans
     return true if own_record?(record) || record.user_id == user.id
 
     # Admins and unit leads can see all action plans
-    return true if user.admin? || user.unit_lead?
+    return true if admin? || unit_lead?
 
     # Team leads can see their team's action plans
-    return user.team_lead_of?(record.user.team) if user.team_lead?
+    return team_lead_of?(record.user.team) if team_lead?
 
     # Users can see action plans where they are assigned
     return record.assigned_to_id == user.id if record.assigned_to_id.present?
@@ -23,13 +23,13 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def create?
-    return false unless user&.active?
+    return false unless active_user?
 
     # Admins and unit leads can create action plans for anyone
-    return true if user.admin? || user.unit_lead?
+    return true if admin? || unit_lead?
 
     # Team leads can create action plans for their team members
-    return true if user.team_lead? && record.user_id.present? && user.team_lead_of?(User.find(record.user_id)&.team)
+    return true if team_lead? && record.user_id.present? && team_lead_of?(User.find(record.user_id)&.team)
 
     # Users can create action plans for themselves
     return record.user_id == user.id if record.user_id.present?
@@ -38,16 +38,16 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def update?
-    return false unless user&.active?
+    return false unless active_user?
 
     # Users can update their own action plans
     return true if own_record?(record) || record.user_id == user.id
 
     # Admins and unit leads can update any action plan
-    return true if user.admin? || user.unit_lead?
+    return true if admin? || unit_lead?
 
     # Team leads can update their team's action plans
-    return user.team_lead_of?(record.user.team) if user.team_lead?
+    return team_lead_of?(record.user.team) if team_lead?
 
     # Assigned users can update action plans assigned to them
     return record.assigned_to_id == user.id if record.assigned_to_id.present?
@@ -56,7 +56,7 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user&.admin?
+    admin?
   end
 
   def edit?
@@ -68,8 +68,8 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def approve?
-    user&.can_approve_skill_ratings? &&
-    (user.admin? || user.unit_lead? || user.team_lead_of?(record.user.team))
+    (team_lead? || unit_lead? || admin?) &&
+    (admin? || unit_lead? || team_lead_of?(record.user.team))
   end
 
   def complete?
@@ -85,21 +85,21 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def assign_to?
-    user&.active? &&
-    (user.admin? || user.unit_lead? || user.team_lead_of?(record.user.team))
+    active_user? &&
+    (admin? || unit_lead? || team_lead_of?(record.user.team))
   end
 
   def view_progress?
-    user&.active? &&
-    (user.admin? || user.unit_lead? || user.team_lead_of?(record.user.team) ||
+    active_user? &&
+    (admin? || unit_lead? || team_lead_of?(record.user.team) ||
      record.user_id == user.id || record.assigned_to_id == user.id)
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin? || user.unit_lead?
+      if admin? || unit_lead?
         scope.all
-      elsif user.team_lead?
+      elsif team_lead?
         scope.joins(:user).where(users: { team_id: user.team_id })
       else
         scope.where(user_id: user.id).or(scope.where(assigned_to_id: user.id))

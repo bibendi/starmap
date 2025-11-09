@@ -271,26 +271,6 @@ class SkillRating < ApplicationRecord
     }
   end
 
-  # Permission helpers
-  def can_be_viewed_by?(user)
-    return true if user.admin? || user.unit_lead?
-    return user == self.user # Users can see their own ratings
-    return user.team_lead_of?(user_team) if user.team_lead?
-    false
-  end
-
-  def can_be_edited_by?(user)
-    return false if locked?
-    return user == self.user # Users can edit their own ratings
-    return user.admin? # Admins can edit any rating
-    false
-  end
-
-  def can_be_approved_by?(user)
-    return false unless user.can_approve_skill_ratings?
-    return user.admin? || user.unit_lead? || user.team_lead_of?(user_team)
-  end
-
   # Class methods for bulk operations
   def self.copy_ratings_to_new_quarter(from_quarter, to_quarter, created_by)
     copied_count = 0
