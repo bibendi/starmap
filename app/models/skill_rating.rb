@@ -44,6 +44,9 @@ class SkillRating < ApplicationRecord
   scope :active_users, -> { joins(:user).where(users: { active: true }) }
   scope :active_technologies, -> { joins(:technology).where(technologies: { active: true }) }
 
+  # Scope for current quarter ratings
+  scope :current, -> { by_quarter(Quarter.current) }
+
   # Rating level helpers
   def level
     case rating

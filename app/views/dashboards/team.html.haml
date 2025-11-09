@@ -1,0 +1,15 @@
+%h1 Team Dashboard
+%p Добро пожаловать в Team Dashboard!
+
+- if @current_quarter
+  .team-info
+    %h3= "Команда: #{@team&.name || 'Не назначена'}"
+    %p= "Членов команды: #{@team_members.size}"
+
+  .metrics-grid
+    .metric-card
+      %h3 Key Person Risks
+      %p= @key_person_risks.size
+    .metric-card
+      %h3 Team Skill Matrix
+      %p= "Доступна"

@@ -1,0 +1,22 @@
+%h1 Personal Dashboard
+%p Добро пожаловать в Personal Dashboard!
+
+- if @current_quarter
+  .personal-info
+    %h3 Текущий квартал: #{@current_quarter.year}Q#{@current_quarter.quarter_number}
+    %p Оценок компетенций: #{@user_skill_ratings.size}
+
+  .metrics-grid
+    .metric-card
+      %h3 Critical Expertise Index
+      %p= "#{@critical_expertise_index}%"
+    .metric-card
+      %h3 Active Action Plans
+      %p= @action_plans.size
+
+  - if @user_skill_ratings.any?
+    .skill-ratings
+      %h3 Ваши компетенции
+      %ul
+        - @user_skill_ratings.each do |rating|
+          %li= "#{rating.technology.name}: #{rating.rating}/3"

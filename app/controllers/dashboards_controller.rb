@@ -1,8 +1,13 @@
 class DashboardsController < ApplicationController
   before_action :authenticate_user!
 
+  # Skip policy scope verification as dashboards don't return collections
+  skip_after_action :verify_policy_scoped
+
   # Overview Dashboard - доступен всем аутентифицированным пользователям
   def overview
+    authorize :dashboard, :overview?
+
     @current_quarter = Quarter.current
     @technologies = Technology.includes(:skill_ratings).order(:name)
     @teams = Team.includes(:users)
@@ -31,7 +36,7 @@ class DashboardsController < ApplicationController
 
   # Personal Dashboard - доступен только владельцу
   def personal
-    authorize :dashboard, :personal?
+    authorize current_user, :personal?
 
     @current_quarter = Quarter.current
     @user_skill_ratings = current_user.skill_ratings.includes(:technology, :quarter)

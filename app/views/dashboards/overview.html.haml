@@ -1,0 +1,14 @@
+%h1 Overview Dashboard
+%p Добро пожаловать в Overview Dashboard!
+
+- if @current_quarter
+  .metrics-grid
+    .metric-card
+      %h3 Coverage Index
+      %p= "#{@coverage_index}%"
+    .metric-card
+      %h3 Maturity Index
+      %p= "#{@maturity_index}/3.0"
+    .metric-card
+      %h3 Red Zones
+      %p= @red_zones.size
