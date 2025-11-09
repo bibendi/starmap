@@ -36,6 +36,7 @@ class SkillRatingPolicy < ApplicationPolicy
 
   def update?
     return false unless active_user?
+    return false unless record
 
     # Users can update their own ratings if not approved
     return true if own_record?(record) && !record.approved?
@@ -50,35 +51,53 @@ class SkillRatingPolicy < ApplicationPolicy
   end
 
   def destroy?
+    return false unless record
     admin?
   end
 
   def approve?
+    return false unless record
     (team_lead? || unit_lead? || admin?) &&
     (admin? || unit_lead? || team_lead_of?(record.user.team))
   end
 
   def reject?
+    return false unless record
     approve?
   end
 
   def edit?
+    return false unless record
     update?
   end
 
   def new?
-    create?
+    return false unless active_user?
+
+    # Users can create ratings for themselves
+    return true if record.nil? || own_record?(record)
+
+    # Team leads can create ratings for their team members
+    return team_lead_of?(record.user.team) if team_lead?
+
+    # Admins and unit leads can create any rating
+    return true if admin? || unit_lead?
+
+    false
   end
 
   def copy_from_previous?
+    return false unless record
     active_user? && (admin? || unit_lead? || team_lead?)
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if admin? || unit_lead?
+      return scope.none unless user
+
+      if user.admin? || user.unit_lead?
         scope.all
-      elsif team_lead?
+      elsif user.team_lead?
         scope.joins(:user).where(users: { team_id: user.team_id })
       else
         scope.where(user_id: user.id)
