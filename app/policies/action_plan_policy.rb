@@ -7,6 +7,9 @@ class ActionPlanPolicy < ApplicationPolicy
   def show?
     return false unless active_user?
 
+    # Handle nil record case
+    return false unless record
+
     # Users can see their own action plans
     return true if own_record?(record) || record.user_id == user.id
 
@@ -14,7 +17,7 @@ class ActionPlanPolicy < ApplicationPolicy
     return true if admin? || unit_lead?
 
     # Team leads can see their team's action plans
-    return team_lead_of?(record.user.team) if team_lead?
+    return team_lead_of?(record.user.team) if team_lead? && record.user&.team
 
     # Users can see action plans where they are assigned
     return record.assigned_to_id == user.id if record.assigned_to_id.present?
@@ -40,6 +43,9 @@ class ActionPlanPolicy < ApplicationPolicy
   def update?
     return false unless active_user?
 
+    # Handle nil record case
+    return false unless record
+
     # Users can update their own action plans
     return true if own_record?(record) || record.user_id == user.id
 
@@ -47,15 +53,23 @@ class ActionPlanPolicy < ApplicationPolicy
     return true if admin? || unit_lead?
 
     # Team leads can update their team's action plans
-    return team_lead_of?(record.user.team) if team_lead?
+    return team_lead_of?(record.user.team) if team_lead? && record.user&.team
 
     # Assigned users can update action plans assigned to them
     return record.assigned_to_id == user.id if record.assigned_to_id.present?
+
+    # Users without team cannot update action plans of others
+    return false if user.team.nil?
 
     false
   end
 
   def destroy?
+    return false unless active_user?
+
+    # Handle nil record case
+    return false unless record
+
     admin?
   end
 
@@ -68,8 +82,13 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def approve?
+    return false unless active_user?
+
+    # Handle nil record case
+    return false unless record
+
     (team_lead? || unit_lead? || admin?) &&
-    (admin? || unit_lead? || team_lead_of?(record.user.team))
+    (admin? || unit_lead? || (team_lead? && record.user&.team && team_lead_of?(record.user.team)))
   end
 
   def complete?
@@ -85,22 +104,34 @@ class ActionPlanPolicy < ApplicationPolicy
   end
 
   def assign_to?
-    active_user? &&
-    (admin? || unit_lead? || team_lead_of?(record.user.team))
+    return false unless active_user?
+
+    # Handle nil record case
+    return false unless record
+
+    admin? || unit_lead? || (team_lead? && record.user&.team && team_lead_of?(record.user.team))
   end
 
   def view_progress?
-    active_user? &&
-    (admin? || unit_lead? || team_lead_of?(record.user.team) ||
-     record.user_id == user.id || record.assigned_to_id == user.id)
+    return false unless active_user?
+
+    # Handle nil record case
+    return false unless record
+
+    admin? || unit_lead? ||
+    (team_lead? && record.user&.team && team_lead_of?(record.user.team)) ||
+    record.user_id == user.id || record.assigned_to_id == user.id ||
+    (user.team.nil? && record.user_id == user.id)
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if admin? || unit_lead?
+      return scope.none unless user
+
+      if user.admin? || user.unit_lead?
         scope.all
-      elsif team_lead?
-        scope.joins(:user).where(users: { team_id: user.team_id })
+      elsif user.team_lead?
+        scope.joins(:user).where(users: { team_id: user.team_id }).or(scope.where(assigned_to_id: user.id))
       else
         scope.where(user_id: user.id).or(scope.where(assigned_to_id: user.id))
       end
