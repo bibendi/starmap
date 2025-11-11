@@ -6,24 +6,27 @@ RSpec.describe ActionPlanPolicy, type: :policy do
   subject { described_class }
 
   # Create test users for all roles
-  let(:admin) { create(:admin) }
-  let(:unit_lead) { create(:unit_lead) }
-  let(:team_lead) { create(:team_lead) }
-  let(:engineer) { create(:engineer) }
-  let(:inactive_user) { create(:inactive_user) }
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:team_lead) { create(:team_lead) }
+  let_it_be(:engineer) { create(:engineer) }
+  let_it_be(:inactive_user) { create(:inactive_user) }
 
   # Create test data
-  let(:technology) { create(:technology) }
-  let(:quarter) { create(:quarter) }
-  let(:own_team) { team_lead.team }
-  let(:other_team) { create(:team) }
+  let_it_be(:technology) { create(:technology) }
+  let_it_be(:quarter) { create(:quarter) }
+  let_it_be(:other_team) { create(:team) }
+
+  let_it_be(:own_team) { team_lead.team }
 
   # Create action plans for different scenarios
-  let(:own_action_plan) { create(:action_plan, user: engineer, technology: technology, quarter: quarter, created_by: engineer) }
-  let(:team_lead_action_plan) { create(:action_plan, user: team_lead, technology: technology, quarter: quarter, created_by: team_lead) }
-  let(:other_team_action_plan) { create(:action_plan, user: create(:engineer, team: other_team), technology: technology, quarter: quarter, created_by: create(:engineer, team: other_team)) }
-  let(:assigned_action_plan) { create(:action_plan, :assigned, user: create(:engineer, team: own_team), technology: technology, quarter: quarter, created_by: team_lead, assigned_to: engineer) }
-  let(:unassigned_action_plan) { create(:action_plan, user: create(:engineer, team: other_team), technology: technology, quarter: quarter, created_by: admin) }
+  let_it_be(:own_action_plan) { create(:action_plan, user: engineer, technology: technology, quarter: quarter, created_by: engineer) }
+  let_it_be(:team_lead_action_plan) { create(:action_plan, user: team_lead, technology: technology, quarter: quarter, created_by: team_lead) }
+  let_it_be(:other_team_user) { create(:engineer, team: other_team) }
+  let_it_be(:other_team_action_plan) { create(:action_plan, user: other_team_user, technology: technology, quarter: quarter, created_by: other_team_user) }
+  let_it_be(:assigned_user) { create(:engineer, team: own_team) }
+  let_it_be(:assigned_action_plan) { create(:action_plan, :assigned, user: assigned_user, technology: technology, quarter: quarter, created_by: team_lead, assigned_to: engineer) }
+  let_it_be(:unassigned_action_plan) { create(:action_plan, user: other_team_user, technology: technology, quarter: quarter, created_by: admin) }
 
   # Context: User is nil (unauthenticated)
   describe 'when user is nil' do
@@ -238,7 +241,7 @@ RSpec.describe ActionPlanPolicy, type: :policy do
         end
 
         context 'when creating action plan for other team member' do
-          let(:record) { build(:action_plan, user: create(:engineer, team: other_team), created_by: team_lead) }
+          let(:record) { build(:action_plan, user: build(:engineer, team: other_team), created_by: team_lead) }
           it 'denies access' do
             expect(subject).not_to permit(user, record)
           end
@@ -445,7 +448,7 @@ RSpec.describe ActionPlanPolicy, type: :policy do
 
       permissions :approve? do
         context 'when approving own team action plan' do
-          let(:record) { create(:action_plan, user: create(:engineer, team: own_team), technology: technology, quarter: quarter, created_by: create(:engineer, team: own_team)) }
+          let(:record) { build(:action_plan, user: create(:engineer, team: own_team), technology: technology, quarter: quarter, created_by: create(:engineer, team: own_team)) }
           it 'grants access' do
             expect(subject).to permit(user, record)
           end
@@ -973,7 +976,7 @@ RSpec.describe ActionPlanPolicy, type: :policy do
         end
 
         context 'when creating action plan for other team member' do
-          let(:record) { build(:action_plan, user: create(:engineer, team: other_team), created_by: team_lead) }
+          let(:record) { build(:action_plan, user: build(:engineer, team: other_team), created_by: team_lead) }
           it 'denies access' do
             expect(subject).not_to permit(user, record)
           end
@@ -1081,8 +1084,8 @@ RSpec.describe ActionPlanPolicy, type: :policy do
     end
 
     context 'when user has no team assigned' do
-      let(:user) { create(:engineer, team: nil) }
-      let(:record) { create(:action_plan, user: user, technology: technology, quarter: quarter, created_by: user) }
+      let(:user) { build(:engineer, team: nil) }
+      let(:record) { build(:action_plan, user: user, technology: technology, quarter: quarter, created_by: user) }
 
       permissions :approve?, :assign_to? do
         it 'denies access' do
@@ -1105,7 +1108,7 @@ RSpec.describe ActionPlanPolicy, type: :policy do
 
     context 'when team_lead is accessing team member action plan' do
       let(:user) { team_lead }
-      let(:record) { create(:action_plan, user: create(:engineer, team: own_team), technology: technology, quarter: quarter, created_by: create(:engineer, team: own_team)) }
+      let(:record) { build(:action_plan, user: create(:engineer, team: own_team), technology: technology, quarter: quarter, created_by: create(:engineer, team: own_team)) }
 
       permissions :show?, :update?, :edit?, :approve?, :complete?, :pause?, :resume?, :assign_to?, :view_progress? do
         it 'grants access' do

@@ -6,17 +6,19 @@ RSpec.describe TeamPolicy, type: :policy do
   subject { described_class }
 
   # Create test users for all roles
-  let(:admin) { create(:admin) }
-  let(:unit_lead) { create(:unit_lead) }
-  let(:team_lead) { create(:team_lead) }
-  let(:engineer) { create(:engineer) }
-  let(:inactive_user) { create(:inactive_user) }
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:team_lead) { create(:team_lead) }
+  let_it_be(:engineer) { create(:engineer) }
+  let_it_be(:inactive_user) { create(:inactive_user) }
 
   # Create teams for testing
   let(:own_team) { team_lead.team }
-  let(:other_team) { create(:team) }
-  let(:other_team_lead) { create(:team_lead) }
-  let(:other_team_engineer) { create(:engineer, team: other_team_lead.team) }
+  let_it_be(:other_team) { create(:team) }
+  let_it_be(:other_team_lead) { create(:team_lead) }
+  let_it_be(:other_team_engineer) { create(:engineer, team: other_team_lead.team) }
+
+  let(:own_team) { team_lead.team }
 
   # Context: User is nil (unauthenticated)
   describe 'when user is nil' do
@@ -45,7 +47,7 @@ RSpec.describe TeamPolicy, type: :policy do
   # Index permission tests
   describe 'index? permission' do
     context 'for admin' do
-      let(:user) { create(:admin) }
+      let(:user) { build(:admin) }
       let(:record) { build(:team) }
 
       permissions :index? do
@@ -56,7 +58,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for unit_lead' do
-      let(:user) { create(:unit_lead) }
+      let(:user) { build(:unit_lead) }
       let(:record) { build(:team) }
 
       permissions :index? do
@@ -67,7 +69,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for team_lead' do
-      let(:user) { create(:team_lead) }
+      let(:user) { build(:team_lead) }
       let(:record) { build(:team) }
 
       permissions :index? do
@@ -78,7 +80,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for engineer' do
-      let(:user) { create(:engineer) }
+      let(:user) { build(:engineer) }
       let(:record) { build(:team) }
 
       permissions :index? do
@@ -150,7 +152,7 @@ RSpec.describe TeamPolicy, type: :policy do
     context 'for engineer' do
       permissions :show? do
         context 'when viewing own team' do
-          let(:user) { create(:engineer, team: own_team) }
+          let(:user) { build(:engineer, team: own_team) }
           let(:record) { own_team }
           it 'grants access' do
             expect(subject).to permit(user, record)
@@ -158,7 +160,7 @@ RSpec.describe TeamPolicy, type: :policy do
         end
 
         context 'when viewing other team' do
-          let(:user) { create(:engineer, team: own_team) }
+          let(:user) { build(:engineer, team: own_team) }
           let(:record) { other_team }
           it 'denies access' do
             expect(subject).not_to permit(user, record)
@@ -171,7 +173,7 @@ RSpec.describe TeamPolicy, type: :policy do
   # Create permission tests
   describe 'create? permission' do
     context 'for admin' do
-      let(:user) { create(:admin) }
+      let(:user) { build(:admin) }
       let(:record) { build(:team) }
 
       permissions :create? do
@@ -182,7 +184,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for unit_lead' do
-      let(:user) { create(:unit_lead) }
+      let(:user) { build(:unit_lead) }
       let(:record) { build(:team) }
 
       permissions :create? do
@@ -193,7 +195,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for team_lead' do
-      let(:user) { create(:team_lead) }
+      let(:user) { build(:team_lead) }
       let(:record) { build(:team) }
 
       permissions :create? do
@@ -204,7 +206,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for engineer' do
-      let(:user) { create(:engineer) }
+      let(:user) { build(:engineer) }
       let(:record) { build(:team) }
 
       permissions :create? do
@@ -288,7 +290,7 @@ RSpec.describe TeamPolicy, type: :policy do
   # Destroy permission tests
   describe 'destroy? permission' do
     context 'for admin' do
-      let(:user) { create(:admin) }
+      let(:user) { build(:admin) }
       let(:record) { build(:team) }
 
       permissions :destroy? do
@@ -299,7 +301,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for unit_lead' do
-      let(:user) { create(:unit_lead) }
+      let(:user) { build(:unit_lead) }
       let(:record) { build(:team) }
 
       permissions :destroy? do
@@ -310,7 +312,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for team_lead' do
-      let(:user) { create(:team_lead) }
+      let(:user) { build(:team_lead) }
       let(:record) { build(:team) }
 
       permissions :destroy? do
@@ -321,7 +323,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for engineer' do
-      let(:user) { create(:engineer) }
+      let(:user) { build(:engineer) }
       let(:record) { build(:team) }
 
       permissions :destroy? do
@@ -335,7 +337,7 @@ RSpec.describe TeamPolicy, type: :policy do
   # New permission tests (should mirror create?)
   describe 'new? permission' do
     context 'for admin' do
-      let(:user) { create(:admin) }
+      let(:user) { build(:admin) }
 
       permissions :new? do
         it 'grants access' do
@@ -345,7 +347,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for unit_lead' do
-      let(:user) { create(:unit_lead) }
+      let(:user) { build(:unit_lead) }
 
       permissions :new? do
         it 'grants access' do
@@ -355,7 +357,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for team_lead' do
-      let(:user) { create(:team_lead) }
+      let(:user) { build(:team_lead) }
 
       permissions :new? do
         it 'denies access' do
@@ -365,7 +367,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for engineer' do
-      let(:user) { create(:engineer) }
+      let(:user) { build(:engineer) }
 
       permissions :new? do
         it 'denies access' do
@@ -470,8 +472,8 @@ RSpec.describe TeamPolicy, type: :policy do
 
       permissions :manage_members? do
         context 'when managing own team (as team lead)' do
-          let(:team_as_lead) { create(:team_lead).team }
-          let(:user_as_lead) { create(:team_lead, team: team_as_lead) }
+          let(:team_as_lead) { build(:team_lead).team }
+          let(:user_as_lead) { build(:team_lead, team: team_as_lead) }
           let(:record) { team_as_lead }
           let(:user) { user_as_lead }
 
@@ -531,7 +533,7 @@ RSpec.describe TeamPolicy, type: :policy do
   # Assign team lead permission tests
   describe 'assign_team_lead? permission' do
     context 'for admin' do
-      let(:user) { create(:admin) }
+      let(:user) { build(:admin) }
       let(:record) { build(:team) }
 
       permissions :assign_team_lead? do
@@ -542,7 +544,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for unit_lead' do
-      let(:user) { create(:unit_lead) }
+      let(:user) { build(:unit_lead) }
       let(:record) { build(:team) }
 
       permissions :assign_team_lead? do
@@ -553,7 +555,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for team_lead' do
-      let(:user) { create(:team_lead) }
+      let(:user) { build(:team_lead) }
       let(:record) { build(:team) }
 
       permissions :assign_team_lead? do
@@ -564,7 +566,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for engineer' do
-      let(:user) { create(:engineer) }
+      let(:user) { build(:engineer) }
       let(:record) { build(:team) }
 
       permissions :assign_team_lead? do
@@ -636,7 +638,7 @@ RSpec.describe TeamPolicy, type: :policy do
     context 'for engineer' do
       permissions :view_team_metrics? do
         context 'when viewing metrics for own team' do
-          let(:user) { create(:engineer, team: own_team) }
+          let(:user) { build(:engineer, team: own_team) }
           let(:record) { own_team }
           it 'grants access' do
             expect(subject).to permit(user, record)
@@ -644,7 +646,7 @@ RSpec.describe TeamPolicy, type: :policy do
         end
 
         context 'when viewing metrics for other team' do
-          let(:user) { create(:engineer, team: own_team) }
+          let(:user) { build(:engineer, team: own_team) }
           let(:record) { other_team }
           it 'denies access' do
             expect(subject).not_to permit(user, record)
@@ -687,7 +689,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'for engineer' do
-      let(:user) { create(:engineer, team: own_team) }
+      let(:user) { build(:engineer, team: own_team) }
 
       it 'includes only own team' do
         scope = TeamPolicy::Scope.new(user, Team.all).resolve
@@ -720,7 +722,7 @@ RSpec.describe TeamPolicy, type: :policy do
     end
 
     context 'when user has no team assigned' do
-      let(:user) { create(:engineer, team: nil) }
+      let(:user) { build(:engineer, team: nil) }
       let(:record) { own_team }
 
       permissions :show?, :update?, :edit?, :view_team_metrics? do
@@ -743,7 +745,7 @@ RSpec.describe TeamPolicy, type: :policy do
 
     context 'when engineer is from same team as team_lead' do
       permissions :show?, :view_team_metrics? do
-        let(:user) { create(:engineer, team: own_team) }
+        let(:user) { build(:engineer, team: own_team) }
         let(:record) { own_team }
 
         it 'grants access' do
@@ -752,7 +754,7 @@ RSpec.describe TeamPolicy, type: :policy do
       end
 
       permissions :update?, :edit?, :manage_members?, :assign_team_lead? do
-        let(:user) { create(:engineer, team: own_team) }
+        let(:user) { build(:engineer, team: own_team) }
         let(:record) { own_team }
 
         it 'denies access' do

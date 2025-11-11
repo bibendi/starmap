@@ -5,11 +5,11 @@ require 'rails_helper'
 RSpec.describe UserPolicy, type: :policy do
   subject { described_class }
 
-  let(:admin) { create(:admin) }
-  let(:unit_lead) { create(:unit_lead) }
-  let(:team_lead) { create(:team_lead) }
-  let(:engineer) { create(:engineer) }
-  let(:inactive_user) { create(:inactive_user) }
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:team_lead) { create(:team_lead) }
+  let_it_be(:engineer) { create(:engineer) }
+  let_it_be(:inactive_user) { create(:inactive_user) }
 
   let(:user_from_same_team) { create(:engineer, team: team_lead.team) }
   let(:user_from_different_team) { create(:engineer) }
@@ -191,7 +191,7 @@ RSpec.describe UserPolicy, type: :policy do
   describe 'edge cases' do
     context 'when user is team lead but viewing a user without team' do
       let(:user) { team_lead }
-      let(:record) { create(:user, team: nil) }
+      let(:record) { build(:user, team: nil) }
 
       permissions :show?, :update?, :edit? do
         it 'denies access' do
@@ -202,7 +202,7 @@ RSpec.describe UserPolicy, type: :policy do
 
     context 'when user is viewing another team lead from their team' do
       let(:user) { team_lead }
-      let(:other_team_lead_in_team) { create(:team_lead, team: team_lead.team) }
+      let(:other_team_lead_in_team) { build(:team_lead, team: team_lead.team) }
       let(:record) { other_team_lead_in_team }
 
       permissions :show?, :update? do

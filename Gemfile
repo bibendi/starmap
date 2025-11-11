@@ -53,4 +53,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "database_cleaner-active_record"
+
+  # Testing optimization
+  gem "test-prof", "~> 1.0"
 end

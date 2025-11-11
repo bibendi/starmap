@@ -22,6 +22,10 @@ require 'rspec/rails'
 #
 # Rails.root.glob('spec/support/**/*.rb').sort.each { |f| require f }
 
+# Load test-prof for optimization
+require 'test_prof'
+require 'test_prof/recipes/rspec/let_it_be'
+
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
@@ -80,6 +84,4 @@ RSpec.configure do |config|
       example.run
     end
   end
-
-  # Include Pundit helpers
 end

@@ -6,23 +6,26 @@ RSpec.describe SkillRatingPolicy, type: :policy do
   subject { described_class }
 
   # Create test users for all roles
-  let(:admin) { create(:admin) }
-  let(:unit_lead) { create(:unit_lead) }
-  let(:team_lead) { create(:team_lead) }
-  let(:engineer) { create(:engineer) }
-  let(:inactive_user) { create(:inactive_user) }
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:team_lead) { create(:team_lead) }
+  let_it_be(:engineer) { create(:engineer) }
+  let_it_be(:inactive_user) { create(:inactive_user) }
 
   # Create test data
-  let(:technology) { create(:technology) }
-  let(:quarter) { create(:quarter) }
+  let_it_be(:technology) { create(:technology) }
+  let_it_be(:other_technology) { create(:technology) }
+  let_it_be(:quarter) { create(:quarter) }
+  let_it_be(:other_team) { create(:team) }
+
   let(:own_team) { team_lead.team }
-  let(:other_team) { create(:team) }
 
   # Create skill ratings for different scenarios
-  let(:own_rating) { create(:skill_rating, user: engineer, technology: technology, quarter: quarter) }
-  let(:team_lead_rating) { create(:skill_rating, user: team_lead, technology: technology, quarter: quarter) }
-  let(:other_team_rating) { create(:skill_rating, user: create(:engineer, team: other_team), technology: technology, quarter: quarter) }
-  let(:approved_rating) { create(:skill_rating, :approved, user: engineer, technology: technology, quarter: quarter) }
+  let_it_be(:own_rating) { create(:skill_rating, user: engineer, technology: technology, quarter: quarter) }
+  let_it_be(:team_lead_rating) { create(:skill_rating, user: team_lead, technology: other_technology, quarter: quarter) }
+  let_it_be(:other_team_user) { create(:engineer, team: other_team) }
+  let_it_be(:other_team_rating) { create(:skill_rating, user: other_team_user, technology: technology, quarter: quarter) }
+  let_it_be(:approved_rating) { create(:skill_rating, :approved, user: admin, technology: technology, quarter: quarter) }
 
   # Context: User is nil (unauthenticated)
   describe 'when user is nil' do
@@ -203,14 +206,14 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
       permissions :create? do
         context 'when creating rating for own team member' do
-          let(:record) { build(:skill_rating, user: create(:engineer, team: own_team)) }
+          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team)) }
           it 'grants access' do
             expect(subject).to permit(user, record)
           end
         end
 
         context 'when creating rating for other team member' do
-          let(:record) { build(:skill_rating, user: create(:engineer, team: other_team)) }
+          let(:record) { build(:skill_rating, user: build(:engineer, team: other_team)) }
           it 'denies access' do
             expect(subject).not_to permit(user, record)
           end
@@ -403,7 +406,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
       permissions :approve? do
         context 'when approving own team rating' do
-          let(:record) { create(:skill_rating, user: create(:engineer, team: own_team), technology: technology, quarter: quarter) }
+          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team), technology: technology, quarter: quarter) }
           it 'grants access' do
             expect(subject).to permit(user, record)
           end
@@ -459,7 +462,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
       permissions :reject? do
         context 'when rejecting own team rating' do
-          let(:record) { create(:skill_rating, user: create(:engineer, team: own_team), technology: technology, quarter: quarter) }
+          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team), technology: technology, quarter: quarter) }
           it 'grants access' do
             expect(subject).to permit(user, record)
           end
@@ -601,14 +604,14 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
       permissions :new? do
         context 'when creating rating for own team member' do
-          let(:record) { build(:skill_rating, user: create(:engineer, team: own_team)) }
+          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team)) }
           it 'grants access' do
             expect(subject).to permit(user, record)
           end
         end
 
         context 'when creating rating for other team member' do
-          let(:record) { build(:skill_rating, user: create(:engineer, team: other_team)) }
+          let(:record) { build(:skill_rating, user: build(:engineer, team: other_team)) }
           it 'denies access' do
             expect(subject).not_to permit(user, record)
           end
@@ -762,7 +765,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
     end
 
     context 'when user has no team assigned' do
-      let(:user) { create(:engineer, team: nil) }
+      let(:user) { build(:engineer, team: nil) }
       let(:record) { own_rating }
 
       permissions :update?, :edit?, :approve?, :reject? do
@@ -780,7 +783,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
     context 'when team_lead is accessing team member rating' do
       let(:user) { team_lead }
-      let(:record) { create(:skill_rating, user: create(:engineer, team: own_team), technology: technology, quarter: quarter) }
+      let(:record) { build(:skill_rating, user: build(:engineer, team: own_team), technology: technology, quarter: quarter) }
 
       permissions :show?, :update?, :edit?, :approve?, :reject? do
         it 'grants access' do
