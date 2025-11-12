@@ -5,7 +5,9 @@ class QuarterPolicy < ApplicationPolicy
   end
 
   def show?
-    active_user?
+    return false unless active_user?
+    return false unless record
+    true
   end
 
   def create?
@@ -13,10 +15,14 @@ class QuarterPolicy < ApplicationPolicy
   end
 
   def update?
+    return false unless active_user?
+    return false unless record
     can_manage_quarters?
   end
 
   def destroy?
+    return false unless active_user?
+    return false unless record
     admin?
   end
 
@@ -29,15 +35,21 @@ class QuarterPolicy < ApplicationPolicy
   end
 
   def activate?
+    return false unless active_user?
+    return false unless record
     can_manage_quarters?
   end
 
   def close?
+    return false unless active_user?
+    return false unless record
     can_manage_quarters?
   end
 
   def copy_ratings?
-    active_user? && (admin? || unit_lead? || team_lead?)
+    return false unless active_user?
+    return false unless record
+    admin? || unit_lead? || team_lead?
   end
 
   def view_current?
@@ -48,8 +60,15 @@ class QuarterPolicy < ApplicationPolicy
     active_user?
   end
 
+  private
+
+  def can_manage_quarters?
+    admin? || unit_lead?
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
+      return scope.none unless user&.active?
       scope.all
     end
   end
