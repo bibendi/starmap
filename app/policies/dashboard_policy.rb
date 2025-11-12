@@ -4,11 +4,11 @@ class DashboardPolicy < ApplicationPolicy
   end
 
   def team?
-    team_lead? || unit_lead? || admin?
+    active_user? && (team_lead? || unit_lead? || admin?)
   end
 
   def personal?
-    record == user || team_lead? || unit_lead? || admin?
+    active_user? && (record == user || team_lead? || unit_lead? || admin?)
   end
 
   class Scope < ApplicationPolicy::Scope
