@@ -97,14 +97,17 @@
 # Запуск сервера разработки
 bin/dev
 
+# Консоль Rails
+bin/rails console
+
 # Выполнение миграций
 bin/rails db:migrate
 
 # Запуск тестов
 bin/rails test
 
-# Консоль Rails
-bin/rails console
+# Запуск конркетного тестового файла
+bundle exec rspec path/to/some_spec.rb
 ```
 
 ### Оптимизация тестирования

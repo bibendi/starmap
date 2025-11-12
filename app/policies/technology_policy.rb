@@ -5,7 +5,9 @@ class TechnologyPolicy < ApplicationPolicy
   end
 
   def show?
-    active_user?
+    return false unless active_user?
+    return false unless record
+    true
   end
 
   def create?
@@ -13,10 +15,14 @@ class TechnologyPolicy < ApplicationPolicy
   end
 
   def update?
+    return false unless active_user?
+    return false unless record
     can_manage_technologies?
   end
 
   def destroy?
+    return false unless active_user?
+    return false unless record
     admin?
   end
 
@@ -29,6 +35,8 @@ class TechnologyPolicy < ApplicationPolicy
   end
 
   def manage_criticality?
+    return false unless active_user?
+    return false unless record
     can_manage_technologies?
   end
 
@@ -37,11 +45,20 @@ class TechnologyPolicy < ApplicationPolicy
   end
 
   def bulk_update?
+    return false unless active_user?
+    return false unless record
     can_manage_technologies?
+  end
+
+  private
+
+  def can_manage_technologies?
+    admin? || unit_lead?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
+      return scope.none unless user&.active?
       scope.all
     end
   end
