@@ -18,7 +18,6 @@ RSpec.describe SkillRatingPolicy, type: :policy do
   let_it_be(:quarter) { create(:quarter) }
   let_it_be(:other_team) { create(:team) }
 
-  let(:own_team) { team_lead.team }
 
   # Create skill ratings for different scenarios
   let_it_be(:own_rating) { create(:skill_rating, user: engineer, technology: technology, quarter: quarter) }
@@ -51,641 +50,155 @@ RSpec.describe SkillRatingPolicy, type: :policy do
     end
   end
 
-  # Index permission tests
-  describe 'index? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { build(:skill_rating) }
+  context 'for admin' do
+    let(:user) { admin }
+    let(:record) { build(:skill_rating, user: admin) }
 
-      permissions :index? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
+    permissions :index?, :show?, :update?, :destroy?, :approve?, :reject?, :edit?, :copy_from_previous? do
+      it 'grants access' do
+        expect(subject).to permit(user, record)
       end
     end
 
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-      let(:record) { build(:skill_rating) }
-
-      permissions :index? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-      let(:record) { build(:skill_rating) }
-
-      permissions :index? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-      let(:record) { build(:skill_rating) }
-
-      permissions :index? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
+    permissions :create?, :new? do
+      it 'grants access' do
+        expect(subject).to permit(user, record)
       end
     end
   end
 
-  # Show permission tests
-  describe 'show? permission' do
-    context 'for admin' do
-      let(:user) { admin }
+  context 'for unit_lead' do
+    let(:user) { unit_lead }
+    let(:record) { build(:skill_rating, user: unit_lead) }
 
-      permissions :show? do
-        context 'when viewing any rating' do
-          let(:record) { own_rating }
-
-          it 'grants access to own rating' do
-            expect(subject).to permit(user, record)
-          end
-
-          it 'grants access to other rating' do
-            expect(subject).to permit(user, other_team_rating)
-          end
-        end
+    permissions :index?, :show?, :update?, :approve?, :reject?, :edit?, :copy_from_previous? do
+      it 'grants access' do
+        expect(subject).to permit(user, record)
       end
     end
 
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-
-      permissions :show? do
-        context 'when viewing any rating' do
-          let(:record) { own_rating }
-
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-
-          it 'grants access to other rating' do
-            expect(subject).to permit(user, other_team_rating)
-          end
-        end
+    permissions :create?, :new? do
+      it 'grants access' do
+        expect(subject).to permit(user, record)
       end
     end
 
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :show? do
-        context 'when viewing own team rating' do
-          let(:record) { team_lead_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when viewing other team rating' do
-          let(:record) { other_team_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      permissions :show? do
-        context 'when viewing own rating' do
-          let(:user) { engineer }
-          let(:record) { own_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when viewing other user rating' do
-          let(:user) { engineer }
-          let(:record) { team_lead_rating }
-          it 'grants access for overview dashboard' do
-            expect(subject).to permit(user, record)
-          end
-        end
+    permissions :destroy? do
+      it 'denies access' do
+        expect(subject).not_to permit(user, record)
       end
     end
   end
 
-  # Create permission tests
-  describe 'create? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { build(:skill_rating, user: admin) }
+  context 'for team_lead' do
+    let(:user) { team_lead }
 
-      permissions :create? do
+    permissions :index?, :copy_from_previous? do
+      it 'grants access' do
+        expect(subject).to permit(user, build(:skill_rating))
+      end
+    end
+
+    permissions :create?, :new? do
+      context 'when creating rating for own team member' do
+        let(:record) { build(:skill_rating, user: build(:engineer, team: team_lead.team)) }
         it 'grants access' do
           expect(subject).to permit(user, record)
         end
       end
-    end
 
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-      let(:record) { build(:skill_rating, user: unit_lead) }
-
-      permissions :create? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :create? do
-        context 'when creating rating for own team member' do
-          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team)) }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when creating rating for other team member' do
-          let(:record) { build(:skill_rating, user: build(:engineer, team: other_team)) }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-
-      permissions :create? do
-        context 'when creating own rating' do
-          let(:record) { build(:skill_rating, user: engineer) }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when creating rating for other user' do
-          let(:record) { build(:skill_rating, user: team_lead) }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-  end
-
-  # Update permission tests
-  describe 'update? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-
-      permissions :update? do
-        context 'when updating any rating' do
-          let(:record) { own_rating }
-
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-
-          it 'grants access to other rating' do
-            expect(subject).to permit(user, other_team_rating)
-          end
-        end
-      end
-    end
-
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-
-      permissions :update? do
-        context 'when updating any rating' do
-          let(:record) { own_rating }
-
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-
-          it 'grants access to other rating' do
-            expect(subject).to permit(user, other_team_rating)
-          end
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :update? do
-        context 'when updating own team rating' do
-          let(:record) { team_lead_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when updating other team rating' do
-          let(:record) { other_team_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-
-      permissions :update? do
-        context 'when updating own unapproved rating' do
-          let(:record) { own_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when updating own approved rating' do
-          let(:record) { approved_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-
-        context 'when updating other user rating' do
-          let(:record) { team_lead_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-  end
-
-  # Destroy permission tests
-  describe 'destroy? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { own_rating }
-
-      permissions :destroy? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-      let(:record) { own_rating }
-
-      permissions :destroy? do
+      context 'when creating rating for other team member' do
+        let(:record) { build(:skill_rating, user: build(:engineer, team: other_team)) }
         it 'denies access' do
           expect(subject).not_to permit(user, record)
         end
       end
     end
 
-    context 'for team_lead' do
-      let(:user) { team_lead }
-      let(:record) { own_rating }
+    permissions :show?, :update?, :edit?, :approve?, :reject? do
+      context 'when accessing own team rating' do
+        let(:record) { team_lead_rating }
+        it 'grants access' do
+          expect(subject).to permit(user, record)
+        end
+      end
 
-      permissions :destroy? do
+      context 'when accessing other team rating' do
+        let(:record) { other_team_rating }
         it 'denies access' do
           expect(subject).not_to permit(user, record)
         end
       end
     end
 
-    context 'for engineer' do
-      let(:user) { engineer }
-      let(:record) { own_rating }
+    permissions :destroy? do
+      it 'denies access' do
+        expect(subject).not_to permit(user, build(:skill_rating))
+      end
+    end
+  end
 
-      permissions :destroy? do
+  context 'for engineer' do
+    let(:user) { engineer }
+
+    permissions :index?, :show? do
+      it 'grants access' do
+        expect(subject).to permit(user, build(:skill_rating))
+      end
+    end
+
+    permissions :copy_from_previous? do
+      it 'denies access' do
+        expect(subject).not_to permit(user, build(:skill_rating))
+      end
+    end
+
+    permissions :create?, :new? do
+      context 'when creating own rating' do
+        let(:record) { build(:skill_rating, user: engineer) }
+        it 'grants access' do
+          expect(subject).to permit(user, record)
+        end
+      end
+
+      context 'when creating rating for other user' do
+        let(:record) { build(:skill_rating, user: team_lead) }
         it 'denies access' do
           expect(subject).not_to permit(user, record)
         end
       end
     end
-  end
 
-  # Approve permission tests
-  describe 'approve? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { own_rating }
-
-      permissions :approve? do
+    permissions :update?, :edit? do
+      context 'when updating own unapproved rating' do
+        let(:record) { own_rating }
         it 'grants access' do
           expect(subject).to permit(user, record)
         end
       end
-    end
 
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-
-      permissions :approve? do
-        context 'when approving any rating' do
-          let(:record) { own_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
+      context 'when updating own approved rating' do
+        let(:record) { approved_rating }
+        it 'denies access' do
+          expect(subject).not_to permit(user, record)
         end
       end
-    end
 
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :approve? do
-        context 'when approving own team rating' do
-          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team), technology: technology, quarter: quarter) }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when approving other team rating' do
-          let(:record) { other_team_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-      let(:record) { own_rating }
-
-      permissions :approve? do
+      context 'when updating other user rating' do
+        let(:record) { team_lead_rating }
         it 'denies access' do
           expect(subject).not_to permit(user, record)
         end
       end
     end
-  end
 
-  # Reject permission tests (should mirror approve?)
-  describe 'reject? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { own_rating }
-
-      permissions :reject? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-      let(:record) { own_rating }
-
-      permissions :reject? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :reject? do
-        context 'when rejecting own team rating' do
-          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team), technology: technology, quarter: quarter) }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when rejecting other team rating' do
-          let(:record) { other_team_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-      let(:record) { own_rating }
-
-      permissions :reject? do
-        it 'denies access' do
-          expect(subject).not_to permit(user, record)
-        end
+    permissions :destroy?, :approve?, :reject? do
+      it 'denies access' do
+        expect(subject).not_to permit(user, build(:skill_rating))
       end
     end
   end
 
-  # Edit permission tests (should mirror update?)
-  describe 'edit? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-
-      permissions :edit? do
-        context 'when editing any rating' do
-          let(:record) { own_rating }
-
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-
-          it 'grants access to other rating' do
-            expect(subject).to permit(user, other_team_rating)
-          end
-        end
-      end
-    end
-
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-
-      permissions :edit? do
-        context 'when editing any rating' do
-          let(:record) { own_rating }
-
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-
-          it 'grants access to other rating' do
-            expect(subject).to permit(user, other_team_rating)
-          end
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :edit? do
-        context 'when editing own team rating' do
-          let(:record) { team_lead_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when editing other team rating' do
-          let(:record) { other_team_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-
-      permissions :edit? do
-        context 'when editing own unapproved rating' do
-          let(:record) { own_rating }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when editing own approved rating' do
-          let(:record) { approved_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-
-        context 'when editing other user rating' do
-          let(:record) { team_lead_rating }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-  end
-
-  # New permission tests (should mirror create?)
-  describe 'new? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { build(:skill_rating, user: admin) }
-
-      permissions :new? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-      let(:record) { build(:skill_rating, user: unit_lead) }
-
-      permissions :new? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-
-      permissions :new? do
-        context 'when creating rating for own team member' do
-          let(:record) { build(:skill_rating, user: build(:engineer, team: own_team)) }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when creating rating for other team member' do
-          let(:record) { build(:skill_rating, user: build(:engineer, team: other_team)) }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-
-      permissions :new? do
-        context 'when creating own rating' do
-          let(:record) { build(:skill_rating, user: engineer) }
-          it 'grants access' do
-            expect(subject).to permit(user, record)
-          end
-        end
-
-        context 'when creating rating for other user' do
-          let(:record) { build(:skill_rating, user: team_lead) }
-          it 'denies access' do
-            expect(subject).not_to permit(user, record)
-          end
-        end
-      end
-    end
-  end
-
-  # Copy from previous permission tests
-  describe 'copy_from_previous? permission' do
-    context 'for admin' do
-      let(:user) { admin }
-      let(:record) { build(:skill_rating) }
-
-      permissions :copy_from_previous? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for unit_lead' do
-      let(:user) { unit_lead }
-      let(:record) { build(:skill_rating) }
-
-      permissions :copy_from_previous? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for team_lead' do
-      let(:user) { team_lead }
-      let(:record) { build(:skill_rating) }
-
-      permissions :copy_from_previous? do
-        it 'grants access' do
-          expect(subject).to permit(user, record)
-        end
-      end
-    end
-
-    context 'for engineer' do
-      let(:user) { engineer }
-      let(:record) { build(:skill_rating) }
-
-      permissions :copy_from_previous? do
-        it 'denies access' do
-          expect(subject).not_to permit(user, record)
-        end
-      end
-    end
-  end
 
   # Scope tests
   describe 'Scope' do
@@ -783,7 +296,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
     context 'when team_lead is accessing team member rating' do
       let(:user) { team_lead }
-      let(:record) { build(:skill_rating, user: build(:engineer, team: own_team), technology: technology, quarter: quarter) }
+      let(:record) { build(:skill_rating, user: build(:engineer, team: team_lead.team), technology: technology, quarter: quarter) }
 
       permissions :show?, :update?, :edit?, :approve?, :reject? do
         it 'grants access' do
