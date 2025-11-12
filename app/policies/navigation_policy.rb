@@ -1,14 +1,14 @@
 # Navigation policy for view-level authorization
 class NavigationPolicy < ApplicationPolicy
   def show_team_dashboard?
-    team_lead? || unit_lead? || admin?
+    active_user? && (team_lead? || unit_lead? || admin?)
   end
 
   def show_admin?
-    admin?
+    active_user? && admin?
   end
 
   def show_personal_dashboard?
-    user.present?
+    active_user?
   end
 end
