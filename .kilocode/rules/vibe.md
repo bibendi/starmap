@@ -19,5 +19,5 @@ Example interaction:
 User: "Continue implementation for task 003"
 Agent:
 - Loads `.vibe/003_task_name/`
-- Reads `story.md` and `plan.md`
+- Reads `task.md` and `plan.md`
 - Uses their content to understand what "implementation" refers to
