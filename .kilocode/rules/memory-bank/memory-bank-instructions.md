@@ -22,13 +22,7 @@ The Memory Bank consists of core files and optional context files, all in Markdo
    - How it should work
    - User experience goals
 
-3. `context.md`
-   This file should be short and factual, not creative or speculative.
-   - Current work focus
-   - Recent changes
-   - Next steps
-
-4. `architecture.md`
+3. `architecture.md`
    - System architecture
    - Source Code paths
    - Key technical decisions
@@ -36,7 +30,7 @@ The Memory Bank consists of core files and optional context files, all in Markdo
    - Component relationships
    - Critical implementation paths
 
-5. `tech.md`
+4. `tech.md`
    - Technologies used
    - Development setup
    - Technical constraints
@@ -76,7 +70,6 @@ Memory Bank updates occur when:
 1. Discovering new project patterns
 2. After implementing significant changes
 3. When user explicitly requests with the phrase **update memory bank** (MUST review ALL files)
-4. When context needs clarification
 
 If I notice significant changes that should be preserved but the user hasn't explicitly requested an update, I should suggest: "Would you like me to update the memory bank to reflect these changes?"
 
@@ -146,17 +139,6 @@ When starting a task that matches a documented task in `tasks.md`, I should ment
 If the task was repetitive and might be needed again, I should suggest: "Would you like me to add this task to the memory bank for future reference?"
 
 In the end of the task, when it seems to be completed, I will update `context.md` accordingly. If the change seems significant, I will suggest to the user: "Would you like me to update memory bank to reflect these changes?" I will not suggest updates for minor changes.
-
-## Context Window Management
-
-When the context window fills up during an extended session:
-1. I should suggest updating the memory bank to preserve the current state
-2. Recommend starting a fresh conversation/task
-3. In the new conversation, I will automatically load the memory bank files to maintain continuity
-
-## Technical Implementation
-
-Memory Bank is built on Kilo Code's Custom Rules feature, with files stored as standard markdown documents that both the user and I can access.
 
 ## Important Notes
 
