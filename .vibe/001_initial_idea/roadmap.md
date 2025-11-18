@@ -92,8 +92,6 @@
 - [ ] Адаптивный дизайн
 
 ### 📋 Этап 12: Покрытие тестами
-- [ ] Настроить RSpec
-- [ ] Создать factory_bot factories
 - [ ] Написать unit тесты для моделей
 - [ ] Написать integration тесты для контроллеров
 - [ ] Написать feature тесты для пользовательских сценариев
@@ -126,7 +124,6 @@
 - Использование Rails 8.1.1 с Hotwire (Turbo + Stimulus)
 - Solid Queue для фоновых задач
 - Pundit для авторизации
-- LDAP интеграция через devise_ldap_authenticatable
 - PostgreSQL для базы данных
 
 ## Технические детали:
@@ -153,7 +150,6 @@
 - Hotwire-rails
 - Solid Queue + Solid Cache
 - Audited
-- Net-LDAP
 - RSpec + Factory Bot для тестирования
 - Letter Opener для email в development
 
