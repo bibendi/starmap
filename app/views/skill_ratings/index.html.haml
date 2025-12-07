@@ -37,7 +37,7 @@
     "filters-debounce-ms-value": "500"
   }
 }
-  = form_with url: skill_ratings_path, method: :get, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do |form|
+  = form_with url: skill_ratings_path, method: :get, class: "grid grid-cols-1 md:grid-cols-6 gap-4", data: { "filters-target": "form" } do |form|
     .md:col-span-2
       = form.label :search, "Поиск", class: "block text-sm font-medium text-gray-700 mb-1"
       = form.text_field :search, value: params[:search],
@@ -45,43 +45,63 @@
                        class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
                        data: { "filters-target": "search" }
 
-      .md:col-span-1
-        = form.label :user_id, "Пользователь", class: "block text-sm font-medium text-gray-700 mb-1"
-        = form.collection_select :user_id, @users, :id, :full_name,
-                                { include_blank: "Все пользователи" },
-                                {
-                                  class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
-                                  data: { "filters-target": "user" }
-                                }
+    .md:col-span-1
+      = form.label :quarter_id, "Квартал", class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.collection_select :quarter_id, @quarters, :id, :full_name, |
+                              { include_blank: "Все кварталы", selected: params[:quarter_id] }, |
+                              { |
+                                class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", |
+                                data: { "filters-target": "quarter" } |
+                              }
 
-      .md:col-span-1
-        = form.label :status, "Статус", class: "block text-sm font-medium text-gray-700 mb-1"
-        = form.select :status,
-                     options_for_select([
-                       ["Все статусы", ""],
-                       ["Черновик", "draft"],
-                       ["На утверждении", "submitted"],
-                       ["Утверждено", "approved"],
-                       ["Отклонено", "rejected"]
-                     ], params[:status]),
-                     {
-                       class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
-                       data: { "filters-target": "status" }
-                     }
+    .md:col-span-1
+      = form.label :user_id, "Пользователь", class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.collection_select :user_id, @users, :id, :full_name,
+                              { include_blank: "Все пользователи", selected: params[:user_id] },
+                              {
+                                class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                                data: { "filters-target": "user" }
+                              }
 
-      .md:col-span-4.flex.justify-end.space-x-3
-        - if params[:search].present? || params[:user_id].present? || params[:status].present?
+    .md:col-span-1
+      = form.label :technology_id, "Технология", class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.collection_select :technology_id, @technologies, :id, :name,
+                              { include_blank: "Все технологии", selected: params[:technology_id] },
+                              {
+                                class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                                data: { "filters-target": "technology" }
+                              }
+
+    .md:col-span-1
+      = form.label :status, "Статус", class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.select :status,
+                   options_for_select([
+                     ["Все статусы", ""],
+                     ["Черновик", "draft"],
+                     ["На утверждении", "submitted"],
+                     ["Утверждено", "approved"],
+                     ["Отклонено", "rejected"]
+                   ], params[:status]),
+                   {
+                     class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                     data: { "filters-target": "status" }
+                   }
+
+    .md:col-span-6.flex.justify-between.items-center
+      .flex.space-x-4
+        - quarter_statuses = { 'draft' => 'Черновик', 'active' => 'Активный', 'closed' => 'Завершен', 'archived' => 'Архивирован' }
+        - quarter_status_colors = { 'draft' => 'bg-gray-100 text-gray-800', 'active' => 'bg-green-100 text-green-800', 'closed' => 'bg-yellow-100 text-yellow-800', 'archived' => 'bg-red-100 text-red-800' }
+        - quarter_statuses.each do |status, label|
+          %span.inline-flex.items-center.px-2.py-1.rounded-full.text-xs.font-medium{ class: quarter_status_colors[status] }
+            = label
+      .flex.space-x-3
+        - if params[:search].present? || params[:quarter_id].present? || params[:user_id].present? || params[:technology_id].present? || params[:status].present?
           = link_to "Сбросить", skill_ratings_path,
                     class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50",
                     data: { action: "filters#clearFilters" }
         = form.submit "Фильтр",
                       class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700",
                       data: { "filters-target": "submit" }
-
-      .md:col-span-4.flex.justify-end.space-x-3
-        - if params[:search].present? || params[:user_id].present? || params[:status].present?
-          = link_to "Сбросить", skill_ratings_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-        = form.submit "Фильтр", class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
 
 - # Статистика
 .stats-grid.grid.grid-cols-1.md:grid-cols-4.gap-4.mb-6

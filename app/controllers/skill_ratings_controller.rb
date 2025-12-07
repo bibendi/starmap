@@ -2,7 +2,7 @@
 # Handles CRUD operations for skill ratings with Hotwire integration
 class SkillRatingsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_skill_rating, only: [:show, :edit, :update, :destroy, :approve, :reject]
+  before_action :set_skill_rating, only: [:show, :edit, :update, :destroy, :submit, :approve, :reject]
   before_action :set_quarter, only: [:index, :new, :create, :user_ratings, :team_ratings, :technology_ratings, :pending_approvals, :copy_from_previous]
   before_action :require_active_quarter, only: [:new, :create, :edit, :update]
   before_action :authorize_skill_rating, only: [:show, :edit, :update, :destroy, :approve, :reject]
@@ -12,7 +12,21 @@ class SkillRatingsController < ApplicationController
   def index
     @skill_ratings = policy_scope(SkillRating)
                     .includes(:user, :technology, :quarter)
-                    .order('users.first_name ASC, technologies.name ASC')
+
+    # Apply filters
+    @skill_ratings = @skill_ratings.where(quarter_id: params[:quarter_id]) if params[:quarter_id].present?
+    @skill_ratings = @skill_ratings.where(status: params[:status]) if params[:status].present?
+    @skill_ratings = @skill_ratings.joins(:user).where("users.first_name ILIKE ? OR users.last_name ILIKE ? OR users.email ILIKE ?", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%") if params[:search].present?
+    @skill_ratings = @skill_ratings.where(user_id: params[:user_id]) if params[:user_id].present?
+    @skill_ratings = @skill_ratings.where(technology_id: params[:technology_id]) if params[:technology_id].present?
+
+    skill_ratings_scope = @skill_ratings
+
+    @skill_ratings_submitted_count = skill_ratings_scope.submitted.count
+    @skill_ratings_approved_count = skill_ratings_scope.approved.count
+    @average_rating = skill_ratings_scope.average(:rating)
+
+    @skill_ratings = skill_ratings_scope.order('users.first_name ASC, technologies.name ASC')
                     .page(params[:page])
 
     respond_to do |format|
@@ -128,6 +142,29 @@ class SkillRatingsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: { alert: "Ошибка при утверждении оценки" }) }
         format.html { redirect_to @skill_rating, alert: "Ошибка при утверждении оценки" }
+      end
+    end
+  end
+
+  # POST /skill_ratings/1/submit
+  def submit
+    @skill_rating = SkillRating.includes(:user, :technology, :quarter).find(params[:id])
+    authorize @skill_rating, :submit?
+
+    if @skill_rating.submit_for_approval
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Оценка отправлена на утверждение" }),
+            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: { skill_rating: @skill_rating })
+          ]
+        end
+        format.html { redirect_to @skill_rating, notice: "Оценка отправлена на утверждение" }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: { alert: "Ошибка при отправке оценки на утверждение" }) }
+        format.html { redirect_to @skill_rating, alert: "Ошибка при отправке оценки на утверждение" }
       end
     end
   end

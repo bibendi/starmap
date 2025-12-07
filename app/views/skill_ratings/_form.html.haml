@@ -35,10 +35,10 @@
         }
       }
         .visual.flex.items-center.space-x-2.mb-3
-          - (1..3).each do |level|
+          - (0..3).each do |level|
             %button{
               type: "button",
-              class: "w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center text-sm font-bold hover:scale-110 transition-transform",
+              class: "w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center text-sm font-bold hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2",
               data: {
                 action: "rating-scale#selectRating rating-scale#previewRating mouseout->rating-scale#resetPreview",
                 rating: level.to_s
@@ -50,32 +50,28 @@
                            value: skill_rating.rating,
                            data: { "rating-scale-target": "input" }
 
-        - if skill_rating.rating > 0
-          .description.hidden.mt-2.p-3.bg-blue-50.rounded-md
-            %p.text-sm.text-blue-800{ data: { "rating-scale-target": "description" } }
-              = {
-                1 => "Имею представление - Могу выполнять простые задачи под присмотром или в паре с коллегой",
-                2 => "Свободно владею - Могу самостоятельно взять задачу средней сложности и довести ее до production",
-                3 => "Могу учить других - Могу объяснить архитектурные решения, провести код-ревью и быть ментором"
-              }[skill_rating.rating]
-        - else
-          .description.hidden.mt-2.p-3.bg-gray-50.rounded-md
-            %p.text-sm.text-gray-600{ data: { "rating-scale-target": "description" } }
+        .description.hidden.mt-2.p-3.rounded-md{
+          class: skill_rating.rating > 0 ? 'bg-blue-50' : 'bg-gray-50',
+          data: { "rating-scale-target": "description" }
+        }
+          %p.text-sm{
+            class: skill_rating.rating > 0 ? 'text-blue-800' : 'text-gray-600'
+          }
+            - if skill_rating.rating > 0
+              = "#{rating_level_label(skill_rating.rating)} - #{rating_level_description(skill_rating.rating)}"
+            - else
               Выберите оценку от 0 до 3
 
         .rating-descriptions.mt-4.grid.grid-cols-1.md:grid-cols-2.gap-3.text-xs
-          .descr-0.flex.items-start.space-x-2.p-2.rounded{ class: skill_rating.rating == 0 ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50' }
-            .font-medium.text-blue-600.w-8 0:
-            %span.text-gray-700 "Не имею представления" - Слышал об этом, но на практике не сталкивался. Нужен онбординг с нуля
-          .descr-1.flex.items-start.space-x-2.p-2.rounded{ class: skill_rating.rating == 1 ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50' }
-            .font-medium.text-blue-600.w-8 1:
-            %span.text-gray-700 "Имею представление" - Могу выполнять простые задачи под присмотром или в паре с коллегой
-          .descr-2.flex.items-start.space-x-2.p-2.rounded{ class: skill_rating.rating == 2 ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50' }
-            .font-medium.text-green-600.w-8 2:
-            %span.text-gray-700 "Свободно владею" - Могу самостоятельно взять задачу средней сложности и довести ее до production
-          .descr-3.flex.items-start.space-x-2.p-2.rounded{ class: skill_rating.rating == 3 ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50' }
-            .font-medium.text-purple-600.w-8 3:
-            %span.text-gray-700 "Могу учить других" - Могу объяснить архитектурные решения, провести код-ревью и быть ментором
+          - (0..3).each do |level|
+            - is_selected = skill_rating.rating == level
+            .flex.items-start.space-x-2.p-2.rounded{
+              class: is_selected ? "#{rating_color_classes(level)} border-2" : 'bg-gray-50'
+            }
+              .font-medium.w-8{ class: rating_color_classes(level).split.first }
+                = "#{level}:"
+              %span.text-gray-700
+                "#{rating_level_label(level)}" - #{rating_level_description(level)}
 
   .mb-4
     = form.label :comment, "Комментарий", class: "block text-sm font-medium text-gray-700 mb-1"

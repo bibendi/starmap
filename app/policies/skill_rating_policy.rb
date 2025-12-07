@@ -66,6 +66,22 @@ class SkillRatingPolicy < ApplicationPolicy
     approve?
   end
 
+  def submit?
+    return false unless record
+    return false unless active_user?
+
+    # Users can submit their own draft ratings
+    return true if own_record?(record) && record.can_be_submitted?
+
+    # Team leads can submit their team's draft ratings
+    return true if team_lead? && team_lead_of?(record.user.team) && record.can_be_submitted?
+
+    # Admins and unit leads can submit any draft rating
+    return true if (admin? || unit_lead?) && record.can_be_submitted?
+
+    false
+  end
+
   def edit?
     return false unless record
     update?

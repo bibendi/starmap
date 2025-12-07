@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Контроллер для интерактивных фильтров и поиска
 export default class extends Controller {
-  static targets = ["search", "user", "status", "submit"]
+  static targets = ["search", "quarter", "user", "status", "submit"]
   static values = {
     autoSubmit: { type: Boolean, default: false },
     debounceMs: { type: Number, default: 300 }
@@ -26,7 +26,7 @@ export default class extends Controller {
     }
 
     // Автоотправка при изменении селектов
-    [this.userTarget, this.statusTarget].forEach(target => {
+    [this.quarterTarget, this.userTarget, this.statusTarget].forEach(target => {
       if (target && this.autoSubmitValue) {
         target.addEventListener('change', this.submitForm.bind(this))
       }
@@ -64,6 +64,10 @@ export default class extends Controller {
   clearFilters() {
     if (this.hasSearchTarget) {
       this.searchTarget.value = ''
+    }
+
+    if (this.hasQuarterTarget) {
+      this.quarterTarget.selectedIndex = 0 // Сбрасываем на "Все кварталы"
     }
 
     if (this.hasUserTarget) {

@@ -37,6 +37,7 @@ gem "haml-rails"
 gem "letter_opener", group: :development
 
 # Utilities
+gem "kaminari"
 gem "annotate", group: :development
 gem "brakeman", group: :development
 

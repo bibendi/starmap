@@ -26,7 +26,11 @@ Rails.application.routes.draw do
 
   # Skill ratings management
   resources :skill_ratings do
+    collection do
+      post :copy_from_previous
+    end
     member do
+      post :submit
       post :approve
       post :reject
     end
