@@ -1,15 +1,15 @@
 - if notice
-  .flash-message.flash-notice
+  .flash-message.flash-notice.bg-green-100.border-l-4.border-green-500.p-4.text-green-800
     .flex.items-center
       .flex-shrink-0
-        %i.fas.fa-check-circle.mr-3
+        %i.fas.fa-check-circle.mr-3.text-green-500
       .flex-1
         = notice
 
 - if alert
-  .flash-message.flash-alert
+  .flash-message.flash-alert.bg-red-100.border-l-4.border-red-500.p-4.text-red-800
     .flex.items-center
       .flex-shrink-0
-        %i.fas.fa-exclamation-circle.mr-3
+        %i.fas.fa-exclamation-circle.mr-3.text-red-500
       .flex-1
         = alert
