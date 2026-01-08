@@ -94,7 +94,7 @@ class DashboardsController < ApplicationController
   def calculate_competency_dynamics
     # Динамика компетенций за квартал
     current_quarter = Quarter.current
-    previous_quarter = current_quarter.previous
+    previous_quarter = current_quarter.previous_quarter
 
     return {} unless previous_quarter
 
@@ -149,7 +149,7 @@ class DashboardsController < ApplicationController
   def calculate_personal_growth
     # Личный рост за квартал
     current_quarter = Quarter.current
-    previous_quarter = current_quarter.previous
+    previous_quarter = current_quarter.previous_quarter
 
     return {} unless previous_quarter
 
