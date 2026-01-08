@@ -1,0 +1,110 @@
+<%= form_with model: skill_rating, local: true, data: { turbo_frame: "skill_rating_form" } do |form| %>
+  <% if skill_rating.errors.any? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+      <h2><%= "#{pluralize(skill_rating.errors.count, 'ошибка')} препятствует сохранению:" %></h2>
+      <ul>
+        <% skill_rating.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div>
+      <%= form.label :user_id, "Пользователь", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.collection_select :user_id, @users, :id, :full_name,
+                                { include_blank: "Выберите пользователя" },
+                                { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" } %>
+    </div>
+
+    <div>
+      <%= form.label :technology_id, "Технология", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.collection_select :technology_id, @technologies, :id, :name,
+                                { include_blank: "Выберите технологию" },
+                                { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" } %>
+    </div>
+
+    <div>
+      <%= form.label :quarter_id, "Квартал", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.collection_select :quarter_id, @quarters, :id, :full_name,
+                                { include_blank: "Выберите квартал" },
+                                { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" } %>
+    </div>
+
+    <div>
+      <%= form.label :rating, "Оценка", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="rating-scale"
+        data: {
+          controller: "rating-scale",
+          "rating-scale-current-rating-value": skill_rating.rating.to_s,
+          "rating-scale-show-description-value": "true"
+        }>
+        <div class="visual flex items-center space-x-2 mb-3">
+          <% (0..3).each do |level| %>
+            <button type="button"
+              class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center text-sm font-bold hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2"
+              data: {
+                action: "rating-scale#selectRating rating-scale#previewRating mouseout->rating-scale#resetPreview",
+                rating: level.to_s
+              }>
+              <%= level %>
+            </button>
+          <% end %>
+        </div>
+
+        <%= form.hidden_field :rating,
+                           value: skill_rating.rating,
+                           data: { "rating-scale-target": "input" } %>
+
+        <div class="description hidden mt-2 p-3 rounded-md"
+          class: skill_rating.rating > 0 ? 'bg-blue-50' : 'bg-gray-50'
+          data: { "rating-scale-target": "description" }>
+          <p class: skill_rating.rating > 0 ? 'text-blue-800' : 'text-gray-600'>
+            <% if skill_rating.rating > 0 %>
+              <%= "#{rating_level_label(skill_rating.rating)} - #{rating_level_description(skill_rating.rating)}" %>
+            <% else %>
+              Выберите оценку от 0 до 3
+            <% end %>
+          </p>
+        </div>
+
+        <div class="rating-descriptions mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <% (0..3).each do |level| %>
+            <% is_selected = skill_rating.rating == level %>
+            <div class="flex items-start space-x-2 p-2 rounded"
+              class: is_selected ? "#{rating_color_classes(level)} border-2" : 'bg-gray-50'>
+              <div class="font-medium w-8 <%= rating_color_classes(level).split.first %>">
+                <%= "#{level}:" %>
+              </div>
+              <span class="text-gray-700">
+                "<%= rating_level_label(level) %>" - <%= rating_level_description(level) %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :comment, "Комментарий", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= form.text_area :comment,
+                      rows: 3,
+                      placeholder: "Дополнительные комментарии к оценке...",
+                      class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :reason, "Обоснование", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= form.text_area :reason,
+                      rows: 2,
+                      placeholder: "Почему вы поставили именно эту оценку?",
+                      class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <%= link_to "Отмена", skill_ratings_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" %>
+    <%= form.submit "Сохранить", class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+  </div>
+<% end %>

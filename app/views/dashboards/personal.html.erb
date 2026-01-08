@@ -1,0 +1,31 @@
+<h1>Personal Dashboard</h1>
+<p>Добро пожаловать в Personal Dashboard!</p>
+
+<% if @current_quarter %>
+  <div class="personal-info">
+    <h3>Текущий квартал: <%= @current_quarter.year %>Q<%= @current_quarter.quarter_number %></h3>
+    <p>Оценок компетенций: <%= @user_skill_ratings.size %></p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <h3>Critical Expertise Index</h3>
+      <p><%= "#{@critical_expertise_index}%" %></p>
+    </div>
+    <div class="metric-card">
+      <h3>Active Action Plans</h3>
+      <p><%= @action_plans.size %></p>
+    </div>
+  </div>
+
+  <% if @user_skill_ratings.any? %>
+    <div class="skill-ratings">
+      <h3>Ваши компетенции</h3>
+      <ul>
+        <% @user_skill_ratings.each do |rating| %>
+          <li><%= "#{rating.technology.name}: #{rating.rating}/3" %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

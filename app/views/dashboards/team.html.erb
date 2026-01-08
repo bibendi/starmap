@@ -1,0 +1,20 @@
+<h1>Team Dashboard</h1>
+<p>Добро пожаловать в Team Dashboard!</p>
+
+<% if @current_quarter %>
+  <div class="team-info">
+    <h3><%= "Команда: #{@team&.name || 'Не назначена'}" %></h3>
+    <p><%= "Членов команды: #{@team_members.size}" %></p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <h3>Key Person Risks</h3>
+      <p><%= @key_person_risks.size %></p>
+    </div>
+    <div class="metric-card">
+      <h3>Team Skill Matrix</h3>
+      <p><%= "Доступна" %></p>
+    </div>
+  </div>
+<% end %>

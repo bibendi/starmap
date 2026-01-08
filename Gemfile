@@ -30,9 +30,6 @@ gem "solid_cache"
 # Audit and versioning
 gem "audited"
 
-# Template engine
-gem "haml-rails"
-
 # Email handling
 gem "letter_opener", group: :development
 
