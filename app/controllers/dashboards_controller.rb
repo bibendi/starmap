@@ -54,7 +54,7 @@ class DashboardsController < ApplicationController
     # Coverage Index = (количество технологий с >= 2 экспертами) / (общее количество технологий)
     total_technologies = Technology.count
     covered_technologies = Technology.joins(:skill_ratings)
-      .where(skill_ratings: { rating: 2..3 })
+      .where(skill_ratings: { rating: 2..3, quarter: Quarter.current })
       .group(:technology_id)
       .having("COUNT(*) >= 2")
       .count
@@ -69,7 +69,7 @@ class DashboardsController < ApplicationController
   def identify_red_zones
     # Red Zones = технологии с высокой критичностью и низким покрытием
     Technology.joins(:skill_ratings)
-      .where(criticality: 'high')
+      .where(criticality: 'high', skill_ratings: { quarter: Quarter.current })
       .group(:technology_id)
       .having("COUNT(CASE WHEN skill_ratings.rating >= 2 THEN 1 END) < 2")
       .count
