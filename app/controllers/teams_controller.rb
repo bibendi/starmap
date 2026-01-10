@@ -17,6 +17,8 @@ class TeamsController < ApplicationController
 
     @current_quarter = Quarter.current
     @team_members = @team&.users || []
+
+    # Preload technologies for skill matrix to avoid N+1 queries
     @technologies = Technology.includes(:skill_ratings)
       .where(skill_ratings: { quarter: Quarter.current })
       .order(:name)
@@ -26,6 +28,15 @@ class TeamsController < ApplicationController
     @competency_dynamics = calculate_competency_dynamics
     @universality_index = calculate_universality_index
     @key_person_risks = identify_key_person_risks
+    @coverage_index = calculate_coverage_index
+    @maturity_index = calculate_maturity_index
+    @red_zones = identify_red_zones
+
+    # Preload users for key person risks to avoid N+1 queries
+    @key_person_risk_users = User.where(id: @key_person_risks.values).index_by(&:id) if @key_person_risks.any?
+
+    # Technology counts by criticality
+    @technology_counts = technology_counts_by_criticality
   end
 
   private
@@ -103,5 +114,60 @@ class TeamsController < ApplicationController
     end
 
     risks
+  end
+
+  def calculate_coverage_index
+    current_quarter = Quarter.current
+    technologies = Technology.includes(:skill_ratings)
+      .where(skill_ratings: { quarter: current_quarter })
+
+    return 0 if technologies.empty?
+
+    covered_count = technologies.count do |tech|
+      experts = tech.skill_ratings.where(quarter: current_quarter, rating: 2..3).count
+      experts >= 2
+    end
+
+    ((covered_count.to_f / technologies.count) * 100).round
+  end
+
+  def calculate_maturity_index
+    current_quarter = Quarter.current
+    team_users = @team&.users || []
+
+    ratings = SkillRating.where(user: team_users, quarter: current_quarter)
+    return 0 if ratings.empty?
+
+    (ratings.average(:rating)&.round(1) || 0)
+  end
+
+  def identify_red_zones
+    current_quarter = Quarter.current
+    technologies = Technology.includes(:skill_ratings)
+      .where(criticality: :high)
+      .where(skill_ratings: { quarter: current_quarter })
+
+    red_zones = {}
+    technologies.each do |tech|
+      experts = tech.skill_ratings.where(quarter: current_quarter, rating: 2..3).count
+      red_zones[tech.id] = experts
+    end
+
+    red_zones
+  end
+
+  def technology_counts_by_criticality
+    current_quarter = Quarter.current
+    counts = { high: 0, medium: 0, low: 0 }
+
+    Technology.joins(:skill_ratings)
+      .where(skill_ratings: { quarter: current_quarter })
+      .distinct
+      .pluck(:criticality)
+      .each do |criticality|
+        counts[criticality.to_sym] += 1 if counts.key?(criticality.to_sym)
+      end
+
+    counts
   end
 end
