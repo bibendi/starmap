@@ -36,7 +36,7 @@ class DashboardsController < ApplicationController
 
   # Personal Dashboard - доступен только владельцу
   def personal
-    authorize current_user, :personal?
+    authorize :dashboard, :personal?
 
     @current_quarter = Quarter.current
     @user_skill_ratings = current_user.skill_ratings.includes(:technology, :quarter).where(quarter: Quarter.current)

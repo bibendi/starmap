@@ -1,20 +1,135 @@
-<h1>Team Dashboard</h1>
-<p>Добро пожаловать в Team Dashboard!</p>
-
-<% if @current_quarter %>
-  <div class="team-info">
-    <h3><%= "Команда: #{@team&.name || 'Не назначена'}" %></h3>
-    <p><%= "Членов команды: #{@team_members.size}" %></p>
-  </div>
-
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <h3>Key Person Risks</h3>
-      <p><%= @key_person_risks.size %></p>
+<div class="flex flex-col min-h-screen">
+  <main class="flex-1 flex flex-col">
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <h1 class="text-3xl font-bold text-gray-900">Team Dashboard</h1>
+          <p class="text-sm text-gray-600">Добро пожаловать в Team Dashboard!</p>
+        </div>
+      </div>
     </div>
-    <div class="metric-card">
-      <h3>Team Skill Matrix</h3>
-      <p><%= "Доступна" %></p>
-    </div>
-  </div>
-<% end %>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full py-6 sm:px-6 lg:px-8">
+      <% if @current_quarter %>
+        <div class="bg-white shadow sm:rounded-lg border border-gray-200 mb-8">
+          <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Информация о команде</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Данные текущего квартала</p>
+          </div>
+          <div class="px-6 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <dt class="text-sm font-medium text-gray-500">Команда</dt>
+                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @team&.name || 'Не назначена' %></dd>
+              </div>
+              <div class="flex flex-col">
+                <dt class="text-sm font-medium text-gray-500">Членов команды</dt>
+                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @team_members.size %></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-6 mb-8">
+          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-red-50 to-orange-50 shadow rounded-xl p-6 border border-red-100 hover:shadow-lg transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <dt class="text-sm font-medium text-red-700 truncate">Key Person Risks</dt>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <svg class="h-4 w-4 text-red-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+            <dd class="text-3xl font-bold text-gray-900"><%= @key_person_risks.size %></dd>
+            <div class="text-xs text-gray-500 mt-1">Риски единоличной экспертизы</div>
+          </div>
+
+          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-indigo-50 to-blue-50 shadow rounded-xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+            <div class="flex items-center justify-between mb-4">
+              <dt class="text-sm font-medium text-indigo-700 truncate">Team Skill Matrix</dt>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 group-hover:bg-indigo-200 transition-colors">
+                <svg class="h-4 w-4 text-indigo-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+            <dd class="text-3xl font-bold text-gray-900"><%= @team_skill_matrix.size %></dd>
+            <div class="text-xs text-gray-500 mt-1">Технологий в матрице команды</div>
+            <div class="text-xs text-indigo-600 mt-2 font-medium group-hover:underline">Просмотреть матрицу →</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Key Person Risks Details -->
+          <div class="bg-white shadow sm:rounded-lg border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Key Person Risks</h3>
+              <p class="mt-1 max-w-2xl text-sm text-gray-500">Технологии с единственным экспертом.</p>
+            </div>
+            <div class="px-6 py-6">
+              <% if @key_person_risks.any? %>
+                <div class="space-y-3">
+                  <% @key_person_risks.each do |tech_id, user_id| %>
+                    <% tech = Technology.find(tech_id) %>
+                    <% user = User.find(user_id) %>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-white transition-colors duration-200 shadow-sm">
+                      <div class="flex flex-col">
+                        <span class="text-sm font-medium text-gray-900"><%= tech.name %></span>
+                        <span class="text-xs text-gray-500"><%= tech.category %></span>
+                      </div>
+                      <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          <%= "Expert: #{user.full_name}" %>
+                        </span>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <p class="text-sm text-gray-500 text-center py-4">Риски единоличной экспертизы не обнаружены.</p>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Team Members -->
+          <div class="bg-white shadow sm:rounded-lg border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Члены команды</h3>
+              <p class="mt-1 max-w-2xl text-sm text-gray-500">Состав текущей команды.</p>
+            </div>
+            <div class="px-6 py-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <% @team_members.each do |member| %>
+                  <div class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+                    <div class="flex-shrink-0 h-16 w-16 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
+                      <span class="text-indigo-700 font-bold text-xl"><%= member.full_name[0] %></span>
+                    </div>
+                    <div class="text-center">
+                      <h4 class="text-sm font-medium text-gray-900"><%= member.full_name %></h4>
+                      <p class="text-xs text-gray-500"><%= member.email %></p>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-xl shadow">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-yellow-700">
+                Нет активного квартала. Пожалуйста, создайте квартал в админке.
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </main>
+  </main>
+</div>
