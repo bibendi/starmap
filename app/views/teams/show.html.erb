@@ -34,7 +34,7 @@
                     Высокая: <%= @technology_counts[:high] %>
                   </span>
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                    Средняя: <%= @technology_counts[:medium] %>
+                    Обычная: <%= @technology_counts[:normal] %>
                   </span>
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                     Низкая: <%= @technology_counts[:low] %>
@@ -240,7 +240,17 @@
                     <% tech = @technologies.find { |t| t.id == tech_id } %>
                     <tr>
                       <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                        <%= tech&.name %>
+                        <div class="flex items-center gap-2">
+                          <%= tech&.name %>
+                          <% criticality = tech&.criticality %>
+                          <% if criticality == 'high' %>
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">High</span>
+                          <% elsif criticality == 'normal' %>
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Norm</span>
+                          <% elsif criticality == 'low' %>
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Low</span>
+                          <% end %>
+                        </div>
                         <span class="text-xs text-gray-500 block"><%= tech&.category %></span>
                       </td>
                       <% @team_members.each do |member| %>
