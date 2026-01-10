@@ -9,7 +9,7 @@ class DashboardsController < ApplicationController
     authorize :dashboard, :overview?
 
     @current_quarter = Quarter.current
-    @technologies = Technology.includes(:skill_ratings).order(:name)
+    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current }).order(:name)
     @teams = Team.includes(:users)
 
     # Метрики для Overview Dashboard
@@ -25,7 +25,7 @@ class DashboardsController < ApplicationController
     @current_quarter = Quarter.current
     @team = current_user.team
     @team_members = @team&.users || []
-    @technologies = Technology.includes(:skill_ratings).order(:name)
+    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current }).order(:name)
 
     # Метрики для Team Dashboard
     @team_skill_matrix = build_team_skill_matrix
@@ -39,8 +39,8 @@ class DashboardsController < ApplicationController
     authorize current_user, :personal?
 
     @current_quarter = Quarter.current
-    @user_skill_ratings = current_user.skill_ratings.includes(:technology, :quarter)
-    @technologies = Technology.order(:name)
+    @user_skill_ratings = current_user.skill_ratings.includes(:technology, :quarter).where(quarter: Quarter.current)
+    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current }).order(:name)
 
     # Метрики для Personal Dashboard
     @personal_growth = calculate_personal_growth
@@ -78,7 +78,7 @@ class DashboardsController < ApplicationController
   def build_team_skill_matrix
     # Создает матрицу навыков команды
     team_users = current_user.team&.users || []
-    technologies = Technology.order(:name)
+    technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current }).order(:name)
 
     matrix = {}
     technologies.each do |tech|
@@ -119,11 +119,12 @@ class DashboardsController < ApplicationController
 
   def calculate_universality_index
     # Индекс универсальности = количество технологий с уровнем >= 2
+    current_quarter = Quarter.current
     team_users = current_user.team&.users || []
     universality = {}
 
     team_users.each do |user|
-      count = user.skill_ratings.where(quarter: Quarter.current, rating: 2..3).count
+      count = user.skill_ratings.where(quarter: current_quarter, rating: 2..3).count
       universality[user.id] = count
     end
 
@@ -133,7 +134,7 @@ class DashboardsController < ApplicationController
   def identify_key_person_risks
     # Key Person Risk = технологии, где сотрудник единственный эксперт
     team_users = current_user.team&.users || []
-    technologies = Technology.all
+    technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current })
     risks = {}
 
     technologies.each do |tech|
