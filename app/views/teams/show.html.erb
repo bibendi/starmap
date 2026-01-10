@@ -17,7 +17,7 @@
             <p class="mt-1 max-w-2xl text-sm text-gray-500">Данные текущего квартала</p>
           </div>
           <div class="px-6 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="flex flex-col">
                 <dt class="text-sm font-medium text-gray-500">Команда</dt>
                 <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @team&.name || 'Не назначена' %></dd>
@@ -25,6 +25,21 @@
               <div class="flex flex-col">
                 <dt class="text-sm font-medium text-gray-500">Членов команды</dt>
                 <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @team_members.size %></dd>
+              </div>
+              <div class="flex flex-col">
+                <dt class="text-sm font-medium text-gray-500">Технологий</dt>
+                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @technology_counts.values.sum %></dd>
+                <div class="mt-2 flex gap-2 text-xs">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                    Высокая: <%= @technology_counts[:high] %>
+                  </span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Средняя: <%= @technology_counts[:medium] %>
+                  </span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                    Низкая: <%= @technology_counts[:low] %>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -44,22 +59,77 @@
             <div class="text-xs text-gray-500 mt-1">Риски единоличной экспертизы</div>
           </div>
 
-          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-indigo-50 to-blue-50 shadow rounded-xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-indigo-50 to-blue-50 shadow rounded-xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between mb-4">
-              <dt class="text-sm font-medium text-indigo-700 truncate">Team Skill Matrix</dt>
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 group-hover:bg-indigo-200 transition-colors">
+              <dt class="text-sm font-medium text-indigo-700 truncate">Coverage Index</dt>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                 <svg class="h-4 w-4 text-indigo-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
               </span>
             </div>
-            <dd class="text-3xl font-bold text-gray-900"><%= @team_skill_matrix.size %></dd>
-            <div class="text-xs text-gray-500 mt-1">Технологий в матрице команды</div>
-            <div class="text-xs text-indigo-600 mt-2 font-medium group-hover:underline">Просмотреть матрицу →</div>
+            <dd class="text-3xl font-bold text-gray-900"><%= "#{@coverage_index}%" %></dd>
+            <div class="text-xs text-gray-500 mt-1">Показатель покрытия технологий</div>
+          </div>
+
+          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-blue-50 to-cyan-50 shadow rounded-xl p-6 border border-blue-100 hover:shadow-lg transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <dt class="text-sm font-medium text-blue-700 truncate">Maturity Index</dt>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <svg class="h-4 w-4 text-blue-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+            <dd class="text-3xl font-bold text-gray-900"><%= "#{@maturity_index}/3.0" %></dd>
+            <div class="text-xs text-gray-500 mt-1">Уровень зрелости компетенций</div>
+          </div>
+
+          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-red-50 to-orange-50 shadow rounded-xl p-6 border border-red-100 hover:shadow-lg transition-all duration-300 cursor-pointer">
+            <div class="flex items-center justify-between mb-4">
+              <dt class="text-sm font-medium text-red-700 truncate">Red Zones</dt>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <svg class="h-4 w-4 text-red-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+            <dd class="text-3xl font-bold text-gray-900"><%= @red_zones.size %></dd>
+            <div class="text-xs text-gray-500 mt-1">Критические технологии</div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Red Zones Details -->
+          <div class="bg-white shadow sm:rounded-lg border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Red Zones</h3>
+              <p class="mt-1 max-w-2xl text-sm text-gray-500">Технологии с высокой критичностью и низким покрытием.</p>
+            </div>
+            <div class="px-6 py-6">
+              <% if @red_zones.any? %>
+                <div class="space-y-3">
+                  <% @red_zones.each do |tech_id, count| %>
+                    <% tech = @technologies.find { |t| t.id == tech_id } %>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-white transition-colors duration-200 shadow-sm">
+                      <div class="flex flex-col">
+                        <span class="text-sm font-medium text-gray-900"><%= tech&.name %></span>
+                        <span class="text-xs text-gray-500"><%= tech&.category %></span>
+                      </div>
+                      <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          <%= "Experts: #{count}" %>
+                        </span>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <p class="text-sm text-gray-500 text-center py-4">Красных зон не обнаружено.</p>
+              <% end %>
+            </div>
+          </div>
+
           <!-- Key Person Risks Details -->
           <div class="bg-white shadow sm:rounded-lg border border-gray-200">
             <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
@@ -70,16 +140,16 @@
               <% if @key_person_risks.any? %>
                 <div class="space-y-3">
                   <% @key_person_risks.each do |tech_id, user_id| %>
-                    <% tech = Technology.find(tech_id) %>
-                    <% user = User.find(user_id) %>
+                    <% tech = @technologies.find { |t| t.id == tech_id } %>
+                    <% user = @key_person_risk_users[user_id] %>
                     <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-white transition-colors duration-200 shadow-sm">
                       <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-900"><%= tech.name %></span>
-                        <span class="text-xs text-gray-500"><%= tech.category %></span>
+                        <span class="text-sm font-medium text-gray-900"><%= tech&.name %></span>
+                        <span class="text-xs text-gray-500"><%= tech&.category %></span>
                       </div>
                       <div class="flex items-center">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                          <%= "Expert: #{user.full_name}" %>
+                          <%= "Expert: #{user&.full_name}" %>
                         </span>
                       </div>
                     </div>
@@ -90,28 +160,117 @@
               <% end %>
             </div>
           </div>
+        </div>
 
-          <!-- Team Members -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <!-- Competency Dynamics -->
           <div class="bg-white shadow sm:rounded-lg border border-gray-200">
             <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-              <h3 class="text-lg leading-6 font-medium text-gray-900">Члены команды</h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Состав текущей команды.</p>
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Динамика компетенций</h3>
+              <p class="mt-1 max-w-2xl text-sm text-gray-500">Изменение навыков относительно прошлого квартала.</p>
             </div>
             <div class="px-6 py-6">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <% @team_members.each do |member| %>
-                  <div class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                    <div class="flex-shrink-0 h-16 w-16 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                      <span class="text-indigo-700 font-bold text-xl"><%= member.full_name[0] %></span>
+              <% if @competency_dynamics.any? %>
+                <div class="space-y-3">
+                  <% @competency_dynamics.each do |user_id, change| %>
+                    <% user = @team_members.find { |u| u.id == user_id } %>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div class="flex flex-col">
+                        <span class="text-sm font-medium text-gray-900"><%= user&.full_name %></span>
+                      </div>
+                      <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= change >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                          <%= change >= 0 ? '+' : '' %><%= change %>
+                        </span>
+                      </div>
                     </div>
-                    <div class="text-center">
-                      <h4 class="text-sm font-medium text-gray-900"><%= member.full_name %></h4>
-                      <p class="text-xs text-gray-500"><%= member.email %></p>
+                  <% end %>
+                </div>
+              <% else %>
+                <p class="text-sm text-gray-500 text-center py-4">Нет данных о динамике компетенций.</p>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Universality Index -->
+          <div class="bg-white shadow sm:rounded-lg border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Индекс универсальности</h3>
+              <p class="mt-1 max-w-2xl text-sm text-gray-500">Количество технологий с уровнем 2-3.</p>
+            </div>
+            <div class="px-6 py-6">
+              <div class="space-y-3">
+                <% @universality_index.each do |user_id, count| %>
+                  <% user = @team_members.find { |u| u.id == user_id } %>
+                  <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-900"><%= user&.full_name %></span>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <%= count %> технологий
+                      </span>
                     </div>
                   </div>
                 <% end %>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Team Skill Matrix Heatmap -->
+        <div class="bg-white shadow sm:rounded-lg border border-gray-200 mt-6">
+          <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Карта навыков команды</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Показатель покрытия технологий и уровень зрелости компетенций.</p>
+          </div>
+          <div class="px-6 py-6 overflow-x-auto">
+            <% if @team_skill_matrix.any? && @team_members.any? %>
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Технология</th>
+                    <% @team_members.each do |member| %>
+                      <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"><%= member.full_name.split.first %></th>
+                    <% end %>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <% @team_skill_matrix.each do |tech_id, user_ratings| %>
+                    <% tech = @technologies.find { |t| t.id == tech_id } %>
+                    <tr>
+                      <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <%= tech&.name %>
+                        <span class="text-xs text-gray-500 block"><%= tech&.category %></span>
+                      </td>
+                      <% @team_members.each do |member| %>
+                        <% rating = user_ratings[member.id] || 0 %>
+                        <td class="px-3 py-2 whitespace-nowrap text-center">
+                          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold <%=
+                            case rating
+                            when 3 then 'bg-green-100 text-green-800'
+                            when 2 then 'bg-blue-100 text-blue-800'
+                            when 1 then 'bg-yellow-100 text-yellow-800'
+                            else 'bg-gray-100 text-gray-400'
+                            end
+                          %>">
+                            <%= rating > 0 ? rating : '-' %>
+                          </span>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+              <div class="mt-4 flex gap-4 text-xs text-gray-500">
+                <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-green-100 text-green-800 inline-flex items-center justify-center mr-1">3</span> Эксперт</div>
+                <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-blue-100 text-blue-800 inline-flex items-center justify-center mr-1">2</span> Продвинутый</div>
+                <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-yellow-100 text-yellow-800 inline-flex items-center justify-center mr-1">1</span> Начинающий</div>
+                <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-gray-100 text-gray-400 inline-flex items-center justify-center mr-1">-</span> Нет данных</div>
+              </div>
+            <% else %>
+              <p class="text-sm text-gray-500 text-center py-4">Нет данных о навыках команды.</p>
+            <% end %>
           </div>
         </div>
       <% else %>
