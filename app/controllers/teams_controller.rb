@@ -130,8 +130,8 @@ class TeamsController < ApplicationController
   end
 
   def identify_red_zones
-    # Only include high criticality technologies with insufficient experts (< 2)
-    team_technologies.where(criticality: :high).each_with_object({}) do |tech, hash|
+    # Only include high and normal criticality technologies with insufficient experts (< 2)
+    team_technologies.where(criticality: [:normal, :high]).each_with_object({}) do |tech, hash|
       expert_count = expert_count_for(tech)
       hash[tech.id] = expert_count if expert_count < MIN_EXPERTS_FOR_COVERAGE
     end
