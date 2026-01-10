@@ -138,10 +138,10 @@ class TeamsController < ApplicationController
   end
 
   def technology_counts_by_criticality
-    counts = { high: 0, normal: 0, low: 0 }
-    team_technologies.pluck(:criticality).each do |criticality|
-      counts[criticality.to_sym] += 1 if counts.key?(criticality.to_sym)
-    end
-    counts
+    team_technologies
+      .group(:criticality)
+      .count
+      .transform_keys(&:to_sym)
+      .then { |counts| { high: counts[:high] || 0, normal: counts[:normal] || 0, low: counts[:low] || 0 } }
   end
 end
