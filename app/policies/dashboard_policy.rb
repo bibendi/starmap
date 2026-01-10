@@ -3,10 +3,6 @@ class DashboardPolicy < ApplicationPolicy
     active_user?
   end
 
-  def team?
-    active_user? && (team_lead? || unit_lead? || admin?)
-  end
-
   def personal?
     active_user? && (record == user || team_lead? || unit_lead? || admin?)
   end

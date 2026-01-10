@@ -13,8 +13,10 @@ Rails.application.routes.draw do
 
   # Dashboards routes
   get 'dashboards/overview', to: 'dashboards#overview', as: :overview_dashboard
-  get 'dashboards/team', to: 'dashboards#team', as: :team_dashboard
   get 'dashboards/personal', to: 'dashboards#personal', as: :personal_dashboard
+
+  # Teams routes
+  get '/team', to: 'teams#show', as: :team
 
   # Admin routes
   namespace :admin do
@@ -52,5 +54,4 @@ Rails.application.routes.draw do
       resources :notifications, only: [:index, :create]
     end
   end
-
-  end
+end
