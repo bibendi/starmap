@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -99,13 +99,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.string "name", null: false
     t.integer "sort_order", default: 0
     t.bigint "team_lead_id"
-    t.string "unit_name"
+    t.bigint "unit_id"
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_teams_on_active"
     t.index ["name"], name: "index_teams_on_name", unique: true
     t.index ["sort_order"], name: "index_teams_on_sort_order"
     t.index ["team_lead_id"], name: "index_teams_on_team_lead_id"
-    t.index ["unit_name"], name: "index_teams_on_unit_name"
+    t.index ["unit_id"], name: "index_teams_on_unit_id"
   end
 
   create_table "technologies", force: :cascade do |t|
@@ -127,6 +127,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
     t.index ["name"], name: "index_technologies_on_name", unique: true
     t.index ["sort_order"], name: "index_technologies_on_sort_order"
     t.index ["updated_by_id"], name: "index_technologies_on_updated_by_id"
+  end
+
+  create_table "units", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "sort_order", default: 0
+    t.bigint "unit_lead_id"
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_units_on_active"
+    t.index ["name"], name: "index_units_on_name", unique: true
+    t.index ["sort_order"], name: "index_units_on_sort_order"
+    t.index ["unit_lead_id"], name: "index_units_on_unit_lead_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -176,8 +190,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_04_074848) do
   add_foreign_key "skill_ratings", "users", column: "approved_by_id"
   add_foreign_key "skill_ratings", "users", column: "created_by_id"
   add_foreign_key "skill_ratings", "users", column: "updated_by_id"
+  add_foreign_key "teams", "units"
   add_foreign_key "teams", "users", column: "team_lead_id"
   add_foreign_key "technologies", "users", column: "created_by_id"
   add_foreign_key "technologies", "users", column: "updated_by_id"
+  add_foreign_key "units", "users", column: "unit_lead_id"
   add_foreign_key "users", "teams"
 end

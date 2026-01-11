@@ -1,11 +1,10 @@
 # Team factory for testing
 FactoryBot.define do
   sequence(:team_name) { |n| "Test Team #{n}" }
-  sequence(:unit_name) { |n| "Unit #{n}" }
 
   factory :team do
     name { generate(:team_name) }
-    unit_name { generate(:unit_name) }
+    unit { create(:unit) }
 
     trait :with_team_lead do
       transient do

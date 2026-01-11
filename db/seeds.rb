@@ -1,25 +1,34 @@
 # Seeds file for Starmap application
 # Creates test users, teams, technologies, and sample data
 
+puts "Creating units..."
+
+engineering_unit = Unit.find_or_create_by!(name: 'Engineering') do |unit|
+  unit.description = 'Main engineering unit'
+end
+
+puts "Created unit: #{engineering_unit.name}"
+puts ""
+
 puts "Creating teams..."
 
 # Create teams
 teams = {
   backend: Team.find_or_create_by!(name: 'Backend Team') do |team|
     team.description = 'Backend development team'
-    team.unit_name = 'Engineering'
+    team.unit = engineering_unit
   end,
   frontend: Team.find_or_create_by!(name: 'Frontend Team') do |team|
     team.description = 'Frontend development team'
-    team.unit_name = 'Engineering'
+    team.unit = engineering_unit
   end,
   devops: Team.find_or_create_by!(name: 'DevOps Team') do |team|
     team.description = 'DevOps and infrastructure team'
-    team.unit_name = 'Engineering'
+    team.unit = engineering_unit
   end,
   mobile: Team.find_or_create_by!(name: 'Mobile Team') do |team|
     team.description = 'Mobile development team'
-    team.unit_name = 'Engineering'
+    team.unit = engineering_unit
   end
 }
 
@@ -163,6 +172,9 @@ unit_lead_user = User.find_or_create_by!(email: 'unit.lead@company.com') do |use
   user.active = true
   user.team_id = nil
 end
+
+# Set unit lead for unit
+engineering_unit.update!(unit_lead_id: unit_lead_user.id)
 
 # Create team leads
 backend_team_lead = User.find_or_create_by!(email: 'backend.lead@company.com') do |user|

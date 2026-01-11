@@ -3,13 +3,13 @@
 class Team < ApplicationRecord
   # Associations
   belongs_to :team_lead, class_name: 'User', optional: true
+  belongs_to :unit, optional: false
   has_many :users, dependent: :nullify
   has_many :skill_ratings, through: :users
   has_many :action_plans, through: :users
 
   # Validations
   validates :name, presence: true, uniqueness: true
-  validates :unit_name, presence: true
   validates :sort_order, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   # Callbacks
@@ -17,8 +17,11 @@ class Team < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(active: true) }
-  scope :by_unit, ->(unit_name) { where(unit_name: unit_name) }
+  scope :by_unit, ->(unit) { where(unit: unit) }
   scope :ordered, -> { order(:sort_order, :name) }
+
+  # Delegation
+  delegate :name, to: :unit, prefix: true, allow_nil: false
 
   # Team leadership helpers
   def has_team_lead?

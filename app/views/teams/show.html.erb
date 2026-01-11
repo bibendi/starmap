@@ -4,7 +4,11 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-6">
           <h1 class="text-3xl font-bold text-gray-900">Team Dashboard</h1>
-          <p class="text-sm text-gray-600">Добро пожаловать в Team Dashboard!</p>
+          <% if @current_quarter %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+              <%= @current_quarter.name %>
+            </span>
+          <% end %>
         </div>
       </div>
     </div>
@@ -12,35 +16,38 @@
     <main class="flex-1 max-w-7xl mx-auto w-full py-6 sm:px-6 lg:px-8">
       <% if @current_quarter %>
         <div class="bg-white shadow sm:rounded-lg border border-gray-200 mb-8">
-          <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">Информация о команде</h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">Данные текущего квартала</p>
-          </div>
           <div class="px-6 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="flex flex-col">
-                <dt class="text-sm font-medium text-gray-500">Команда</dt>
-                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @team&.name || 'Не назначена' %></dd>
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Team</dt>
+                <dd class="text-2xl font-bold text-gray-900"><%= @team&.name || 'Not assigned' %></dd>
               </div>
-              <div class="flex flex-col">
-                <dt class="text-sm font-medium text-gray-500">Членов команды</dt>
-                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @team_members.size %></dd>
-              </div>
-              <div class="flex flex-col">
-                <dt class="text-sm font-medium text-gray-500">Технологий</dt>
-                <dd class="mt-1 text-2xl font-bold text-gray-900"><%= @technology_counts.values.sum %></dd>
-                <div class="mt-2 flex gap-2 text-xs">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                    Высокая: <%= @technology_counts[:high] %>
-                  </span>
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                    Обычная: <%= @technology_counts[:normal] %>
-                  </span>
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                    Низкая: <%= @technology_counts[:low] %>
-                  </span>
+              <div class="flex items-center gap-8">
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Unit</dt>
+                  <dd class="text-xl font-semibold text-gray-700"><%= @team&.unit&.name || '-' %></dd>
+                </div>
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Unit Lead</dt>
+                  <dd class="text-lg font-medium text-gray-700"><%= @team&.unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
                 </div>
               </div>
+            </div>
+            <div class="flex items-center gap-6 text-sm text-gray-600">
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <strong><%= @team_members.size %></strong> участников
+              </span>
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                </svg>
+                <strong><%= @technology_counts.values.sum %></strong> технологий
+                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">High: <%= @technology_counts[:high] %></span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Normal: <%= @technology_counts[:normal] %></span>
+              </span>
             </div>
           </div>
         </div>

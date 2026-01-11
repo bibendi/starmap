@@ -15,7 +15,7 @@ RSpec.describe DashboardPolicy, type: :policy do
   describe 'when user is nil' do
     let(:user) { nil }
 
-    permissions :overview?, :team?, :personal? do
+    permissions :overview?, :personal? do
       it 'denies access' do
         expect(subject).not_to permit(user, nil)
       end
@@ -26,7 +26,7 @@ RSpec.describe DashboardPolicy, type: :policy do
   describe 'when user is inactive' do
     let(:user) { inactive_user }
 
-    permissions :overview?, :team?, :personal? do
+    permissions :overview?, :personal? do
       it 'denies access' do
         expect(subject).not_to permit(user, nil)
       end
@@ -37,7 +37,7 @@ RSpec.describe DashboardPolicy, type: :policy do
   context 'for admin' do
     let(:user) { admin }
 
-    permissions :overview?, :team?, :personal? do
+    permissions :overview?, :personal? do
       it 'grants access' do
         expect(subject).to permit(user, nil)
       end
@@ -47,7 +47,7 @@ RSpec.describe DashboardPolicy, type: :policy do
   context 'for unit_lead' do
     let(:user) { unit_lead }
 
-    permissions :overview?, :team?, :personal? do
+    permissions :overview?, :personal? do
       it 'grants access' do
         expect(subject).to permit(user, nil)
       end
@@ -56,12 +56,6 @@ RSpec.describe DashboardPolicy, type: :policy do
 
   context 'for team_lead' do
     let(:user) { team_lead }
-
-    permissions :overview?, :team? do
-      it 'grants access' do
-        expect(subject).to permit(user, nil)
-      end
-    end
 
     permissions :personal? do
       context 'when viewing their own dashboard' do
@@ -95,25 +89,5 @@ RSpec.describe DashboardPolicy, type: :policy do
       end
     end
 
-    permissions :team? do
-      it 'denies access' do
-        expect(subject).not_to permit(user, nil)
-      end
-    end
-
-    permissions :personal? do
-      context 'when viewing their own dashboard' do
-        it 'grants access' do
-          expect(subject).to permit(user, user)
-        end
-      end
-
-      context 'when viewing other user dashboard' do
-        let(:other_user) { create(:engineer) }
-        it 'denies access' do
-          expect(subject).not_to permit(user, other_user)
-        end
-      end
-    end
   end
 end
