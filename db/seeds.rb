@@ -108,6 +108,61 @@ technologies = {
   end
 }
 
+puts "Creating team technology settings..."
+
+# Helper method to determine target_experts based on criticality
+def target_experts_for_criticality(criticality)
+  case criticality
+  when 'high' then 3
+  when 'normal' then 2
+  when 'low' then 1
+  else 2
+  end
+end
+
+# Create team_technology settings for each team
+team_settings = {
+  teams[:backend] => [
+    { tech: technologies[:ruby_on_rails], criticality: 'high' },
+    { tech: technologies[:postgresql], criticality: 'high' },
+    { tech: technologies[:redis], criticality: 'normal' },
+    { tech: technologies[:graphql], criticality: 'normal' },
+    { tech: technologies[:nodejs], criticality: 'normal' }
+  ],
+  teams[:frontend] => [
+    { tech: technologies[:react], criticality: 'high' },
+    { tech: technologies[:javascript], criticality: 'high' },
+    { tech: technologies[:typescript], criticality: 'normal' },
+    { tech: technologies[:vuejs], criticality: 'low' },
+    { tech: technologies[:angular], criticality: 'low' }
+  ],
+  teams[:devops] => [
+    { tech: technologies[:docker], criticality: 'high' },
+    { tech: technologies[:kubernetes], criticality: 'high' },
+    { tech: technologies[:aws], criticality: 'high' },
+    { tech: technologies[:terraform], criticality: 'normal' },
+    { tech: technologies[:postgresql], criticality: 'normal' }
+  ],
+  teams[:mobile] => [
+    { tech: technologies[:react], criticality: 'high' },
+    { tech: technologies[:javascript], criticality: 'high' },
+    { tech: technologies[:nodejs], criticality: 'normal' },
+    { tech: technologies[:aws], criticality: 'normal' }
+  ]
+}
+
+team_settings.each do |team, settings|
+  settings.each do |setting|
+    TeamTechnology.find_or_create_by!(
+      team_id: team.id,
+      technology_id: setting[:tech].id
+    ) do |tt|
+      tt.criticality = setting[:criticality]
+      tt.target_experts = target_experts_for_criticality(setting[:criticality])
+    end
+  end
+end
+
 puts "Creating quarters..."
 
 # Create current and previous quarters

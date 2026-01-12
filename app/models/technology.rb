@@ -7,6 +7,8 @@ class Technology < ApplicationRecord
   has_many :skill_ratings, dependent: :destroy
   has_many :users, through: :skill_ratings
   has_many :action_plans, dependent: :destroy
+  has_many :team_technologies, dependent: :destroy
+  has_many :teams, through: :team_technologies
 
   # Validations
   validates :name, presence: true, uniqueness: true
@@ -48,28 +50,74 @@ class Technology < ApplicationRecord
   end
 
   # Expert analysis
-  def current_experts(quarter = nil)
+  def current_experts(quarter = nil, team = nil)
     quarter ||= Quarter.current
-    User.joins(:skill_ratings)
+    query = User.joins(:skill_ratings)
       .where(skill_ratings: { technology: self, quarter: quarter, rating: 2..3 })
       .distinct
+    query = query.where(skill_ratings: { team_id: team.id }) if team
+    query
   end
 
-  def expert_count(quarter = nil)
-    current_experts(quarter).count
+  def expert_count(quarter = nil, team = nil)
+    current_experts(quarter, team).count
   end
 
-  def has_sufficient_experts?(quarter = nil)
-    expert_count(quarter) >= target_experts
+  def has_sufficient_experts?(quarter = nil, team = nil)
+    target = team ? target_experts_for(team) : target_experts
+    expert_count(quarter, team) >= target
   end
 
-  def expert_deficit(quarter = nil)
-    [0, target_experts - expert_count(quarter)].max
+  def expert_deficit(quarter = nil, team = nil)
+    target = team ? target_experts_for(team) : target_experts
+    [0, target - expert_count(quarter, team)].max
   end
 
-  def is_critical_risk?(quarter = nil)
-    # Critical risk if high criticality technology has < 2 experts
-    high_criticality? && expert_count(quarter) < 2
+  def is_critical_risk?(quarter = nil, team = nil)
+    criticality_level = team ? criticality_for(team) : criticality
+    target = team ? target_experts_for(team) : target_experts
+    criticality_level == 'high' && expert_count(quarter, team) < target
+  end
+
+  # Team-specific helpers
+  def target_experts_for(team)
+    team_tech = team_technologies.find_by(team_id: team.id)
+    team_tech&.target_experts || target_experts
+  end
+
+  def criticality_for(team)
+    team_tech = team_technologies.find_by(team_id: team.id)
+    team_tech&.criticality || criticality
+  end
+
+  def bus_factor_risk_for(team, quarter = nil)
+    quarter ||= Quarter.current
+    team_tech = team_technologies.find_by(team_id: team.id)
+    target = team_tech&.target_experts || target_experts
+    experts = current_experts(quarter, team)
+
+    if experts.count == 0
+      {
+        level: 'high',
+        description: 'Нет экспертов',
+        experts: [],
+        recommendation: 'Необходимо обучить специалиста'
+      }
+    elsif experts.count < target
+      {
+        level: 'medium',
+        description: "Недостаточно экспертов (#{experts.count}/#{target})",
+        experts: experts,
+        recommendation: "Рекомендуется обучить #{expert_deficit(quarter, team)} дополнительных специалистов"
+      }
+    else
+      {
+        level: 'low',
+        description: "Достаточно экспертов (#{experts.count}/#{target})",
+        experts: experts,
+        recommendation: 'Уровень риска низкий'
+      }
+    end
   end
 
   # Skill rating distribution
@@ -122,12 +170,12 @@ class Technology < ApplicationRecord
     quarter ||= Quarter.current
     experts = current_experts(quarter)
 
-    if experts.count == 1
+    if experts.count == 0
       {
         level: 'high',
-        description: 'Только один эксперт',
-        expert: experts.first,
-        recommendation: 'Необходимо обучить дополнительных специалистов'
+        description: 'Нет экспертов',
+        experts: [],
+        recommendation: 'Необходимо обучить специалиста'
       }
     elsif experts.count < target_experts
       {

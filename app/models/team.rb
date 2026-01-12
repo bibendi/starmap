@@ -7,6 +7,8 @@ class Team < ApplicationRecord
   has_many :users, dependent: :nullify
   has_many :skill_ratings, through: :users
   has_many :action_plans, through: :users
+  has_many :team_technologies, dependent: :destroy
+  has_many :technologies, through: :team_technologies
 
   # Validations
   validates :name, presence: true, uniqueness: true
@@ -81,11 +83,15 @@ class Team < ApplicationRecord
   def coverage_gaps
     # Returns technologies where current expert count < target_experts
     gaps = []
-    Technology.active.each do |tech|
-      current_experts = experts_for_technology(tech).count
-      gaps << { technology: tech, current: current_experts, target: tech.target_experts } if current_experts < tech.target_experts
+    team_technologies.includes(:technology).each do |team_tech|
+      current_experts = experts_for_technology(team_tech.technology).count
+      gaps << { technology: team_tech.technology, current: current_experts, target: team_tech.target_experts } if current_experts < team_tech.target_experts
     end
     gaps
+  end
+
+  def team_technology_for(technology)
+    team_technologies.find_by(technology_id: technology.id)
   end
 
   # Risk assessment

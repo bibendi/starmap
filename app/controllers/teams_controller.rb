@@ -20,6 +20,7 @@ class TeamsController < ApplicationController
     @maturity_index = calculate_maturity_index
     @red_zones = identify_red_zones
     @technology_counts = technology_counts_by_criticality
+    @bus_factor = calculate_bus_factor
 
     # Preload users for key person risks to avoid N+1 queries
     @key_person_risk_users = User.where(id: @key_person_risks.values).index_by(&:id) if @key_person_risks.any?
@@ -52,15 +53,40 @@ class TeamsController < ApplicationController
 
   # Helper methods to reduce duplication
   def team_technologies
-    Technology.joins(:skill_ratings)
-      .where(skill_ratings: { quarter: @current_quarter, team_id: @team.id })
-      .distinct
+    @team.technologies.order(:name)
+  end
+
+  def team_technology_for(technology)
+    @team.team_technologies.find_by(technology_id: technology.id)
   end
 
   def expert_count_for(technology)
     technology.skill_ratings
       .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
       .count
+  end
+
+  def calculate_bus_factor
+    team_technologies.includes(:team_technologies).each_with_object({}) do |tech, bus_factors|
+      team_tech = team_technology_for(tech)
+      expert_count = expert_count_for(tech)
+      target_experts = team_tech&.target_experts || MIN_EXPERTS_FOR_COVERAGE
+
+      risk_level = if expert_count == 0
+                     'high'
+                   elsif expert_count < target_experts
+                     'medium'
+                   else
+                     'low'
+                   end
+
+      bus_factors[tech.id] = {
+        count: expert_count,
+        target: target_experts,
+        risk_level: risk_level,
+        criticality: team_tech&.criticality || 'normal'
+      }
+    end
   end
 
   # Main metric calculation methods
@@ -130,15 +156,30 @@ class TeamsController < ApplicationController
   end
 
   def identify_red_zones
-    # Only include high and normal criticality technologies with insufficient experts (< 2)
-    team_technologies.where(criticality: [:normal, :high]).each_with_object({}) do |tech, hash|
-      expert_count = expert_count_for(tech)
-      hash[tech.id] = expert_count if expert_count < MIN_EXPERTS_FOR_COVERAGE
+    # Only include high and normal criticality technologies with insufficient experts
+    @team.team_technologies.includes(:technology)
+      .where(criticality: [:normal, 'high'])
+      .each_with_object({}) do |team_tech, hash|
+        expert_count = expert_count_for(team_tech.technology)
+        hash[team_tech.technology_id] = expert_count if expert_count < team_tech.target_experts
+      end
+  end
+
+  def calculate_coverage_index
+    technologies = team_technologies
+    return 0 if technologies.empty?
+
+    covered_count = 0
+    @team.team_technologies.includes(:technology).each do |team_tech|
+      expert_count = expert_count_for(team_tech.technology)
+      covered_count += 1 if expert_count >= team_tech.target_experts
     end
+
+    ((covered_count.to_f / technologies.count) * 100).round
   end
 
   def technology_counts_by_criticality
-    team_technologies
+    @team.team_technologies
       .group(:criticality)
       .count
       .transform_keys(&:to_sym)

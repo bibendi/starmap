@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_12_182828) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,6 +93,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_182828) do
     t.index ["updated_by_id"], name: "index_skill_ratings_on_updated_by_id"
     t.index ["user_id", "technology_id", "quarter_id"], name: "idx_on_user_id_technology_id_quarter_id_2dd6e152f0", unique: true
     t.index ["user_id"], name: "index_skill_ratings_on_user_id"
+  end
+
+  create_table "team_technologies", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "criticality", default: "normal", null: false
+    t.integer "target_experts", default: 2, null: false
+    t.bigint "team_id", null: false
+    t.bigint "technology_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["criticality"], name: "index_team_technologies_on_criticality"
+    t.index ["team_id", "technology_id"], name: "index_team_technologies_on_team_and_tech", unique: true
+    t.index ["team_id"], name: "index_team_technologies_on_team_id"
+    t.index ["technology_id"], name: "index_team_technologies_on_technology_id"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -194,6 +207,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_182828) do
   add_foreign_key "skill_ratings", "users", column: "approved_by_id"
   add_foreign_key "skill_ratings", "users", column: "created_by_id"
   add_foreign_key "skill_ratings", "users", column: "updated_by_id"
+  add_foreign_key "team_technologies", "teams"
+  add_foreign_key "team_technologies", "technologies"
   add_foreign_key "teams", "units"
   add_foreign_key "teams", "users", column: "team_lead_id"
   add_foreign_key "technologies", "users", column: "created_by_id"
