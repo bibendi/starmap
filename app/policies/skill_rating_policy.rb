@@ -114,7 +114,7 @@ class SkillRatingPolicy < ApplicationPolicy
       if user.admin? || user.unit_lead?
         scope.all
       elsif user.team_lead?
-        scope.joins(:user).where(users: { team_id: user.team_id })
+        scope.where(team_id: user.team_id)
       else
         scope.where(user_id: user.id)
       end

@@ -5,6 +5,7 @@ class SkillRating < ApplicationRecord
   belongs_to :user, inverse_of: :skill_ratings
   belongs_to :technology
   belongs_to :quarter
+  belongs_to :team
   belongs_to :approved_by, class_name: 'User', optional: true
   belongs_to :created_by, class_name: 'User', optional: true
   belongs_to :updated_by, class_name: 'User', optional: true
@@ -13,6 +14,7 @@ class SkillRating < ApplicationRecord
   validates :user_id, presence: true
   validates :technology_id, presence: true
   validates :quarter_id, presence: true
+  validates :team_id, presence: true
   validates :rating, presence: true, inclusion: { in: 0..3 }
   validates :status, presence: true, inclusion: { in: %w[draft submitted approved rejected] }
 
@@ -24,6 +26,7 @@ class SkillRating < ApplicationRecord
 
   # Callbacks
   before_validation :set_default_status, on: :create
+  before_validation :set_team_from_user, if: -> { team_id.nil? && user_id.present? }
   before_update :set_updated_by, if: :saved_changes?
   after_update :handle_approval_change, if: :status_changed?
   after_update :handle_lock_change, if: :locked_changed?
@@ -225,7 +228,7 @@ class SkillRating < ApplicationRecord
 
   def self.team_maturity_index(team, quarter = nil)
     quarter ||= Quarter.current
-    team_ratings = joins(:user).where(users: { team: team }).by_quarter(quarter)
+    team_ratings = by_quarter(quarter).where(team: team)
     total_ratings = team_ratings.count
     return 0 if total_ratings.zero?
 
@@ -284,6 +287,7 @@ class SkillRating < ApplicationRecord
         rating: old_rating.rating,
         comment: "Скопировано из #{from_quarter.full_name}",
         status: 'draft',
+        team_id: old_rating.team_id,
         created_by: created_by
       )
       copied_count += 1
@@ -319,6 +323,10 @@ class SkillRating < ApplicationRecord
 
   def set_default_status
     self.status ||= 'draft'
+  end
+
+  def set_team_from_user
+    self.team_id = user.team_id if user.present?
   end
 
   def set_updated_by

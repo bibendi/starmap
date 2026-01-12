@@ -66,6 +66,7 @@ class SkillRatingsController < ApplicationController
     @skill_rating = SkillRating.new(skill_rating_params)
     @skill_rating.created_by = current_user
     @skill_rating.quarter = @quarter || Quarter.current
+    @skill_rating.team_id = @skill_rating.user.team_id if @skill_rating.user.present?
 
     authorize @skill_rating
 
@@ -214,7 +215,7 @@ class SkillRatingsController < ApplicationController
     @team = Team.find(params[:team_id])
     @skill_ratings = policy_scope(SkillRating)
                     .includes(:user, :technology, :quarter)
-                    .joins(:user).where(users: { team: @team })
+                    .where(team_id: @team.id)
                     .order('users.first_name ASC, technologies.name ASC')
                     .page(params[:page])
 

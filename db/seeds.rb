@@ -317,19 +317,8 @@ puts "Creating sample skill ratings..."
 # Create sample skill ratings for current quarter
 
 # Define skill levels for each user (0-3 scale)
+# Admin and unit lead are excluded as they don't have team_id
 user_skills = {
-  admin_user.id => {
-    technologies[:ruby_on_rails].id => 3,
-    technologies[:postgresql].id => 3,
-    technologies[:docker].id => 3,
-    technologies[:aws].id => 3
-  },
-  unit_lead_user.id => {
-    technologies[:ruby_on_rails].id => 3,
-    technologies[:react].id => 2,
-    technologies[:postgresql].id => 3,
-    technologies[:docker].id => 2
-  },
   backend_team_lead.id => {
     technologies[:ruby_on_rails].id => 3,
     technologies[:postgresql].id => 3,
@@ -423,6 +412,7 @@ engineer_skills.each do |email, skills|
       technology_id: tech_id,
       quarter_id: current_quarter.id
     ) do |rating|
+      rating.team_id = user.team_id
       rating.rating = rating_level
       rating.status = 'draft'
       rating.locked = false

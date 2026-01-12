@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_12_182828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,6 +76,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_11_120000) do
     t.bigint "quarter_id", null: false
     t.integer "rating", null: false
     t.string "status", default: "draft", null: false
+    t.bigint "team_id", null: false
     t.bigint "technology_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "updated_by_id"
@@ -86,6 +87,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_11_120000) do
     t.index ["quarter_id"], name: "index_skill_ratings_on_quarter_id"
     t.index ["rating"], name: "index_skill_ratings_on_rating"
     t.index ["status"], name: "index_skill_ratings_on_status"
+    t.index ["team_id", "quarter_id"], name: "index_skill_ratings_on_team_id_and_quarter_id"
+    t.index ["team_id"], name: "index_skill_ratings_on_team_id"
     t.index ["technology_id"], name: "index_skill_ratings_on_technology_id"
     t.index ["updated_by_id"], name: "index_skill_ratings_on_updated_by_id"
     t.index ["user_id", "technology_id", "quarter_id"], name: "idx_on_user_id_technology_id_quarter_id_2dd6e152f0", unique: true
@@ -185,6 +188,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_11_120000) do
   add_foreign_key "quarters", "quarters", column: "previous_quarter_id"
   add_foreign_key "quarters", "users", column: "created_by_id"
   add_foreign_key "skill_ratings", "quarters"
+  add_foreign_key "skill_ratings", "teams"
   add_foreign_key "skill_ratings", "technologies"
   add_foreign_key "skill_ratings", "users"
   add_foreign_key "skill_ratings", "users", column: "approved_by_id"

@@ -48,23 +48,18 @@ class TeamsController < ApplicationController
   def set_team_context
     @current_quarter = Quarter.current
     @team_members = @team&.users || []
-    @team_member_ids = @team_members.map(&:id)
   end
 
   # Helper methods to reduce duplication
   def team_technologies
     Technology.joins(:skill_ratings)
-      .where(skill_ratings: { quarter: @current_quarter, user_id: @team_member_ids })
+      .where(skill_ratings: { quarter: @current_quarter, team_id: @team.id })
       .distinct
-  end
-
-  def high_criticality_technologies
-    Technology.where(criticality: :high, active: true)
   end
 
   def expert_count_for(technology)
     technology.skill_ratings
-      .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, user_id: @team_member_ids)
+      .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
       .count
   end
 
@@ -85,8 +80,12 @@ class TeamsController < ApplicationController
 
     dynamics = {}
     @team_members.each do |user|
-      current_ratings = user.skill_ratings.where(quarter: @current_quarter).index_by(&:technology_id)
-      previous_ratings = user.skill_ratings.where(quarter: previous_quarter).index_by(&:technology_id)
+      current_ratings = user.skill_ratings
+        .where(quarter: @current_quarter, team_id: @team.id)
+        .index_by(&:technology_id)
+      previous_ratings = user.skill_ratings
+        .where(quarter: previous_quarter)
+        .index_by(&:technology_id)
 
       total_change = current_ratings.sum do |tech_id, current_rating|
         previous_rating = previous_ratings[tech_id]&.rating || 0
@@ -99,16 +98,17 @@ class TeamsController < ApplicationController
   end
 
   def calculate_universality_index
-    @team_members.each_with_object({}) do |user, hash|
-      hash[user.id] = user.skill_ratings.where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING).count
-    end
+    SkillRating.where(quarter: @current_quarter, team_id: @team.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
+      .group(:user_id)
+      .count
+      .transform_keys(&:to_i)
   end
 
   def identify_key_person_risks
     risks = {}
     team_technologies.each do |tech|
       experts = tech.skill_ratings
-        .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, user_id: @team_member_ids)
+        .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
         .pluck(:user_id)
 
       risks[tech.id] = experts.first if experts.size == SINGLE_EXPERT_THRESHOLD
@@ -125,7 +125,7 @@ class TeamsController < ApplicationController
   end
 
   def calculate_maturity_index
-    ratings = SkillRating.where(user_id: @team_member_ids, quarter: @current_quarter)
+    ratings = SkillRating.where(team_id: @team.id, quarter: @current_quarter)
     ratings.average(:rating)&.round(1) || 0
   end
 
