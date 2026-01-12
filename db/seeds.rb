@@ -475,6 +475,112 @@ engineer_skills.each do |email, skills|
   end
 end
 
+# Create skill ratings for previous quarter (Q3) to show dynamics
+puts "Creating previous quarter skill ratings for dynamics..."
+
+previous_user_skills = {
+  backend_team_lead.id => {
+    technologies[:ruby_on_rails].id => 2,
+    technologies[:postgresql].id => 3,
+    technologies[:redis].id => 2,
+    technologies[:graphql].id => 1,
+    technologies[:nodejs].id => 2
+  },
+  frontend_team_lead.id => {
+    technologies[:react].id => 3,
+    technologies[:javascript].id => 2,
+    technologies[:typescript].id => 2,
+    technologies[:vuejs].id => 2,
+    technologies[:angular].id => 0
+  },
+  devops_team_lead.id => {
+    technologies[:docker].id => 2,
+    technologies[:kubernetes].id => 2,
+    technologies[:aws].id => 3,
+    technologies[:terraform].id => 1,
+    technologies[:postgresql].id => 1
+  }
+}
+
+previous_engineer_skills = {
+  'john.doe@company.com' => {
+    technologies[:ruby_on_rails].id => 1,
+    technologies[:postgresql].id => 1,
+    technologies[:redis].id => 0,
+    technologies[:graphql].id => 1
+  },
+  'jane.smith@company.com' => {
+    technologies[:react].id => 1,
+    technologies[:javascript].id => 2,
+    technologies[:typescript].id => 1,
+    technologies[:vuejs].id => 1
+  },
+  'mike.wilson@company.com' => {
+    technologies[:docker].id => 1,
+    technologies[:kubernetes].id => 0,
+    technologies[:aws].id => 1,
+    technologies[:terraform].id => 0
+  },
+  'sarah.brown@company.com' => {
+    technologies[:ruby_on_rails].id => 1,
+    technologies[:postgresql].id => 1,
+    technologies[:nodejs].id => 0,
+    technologies[:graphql].id => 0
+  },
+  'tom.johnson@company.com' => {
+    technologies[:react].id => 0,
+    technologies[:javascript].id => 1,
+    technologies[:typescript].id => 1,
+    technologies[:angular].id => 0
+  },
+  'lisa.davis@company.com' => {
+    technologies[:react].id => 1,
+    technologies[:javascript].id => 1,
+    technologies[:nodejs].id => 0,
+    technologies[:aws].id => 0
+  }
+}
+
+previous_user_skills.each do |user_id, skills|
+  skills.each do |tech_id, rating_level|
+    next if rating_level == 0
+
+    SkillRating.find_or_create_by!(
+      user_id: user_id,
+      technology_id: tech_id,
+      quarter_id: previous_quarter.id
+    ) do |rating|
+      rating.rating = rating_level
+      rating.status = 'approved'
+      rating.approved_at = 3.months.ago
+      rating.approved_by_id = unit_lead_user.id
+      rating.locked = true
+    end
+  end
+end
+
+previous_engineer_skills.each do |email, skills|
+  user = User.find_by(email: email)
+  next unless user
+
+  skills.each do |tech_id, rating_level|
+    next if rating_level == 0
+
+    SkillRating.find_or_create_by!(
+      user_id: user.id,
+      technology_id: tech_id,
+      quarter_id: previous_quarter.id
+    ) do |rating|
+      rating.team_id = user.team_id
+      rating.rating = rating_level
+      rating.status = 'approved'
+      rating.approved_at = 3.months.ago
+      rating.approved_by_id = unit_lead_user.id
+      rating.locked = true
+    end
+  end
+end
+
 puts "Creating sample action plans..."
 
 # Create sample action plans

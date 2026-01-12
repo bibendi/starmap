@@ -310,6 +310,22 @@
                               <% end %>
                               <%= bus_factor_data[:count] %>/<%= bus_factor_data[:target] %>
                             </span>
+                            <% if bus_factor_data.key?(:change) && bus_factor_data[:change] != 0 %>
+                              <span class="text-[10px] font-medium flex items-center gap-0.5 <%=
+                                bus_factor_data[:change] > 0 ? 'text-green-600' : 'text-red-600'
+                              %>">
+                                <% if bus_factor_data[:change] > 0 %>
+                                  <svg class="w-2.5 h-2.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                  </svg>
+                                <% else %>
+                                  <svg class="w-2.5 h-2.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                  </svg>
+                                <% end %>
+                                <%= bus_factor_data[:change] > 0 ? '+' : '' %><%= bus_factor_data[:change] %>
+                              </span>
+                            <% end %>
                           </div>
                         <% else %>
                           <span class="text-gray-400">-</span>

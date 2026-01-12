@@ -67,6 +67,8 @@ class TeamsController < ApplicationController
   end
 
   def calculate_bus_factor
+    previous_quarter = @current_quarter.previous_quarter
+
     team_technologies.includes(:team_technologies).each_with_object({}) do |tech, bus_factors|
       team_tech = team_technology_for(tech)
       expert_count = expert_count_for(tech)
@@ -80,13 +82,27 @@ class TeamsController < ApplicationController
                      'low'
                    end
 
-      bus_factors[tech.id] = {
+      bus_factor_data = {
         count: expert_count,
         target: target_experts,
         risk_level: risk_level,
         criticality: team_tech&.criticality || 'normal'
       }
+
+      if previous_quarter
+        previous_expert_count = expert_count_for_quarter(tech, previous_quarter)
+        bus_factor_data[:previous_count] = previous_expert_count
+        bus_factor_data[:change] = expert_count - previous_expert_count
+      end
+
+      bus_factors[tech.id] = bus_factor_data
     end
+  end
+
+  def expert_count_for_quarter(technology, quarter)
+    technology.skill_ratings
+      .where(quarter: quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
+      .count
   end
 
   # Main metric calculation methods
