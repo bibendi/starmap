@@ -287,7 +287,7 @@
                       </td>
                       <td class="px-3 py-2 whitespace-nowrap text-center">
                         <% if bus_factor_data %>
-                          <div class="flex flex-col items-center gap-1">
+                          <div class="relative inline-flex items-center justify-center">
                             <span class="inline-flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium <%=
                               case bus_factor_data[:risk_level]
                               when 'high' then 'bg-red-100 text-red-800'
@@ -311,15 +311,15 @@
                               <%= bus_factor_data[:count] %>/<%= bus_factor_data[:target] %>
                             </span>
                             <% if bus_factor_data.key?(:change) && bus_factor_data[:change] != 0 %>
-                              <span class="text-[10px] font-medium flex items-center gap-0.5 <%=
+                              <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%=
                                 bus_factor_data[:change] > 0 ? 'text-green-600' : 'text-red-600'
                               %>">
                                 <% if bus_factor_data[:change] > 0 %>
-                                  <svg class="w-2.5 h-2.5" viewBox="0 0 20 20" fill="currentColor">
+                                  <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                                   </svg>
                                 <% else %>
-                                  <svg class="w-2.5 h-2.5" viewBox="0 0 20 20" fill="currentColor">
+                                  <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                   </svg>
                                 <% end %>
@@ -333,17 +333,34 @@
                       </td>
                       <% @team_members.each do |member| %>
                         <% rating = user_ratings[member.id] || 0 %>
+                        <% change = @rating_dynamics.dig(tech_id, member.id) %>
                         <td class="px-3 py-2 whitespace-nowrap text-center">
-                          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold <%=
-                            case rating
-                            when 3 then 'bg-green-100 text-green-800'
-                            when 2 then 'bg-blue-100 text-blue-800'
-                            when 1 then 'bg-yellow-100 text-yellow-800'
-                            else 'bg-gray-100 text-gray-400'
-                            end
-                          %>">
-                            <%= rating > 0 ? rating : '-' %>
-                          </span>
+                          <div class="relative inline-flex items-center justify-center">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold <%=
+                              case rating
+                              when 3 then 'bg-green-100 text-green-800'
+                              when 2 then 'bg-blue-100 text-blue-800'
+                              when 1 then 'bg-yellow-100 text-yellow-800'
+                              else 'bg-gray-100 text-gray-400'
+                              end
+                            %>">
+                              <%= rating > 0 ? rating : '-' %>
+                            </span>
+                            <% if change && change != 0 %>
+                              <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                                <% if change > 0 %>
+                                  <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                  </svg>
+                                <% else %>
+                                  <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                  </svg>
+                                <% end %>
+                                <%= change > 0 ? '+' : '' %><%= change %>
+                              </span>
+                            <% end %>
+                          </div>
                         </td>
                       <% end %>
                     </tr>
@@ -400,10 +417,27 @@
                     <td class="px-4 py-2 text-sm font-medium text-gray-700">Всего</td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:competence_level, :total) || 0 %>
+                      <% change = @team_member_metrics[member.id]&.dig(:competence_level, :total_change) %>
                       <td class="px-4 py-2 text-center">
-                        <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-800">
-                          <%= value %>
-                        </span>
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-800">
+                            <%= value %>
+                          </span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
                       </td>
                     <% end %>
                   </tr>
@@ -415,7 +449,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:competence_level, :high) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:competence_level, :high_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
                   <tr>
@@ -426,7 +479,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:competence_level, :normal) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:competence_level, :normal_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
                   <tr>
@@ -437,7 +509,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:competence_level, :low) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:competence_level, :low_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
 
@@ -456,10 +547,27 @@
                     <td class="px-4 py-2 text-sm font-medium text-gray-700">Всего</td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:universality, :total) || 0 %>
+                      <% change = @team_member_metrics[member.id]&.dig(:universality, :total_change) %>
                       <td class="px-4 py-2 text-center">
-                        <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
-                          <%= value %>
-                        </span>
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
+                            <%= value %>
+                          </span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
                       </td>
                     <% end %>
                   </tr>
@@ -471,7 +579,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:universality, :high) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:universality, :high_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
                   <tr>
@@ -482,7 +609,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:universality, :normal) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:universality, :normal_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
                   <tr>
@@ -493,7 +639,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:universality, :low) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:universality, :low_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change > 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change > 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
 
@@ -512,10 +677,27 @@
                     <td class="px-4 py-2 text-sm font-medium text-gray-700">Всего</td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:expertise_concentration, :total) || 0 %>
+                      <% change = @team_member_metrics[member.id]&.dig(:expertise_concentration, :total_change) %>
                       <td class="px-4 py-2 text-center">
-                        <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold <%= value > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
-                          <%= value %>
-                        </span>
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold <%= value > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
+                            <%= value %>
+                          </span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change < 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change < 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
                       </td>
                     <% end %>
                   </tr>
@@ -527,7 +709,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:expertise_concentration, :high) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:expertise_concentration, :high_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change < 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change < 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
                   <tr>
@@ -538,7 +739,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:expertise_concentration, :normal) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:expertise_concentration, :normal_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change < 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change < 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
                   <tr>
@@ -549,7 +769,26 @@
                     </td>
                     <% @team_members.each do |member| %>
                       <% value = @team_member_metrics[member.id]&.dig(:expertise_concentration, :low) || 0 %>
-                      <td class="px-4 py-2 text-center text-sm"><%= value %></td>
+                      <% change = @team_member_metrics[member.id]&.dig(:expertise_concentration, :low_change) %>
+                      <td class="px-4 py-2 text-center">
+                        <div class="relative inline-flex items-center justify-center">
+                          <span class="text-sm"><%= value %></span>
+                          <% if change && change != 0 %>
+                            <span class="absolute -top-1 -right-6 text-[10px] font-medium flex items-center gap-0.5 <%= change < 0 ? 'text-green-600' : 'text-red-600' %>">
+                              <% if change < 0 %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% else %>
+                                <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                              <% end %>
+                              <%= change > 0 ? '+' : '' %><%= change %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </td>
                     <% end %>
                   </tr>
 
