@@ -42,3 +42,4 @@ node_modules
 *.local
 
 /spec/examples.txt
+/.opencode/
