@@ -35,6 +35,7 @@ gem "letter_opener", group: :development
 
 # Utilities
 gem "kaminari"
+gem "view_component"
 gem "annotate", group: :development
 gem "brakeman", group: :development
 

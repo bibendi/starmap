@@ -17,7 +17,6 @@ class TeamsController < ApplicationController
     @rating_dynamics = calculate_rating_dynamics
     @universality_index = calculate_universality_index
     @key_person_risks = identify_key_person_risks
-    @coverage_index = calculate_coverage_index
     @maturity_index = calculate_maturity_index
     @red_zones = identify_red_zones
     @technology_counts = technology_counts_by_criticality
@@ -181,14 +180,6 @@ class TeamsController < ApplicationController
     risks
   end
 
-  def calculate_coverage_index
-    technologies = team_technologies
-    return 0 if technologies.empty?
-
-    covered_count = technologies.count { |tech| expert_count_for(tech) >= tech.target_experts }
-    ((covered_count.to_f / technologies.count) * 100).round
-  end
-
   def calculate_maturity_index
     ratings = SkillRating.where(team_id: @team.id, quarter: @current_quarter)
     ratings.average(:rating)&.round(1) || 0
@@ -202,19 +193,6 @@ class TeamsController < ApplicationController
         expert_count = expert_count_for(team_tech.technology)
         hash[team_tech.technology_id] = expert_count if expert_count < team_tech.target_experts
       end
-  end
-
-  def calculate_coverage_index
-    technologies = team_technologies
-    return 0 if technologies.empty?
-
-    covered_count = 0
-    @team.team_technologies.includes(:technology).each do |team_tech|
-      expert_count = expert_count_for(team_tech.technology)
-      covered_count += 1 if expert_count >= team_tech.target_experts
-    end
-
-    ((covered_count.to_f / technologies.count) * 100).round
   end
 
   def technology_counts_by_criticality
