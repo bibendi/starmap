@@ -74,7 +74,7 @@ class TeamsController < ApplicationController
     team_technologies.includes(:team_technologies).each_with_object({}) do |tech, bus_factors|
       team_tech = team_technology_for(tech)
       expert_count = expert_count_for(tech)
-      target_experts = team_tech&.target_experts || MIN_EXPERTS_FOR_COVERAGE
+      target_experts = team_tech.target_experts
 
       risk_level = if expert_count == 0
                      'high'
@@ -176,7 +176,7 @@ class TeamsController < ApplicationController
         .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
         .pluck(:user_id)
 
-      risks[tech.id] = experts.first if experts.size == SINGLE_EXPERT_THRESHOLD
+      risks[tech.id] = experts.first if experts.size == 1
     end
     risks
   end
@@ -185,7 +185,7 @@ class TeamsController < ApplicationController
     technologies = team_technologies
     return 0 if technologies.empty?
 
-    covered_count = technologies.count { |tech| expert_count_for(tech) >= MIN_EXPERTS_FOR_COVERAGE }
+    covered_count = technologies.count { |tech| expert_count_for(tech) >= tech.target_experts }
     ((covered_count.to_f / technologies.count) * 100).round
   end
 
