@@ -16,17 +16,13 @@ class TeamsController < ApplicationController
     @competency_dynamics = calculate_competency_dynamics
     @rating_dynamics = calculate_rating_dynamics
     @universality_index = calculate_universality_index
-    @key_person_risks = identify_key_person_risks
     @red_zones = identify_red_zones
     @technology_counts = technology_counts_by_criticality
     @bus_factor = calculate_bus_factor
     @team_member_metrics = calculate_team_member_metrics
 
-    # Preload users for key person risks to avoid N+1 queries
-    @key_person_risk_users = User.where(id: @key_person_risks.values).index_by(&:id) if @key_person_risks.any?
-
     # Preload all technologies referenced in metrics for view (avoid N+1)
-    all_tech_ids = (@red_zones.keys + @key_person_risks.keys).uniq
+    all_tech_ids = @red_zones.keys
     @technologies_index = if all_tech_ids.any?
                             Technology.where(id: all_tech_ids).index_by(&:id)
                           else
@@ -165,18 +161,6 @@ class TeamsController < ApplicationController
       .group(:user_id)
       .count
       .transform_keys(&:to_i)
-  end
-
-  def identify_key_person_risks
-    risks = {}
-    team_technologies.each do |tech|
-      experts = tech.skill_ratings
-        .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
-        .pluck(:user_id)
-
-      risks[tech.id] = experts.first if experts.size == 1
-    end
-    risks
   end
 
   def identify_red_zones

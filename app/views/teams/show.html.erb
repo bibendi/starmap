@@ -62,19 +62,7 @@
           <%= render CoverageIndexComponent.new(team: @team) %>
           <%= render MaturityIndexComponent.new(team: @team) %>
           <%= render RedZonesCardComponent.new(team: @team) %>
-
-          <div class="flex-1 min-w-[250px] bg-gradient-to-br from-red-50 to-orange-50 shadow rounded-xl p-6 border border-red-100 hover:shadow-lg transition-all duration-300 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
-              <dt class="text-sm font-medium text-red-700 truncate">Key Person Risks</dt>
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                <svg class="h-4 w-4 text-red-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                </svg>
-              </span>
-            </div>
-            <dd class="text-3xl font-bold text-gray-900"><%= @key_person_risks.size %></dd>
-            <div class="text-xs text-gray-500 mt-1">Риски единоличной экспертизы</div>
-          </div>
+          <%= render KeyPersonRisksComponent.new(team: @team) %>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -108,36 +96,7 @@
             </div>
           </div>
 
-          <!-- Key Person Risks Details -->
-          <div class="bg-white shadow sm:rounded-lg border border-gray-200">
-            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-              <h3 class="text-lg leading-6 font-medium text-gray-900">Key Person Risks</h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Технологии с единственным экспертом.</p>
-            </div>
-            <div class="px-6 py-6">
-              <% if @key_person_risks.any? %>
-                <div class="space-y-3">
-                  <% @key_person_risks.each do |tech_id, user_id| %>
-                    <% tech = @technologies.find { |t| t.id == tech_id } %>
-                    <% user = @key_person_risk_users[user_id] %>
-                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-white transition-colors duration-200 shadow-sm">
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-900"><%= tech&.name %></span>
-                        <span class="text-xs text-gray-500"><%= tech&.category %></span>
-                      </div>
-                      <div class="flex items-center">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                          <%= user&.full_name %>
-                        </span>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <p class="text-sm text-gray-500 text-center py-4">Риски единоличной экспертизы не обнаружены.</p>
-              <% end %>
-            </div>
-          </div>
+          <%= render KeyPersonRisksDetailsComponent.new(team: @team) %>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
