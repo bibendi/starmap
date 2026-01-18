@@ -1,0 +1,112 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.describe MaturityIndexComponent, type: :component do
+  let_it_be(:current_quarter) { create(:quarter, status: :active) }
+  let_it_be(:team) { create(:team) }
+  let_it_be(:user) { create(:user, team: team) }
+  let_it_be(:technology1) { create(:technology) }
+  let_it_be(:technology2) { create(:technology) }
+
+  describe "#calculate" do
+    context "when ratings exist" do
+      before do
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "calculates average rating" do
+        component = described_class.new(team: team)
+        expect(component.maturity_index).to eq(2.5)
+      end
+    end
+
+    context "when no ratings exist" do
+      it "returns 0" do
+        component = described_class.new(team: team)
+        expect(component.maturity_index).to eq(0)
+      end
+    end
+
+    context "when there is no current quarter" do
+      before do
+        Quarter.destroy_all
+      end
+
+      it "returns 0" do
+        component = described_class.new(team: team)
+        expect(component.maturity_index).to eq(0)
+      end
+    end
+
+    context "when multiple users have ratings" do
+      let_it_be(:user2) { create(:user, team: team) }
+
+      before do
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 1, team: team)
+        create(:skill_rating, user: user2, technology: technology2, quarter: current_quarter, rating: 2, team: team)
+      end
+
+      it "calculates average across all ratings" do
+        component = described_class.new(team: team)
+        expect(component.maturity_index).to eq(2.0)
+      end
+    end
+
+    context "when ratings include zero values" do
+      before do
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 0, team: team)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "includes zero values in average calculation" do
+        component = described_class.new(team: team)
+        expect(component.maturity_index).to eq(1.5)
+      end
+    end
+  end
+
+  describe "rendering" do
+    context "with custom label and description" do
+      it "renders custom text" do
+        component = described_class.new(team: team, label: "Custom Label", description: "Custom Description")
+        render_inline(component)
+        expect(page).to have_text("Custom Label")
+        expect(page).to have_text("Custom Description")
+      end
+    end
+
+    context "with default label and description" do
+      it "renders default text" do
+        component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).to have_text("Maturity Index")
+        expect(page).to have_text("Уровень зрелости компетенций")
+      end
+    end
+
+    context "maturity value display" do
+      before do
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "displays value with max scale" do
+        component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).to have_text("2.5/3.0")
+      end
+    end
+
+    context "when maturity index is 0" do
+      it "displays 0/3.0" do
+        component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).to have_text("0/3.0")
+      end
+    end
+  end
+end

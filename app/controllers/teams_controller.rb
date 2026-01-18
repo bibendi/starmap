@@ -17,7 +17,6 @@ class TeamsController < ApplicationController
     @rating_dynamics = calculate_rating_dynamics
     @universality_index = calculate_universality_index
     @key_person_risks = identify_key_person_risks
-    @maturity_index = calculate_maturity_index
     @red_zones = identify_red_zones
     @technology_counts = technology_counts_by_criticality
     @bus_factor = calculate_bus_factor
@@ -178,11 +177,6 @@ class TeamsController < ApplicationController
       risks[tech.id] = experts.first if experts.size == 1
     end
     risks
-  end
-
-  def calculate_maturity_index
-    ratings = SkillRating.where(team_id: @team.id, quarter: @current_quarter)
-    ratings.average(:rating)&.round(1) || 0
   end
 
   def identify_red_zones
