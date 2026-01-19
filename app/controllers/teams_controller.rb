@@ -8,26 +8,14 @@ class TeamsController < ApplicationController
   skip_after_action :verify_policy_scoped
 
   def show
-    # Preload technologies for skill matrix
     @technologies = team_technologies.order(:name)
-
-    # Calculate team metrics
     @team_skill_matrix = build_team_skill_matrix
     @competency_dynamics = calculate_competency_dynamics
     @rating_dynamics = calculate_rating_dynamics
     @universality_index = calculate_universality_index
-    @red_zones = identify_red_zones
     @technology_counts = technology_counts_by_criticality
     @bus_factor = calculate_bus_factor
     @team_member_metrics = calculate_team_member_metrics
-
-    # Preload all technologies referenced in metrics for view (avoid N+1)
-    all_tech_ids = @red_zones.keys
-    @technologies_index = if all_tech_ids.any?
-                            Technology.where(id: all_tech_ids).index_by(&:id)
-                          else
-                            {}
-                          end
   end
 
   private
@@ -161,16 +149,6 @@ class TeamsController < ApplicationController
       .group(:user_id)
       .count
       .transform_keys(&:to_i)
-  end
-
-  def identify_red_zones
-    # Only include high and normal criticality technologies with insufficient experts
-    @team.team_technologies.includes(:technology)
-      .where(criticality: [:normal, 'high'])
-      .each_with_object({}) do |team_tech, hash|
-        expert_count = expert_count_for(team_tech.technology)
-        hash[team_tech.technology_id] = expert_count if expert_count < team_tech.target_experts
-      end
   end
 
   def technology_counts_by_criticality
