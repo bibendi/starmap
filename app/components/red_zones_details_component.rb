@@ -21,7 +21,7 @@ class RedZonesDetailsComponent < ViewComponent::Base
     return [] unless current_quarter
 
     team_technologies = @team.team_technologies.includes(:technology)
-      .where(criticality: [:normal, 'high'])
+      .where(criticality: [:normal, :high])
 
     red_zones = team_technologies.each_with_object([]) do |team_tech, result|
       expert_count = expert_count_for(team_tech.technology, current_quarter)

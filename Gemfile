@@ -55,4 +55,7 @@ group :test do
 
   # Testing optimization
   gem "test-prof", "~> 1.0"
+
+  # N+1 query detection
+  gem "bullet"
 end
