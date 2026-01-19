@@ -23,8 +23,17 @@ class RedZonesDetailsComponent < ViewComponent::Base
     team_technologies = @team.team_technologies.includes(:technology)
       .where(criticality: [:normal, :high])
 
-    red_zones = team_technologies.each_with_object([]) do |team_tech, result|
-      expert_count = expert_count_for(team_tech.technology, current_quarter)
+    technology_ids = team_technologies.map(&:technology_id)
+    
+    expert_counts = SkillRating.where(
+      quarter: current_quarter,
+      technology_id: technology_ids,
+      rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
+      team_id: @team.id
+    ).group(:technology_id).count
+
+    team_technologies.each_with_object([]) do |team_tech, result|
+      expert_count = expert_counts[team_tech.technology_id] || 0
       if expert_count < team_tech.target_experts
         result << {
           technology: team_tech.technology,
@@ -32,13 +41,5 @@ class RedZonesDetailsComponent < ViewComponent::Base
         }
       end
     end
-
-    red_zones
-  end
-
-  def expert_count_for(technology, quarter)
-    technology.skill_ratings
-      .where(quarter: quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
-      .count
   end
 end
