@@ -11,7 +11,6 @@ class TeamsController < ApplicationController
     @technologies = team_technologies.order(:name)
     @team_skill_matrix = build_team_skill_matrix
     @rating_dynamics = calculate_rating_dynamics
-    @universality_index = calculate_universality_index
     @technology_counts = technology_counts_by_criticality
     @bus_factor = calculate_bus_factor
     @team_member_metrics = calculate_team_member_metrics
@@ -118,13 +117,6 @@ class TeamsController < ApplicationController
     end
 
     dynamics
-  end
-
-  def calculate_universality_index
-    SkillRating.where(quarter: @current_quarter, team_id: @team.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
-      .group(:user_id)
-      .count
-      .transform_keys(&:to_i)
   end
 
   def technology_counts_by_criticality
