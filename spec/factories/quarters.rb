@@ -31,12 +31,21 @@ FactoryBot.define do
       status { "archived" }
     end
 
-    trait :with_previous do
-      after(:create) do |quarter|
-        create(:quarter,
-               year: quarter.year - (quarter.quarter_number == 1 ? 1 : 0),
-               quarter_number: quarter.quarter_number == 1 ? 4 : quarter.quarter_number - 1,
-               status: "closed")
+    trait :previous do
+      transient do
+        relative_to { nil }
+      end
+
+      after(:build) do |quarter, evaluator|
+        if evaluator.relative_to
+          quarter.year = evaluator.relative_to.year - (evaluator.relative_to.quarter_number == 1 ? 1 : 0)
+          quarter.quarter_number = evaluator.relative_to.quarter_number == 1 ? 4 : evaluator.relative_to.quarter_number - 1
+          quarter.name = "#{quarter.year} Q#{quarter.quarter_number}"
+          quarter.start_date = Date.new(quarter.year, (quarter.quarter_number - 1) * 3 + 1, 1)
+          quarter.end_date = quarter.start_date.end_of_quarter
+          quarter.evaluation_start_date = quarter.start_date + 45.days
+          quarter.evaluation_end_date = quarter.evaluation_start_date + 14.days
+        end
       end
     end
   end

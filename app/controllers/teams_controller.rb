@@ -10,7 +10,6 @@ class TeamsController < ApplicationController
   def show
     @technologies = team_technologies.order(:name)
     @team_skill_matrix = build_team_skill_matrix
-    @competency_dynamics = calculate_competency_dynamics
     @rating_dynamics = calculate_rating_dynamics
     @universality_index = calculate_universality_index
     @technology_counts = technology_counts_by_criticality
@@ -118,29 +117,6 @@ class TeamsController < ApplicationController
       end
     end
 
-    dynamics
-  end
-
-  def calculate_competency_dynamics
-    previous_quarter = @current_quarter.previous_quarter
-    return {} unless previous_quarter
-
-    dynamics = {}
-    @team_members.each do |user|
-      current_ratings = user.skill_ratings
-        .where(quarter: @current_quarter, team_id: @team.id)
-        .index_by(&:technology_id)
-      previous_ratings = user.skill_ratings
-        .where(quarter: previous_quarter)
-        .index_by(&:technology_id)
-
-      total_change = current_ratings.sum do |tech_id, current_rating|
-        previous_rating = previous_ratings[tech_id]&.rating || 0
-        current_rating.rating - previous_rating
-      end
-
-      dynamics[user.id] = total_change
-    end
     dynamics
   end
 

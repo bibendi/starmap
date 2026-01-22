@@ -71,34 +71,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <!-- Competency Dynamics -->
-          <div class="bg-white shadow sm:rounded-lg border border-gray-200">
-            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-              <h3 class="text-lg leading-6 font-medium text-gray-900">Динамика компетенций</h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Изменение навыков относительно прошлого квартала.</p>
-            </div>
-            <div class="px-6 py-6">
-              <% if @competency_dynamics.any? %>
-                <div class="space-y-3">
-                  <% @competency_dynamics.each do |user_id, change| %>
-                    <% user = @team_members.find { |u| u.id == user_id } %>
-                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-900"><%= user&.full_name %></span>
-                      </div>
-                      <div class="flex items-center">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= change >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                          <%= change >= 0 ? '+' : '' %><%= change %>
-                        </span>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <p class="text-sm text-gray-500 text-center py-4">Нет данных о динамике компетенций.</p>
-              <% end %>
-            </div>
-          </div>
+          <%= render CompetencyDynamicsComponent.new(team: @team) %>
 
           <!-- Universality Index -->
           <div class="bg-white shadow sm:rounded-lg border border-gray-200">
