@@ -10,21 +10,13 @@ class TeamSkillMatrixComponent < ViewComponent::Base
     @current_quarter = Quarter.current
     @team_members = @team&.users || []
     @technologies = team_technologies
-    @team_skill_matrix = build_team_skill_matrix
-    @bus_factor = calculate_bus_factor
-    @rating_dynamics = calculate_rating_dynamics
+    build_data
   end
 
   def any_data?
     return false unless @team_members.any?
-    return false unless @team_skill_matrix.any?
 
-    # Check if there's any non-zero rating
-    @team_skill_matrix.values.any? { |user_ratings| user_ratings.values.any? { |r| r > 0 } }
-  end
-
-  def has_dynamics?
-    @rating_dynamics.any?
+    @team_skill_matrix.values.any? { |user_ratings| user_ratings.values.any?(&:positive?) }
   end
 
   def bus_factor_for(technology_id)
@@ -40,38 +32,65 @@ class TeamSkillMatrixComponent < ViewComponent::Base
   end
 
   def technology_for(technology_id)
-    @technologies.find { |t| t.id == technology_id }
+    @technologies_by_id ||= @technologies.to_h { |t| [t.id, t] }
+    @technologies_by_id[technology_id]
   end
 
   private
 
-  def team_technologies
-    @team.technologies.order(:name)
+  def build_data
+    @team_skill_matrix = build_team_skill_matrix
+    @bus_factor = calculate_bus_factor
+    @rating_dynamics = calculate_rating_dynamics
   end
 
-  def team_technology_for(technology)
-    @team.team_technologies.find_by(technology_id: technology.id)
+  def team_technologies
+    return [] unless @team
+
+    @team.technologies
+  end
+
+  def team_technology_link_for(technology)
+    @team_technologies_by_id ||= @team.team_technologies.to_h { |tt| [tt.technology_id, tt] }
+    @team_technologies_by_id[technology.id]
+  end
+
+  def expert_counts_by_technology_and_quarter
+    @expert_counts_by_technology_and_quarter ||= begin
+      quarters = [@current_quarter]
+      quarters << @current_quarter.previous_quarter if @current_quarter.previous_quarter
+
+      SkillRating
+        .where(
+          quarter: quarters,
+          rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
+          team_id: @team.id,
+          technology_id: @technologies.map(&:id)
+        )
+        .group(:technology_id, :quarter_id)
+        .count
+        .each_with_object({}) { |((tech_id, quarter_id), count), hash|
+          hash[tech_id] ||= {}
+          hash[tech_id][quarter_id] = count
+        }
+    end
   end
 
   def expert_count_for(technology)
-    technology.skill_ratings
-      .where(quarter: @current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
-      .count
+    expert_counts_by_technology_and_quarter.dig(technology.id, @current_quarter.id) || 0
   end
 
   def expert_count_for_quarter(technology, quarter)
-    technology.skill_ratings
-      .where(quarter: quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
-      .count
+    expert_counts_by_technology_and_quarter.dig(technology.id, quarter.id) || 0
   end
 
   def calculate_bus_factor
     previous_quarter = @current_quarter&.previous_quarter
 
     team_technologies.each_with_object({}) do |tech, bus_factors|
-      team_tech = team_technology_for(tech)
+      team_tech = team_technology_link_for(tech)
       expert_count = expert_count_for(tech)
-      target_experts = team_tech.target_experts
+      target_experts = team_tech&.target_experts || 0
 
       risk_level = if expert_count == 0
                      'high'
@@ -101,12 +120,39 @@ class TeamSkillMatrixComponent < ViewComponent::Base
   def build_team_skill_matrix
     return {} unless @current_quarter
 
-    team_technologies.each_with_object({}) do |tech, matrix|
-      matrix[tech.id] = {}
+    ratings = load_skill_ratings
+    fill_missing_ratings(ratings)
+    sort_ratings_by_technology(ratings)
+  end
+
+  def load_skill_ratings
+    SkillRating
+      .where(
+        quarter: @current_quarter,
+        team_id: @team.id,
+        technology_id: @technologies.map(&:id),
+        user_id: @team_members.map(&:id)
+      )
+      .pluck(:technology_id, :user_id, :rating)
+      .each_with_object({}) { |(tech_id, user_id, rating), hash|
+        hash[tech_id] ||= {}
+        hash[tech_id][user_id] = rating
+      }
+  end
+
+  def fill_missing_ratings(ratings)
+    @technologies.each do |tech|
+      ratings[tech.id] ||= {}
       @team_members.each do |user|
-        rating = user.skill_ratings.find_by(technology: tech, quarter: @current_quarter)&.rating || 0
-        matrix[tech.id][user.id] = rating
+        ratings[tech.id][user.id] ||= 0
       end
+    end
+    ratings
+  end
+
+  def sort_ratings_by_technology(ratings)
+    @technologies.sort_by(&:name).each_with_object({}) do |tech, sorted|
+      sorted[tech.id] = ratings[tech.id]
     end
   end
 
@@ -115,21 +161,41 @@ class TeamSkillMatrixComponent < ViewComponent::Base
     previous_quarter = @current_quarter.previous_quarter
     return {} unless previous_quarter
 
-    dynamics = {}
+    ratings_by_tech_user = load_ratings_by_quarter(previous_quarter)
+    calculate_differences(ratings_by_tech_user, previous_quarter)
+  end
 
-    team_technologies.each do |tech|
+  def load_ratings_by_quarter(previous_quarter)
+    ratings = SkillRating
+      .where(
+        quarter: [@current_quarter, previous_quarter],
+        team_id: @team.id,
+        technology_id: @technologies.map(&:id),
+        user_id: @team_members.map(&:id)
+      )
+      .pluck(:technology_id, :user_id, :quarter_id, :rating)
+
+    ratings.each_with_object({}) do |(tech_id, user_id, quarter_id, rating), hash|
+      hash[tech_id] ||= {}
+      hash[tech_id][user_id] ||= {}
+      hash[tech_id][user_id][quarter_id] = rating
+    end
+  end
+
+  def calculate_differences(ratings_by_tech_user, previous_quarter)
+    dynamics = {}
+    @technologies.each do |tech|
       @team_members.each do |user|
-        current_rating = user.skill_ratings.find_by(technology: tech, quarter: @current_quarter, team_id: @team.id)&.rating || 0
-        previous_rating = user.skill_ratings.find_by(technology: tech, quarter: previous_quarter, team_id: @team.id)&.rating || 0
+        current_rating = ratings_by_tech_user.dig(tech.id, user.id, @current_quarter.id) || 0
+        previous_rating = ratings_by_tech_user.dig(tech.id, user.id, previous_quarter.id) || 0
 
         change = current_rating - previous_rating
-        if change != 0
-          dynamics[tech.id] ||= {}
-          dynamics[tech.id][user.id] = change
-        end
+        next if change == 0
+
+        dynamics[tech.id] ||= {}
+        dynamics[tech.id][user.id] = change
       end
     end
-
     dynamics
   end
 end

@@ -64,46 +64,6 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
     end
   end
 
-  describe "#has_dynamics?" do
-    context "when there is no previous quarter" do
-      let(:single_quarter) { create(:quarter, status: :active, is_current: true) }
-
-      before do
-        Quarter.where.not(id: single_quarter.id).delete_all
-        create(:skill_rating, user: user1, technology: technology1, quarter: single_quarter, rating: 2, team: team)
-      end
-
-      it "returns false" do
-        component = described_class.new(team: team)
-        expect(component.has_dynamics?).to be false
-      end
-    end
-
-    context "when there is a previous quarter but no changes" do
-      before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "returns false" do
-        component = described_class.new(team: team)
-        expect(component.has_dynamics?).to be false
-      end
-    end
-
-    context "when there are changes" do
-      before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "returns true" do
-        component = described_class.new(team: team)
-        expect(component.has_dynamics?).to be true
-      end
-    end
-  end
-
   describe "#rating_for" do
     before do
       create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
@@ -263,6 +223,34 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("+1")
+      end
+    end
+
+    context "when there is no previous quarter" do
+      let(:single_quarter) { create(:quarter, status: :active, is_current: true) }
+
+      before do
+        Quarter.where.not(id: single_quarter.id).delete_all
+        create(:skill_rating, user: user1, technology: technology1, quarter: single_quarter, rating: 2, team: team)
+      end
+
+      it "does not render change indicators" do
+        component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).not_to have_selector(".change-indicator")
+      end
+    end
+
+    context "when there are no changes from previous quarter" do
+      before do
+        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+      end
+
+      it "does not render change indicators" do
+        component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).not_to have_selector(".change-indicator")
       end
     end
 
