@@ -182,6 +182,7 @@ GEM
     mini_mime (1.1.5)
     minitest (5.26.0)
     mutex_m (0.3.0)
+    n_plus_one_control (0.7.2)
     net-imap (0.5.12)
       date
       net-protocol
@@ -383,6 +384,7 @@ DEPENDENCIES
   hotwire-rails
   kaminari
   letter_opener
+  n_plus_one_control
   pg (~> 1.1)
   puma (>= 5.0)
   pundit

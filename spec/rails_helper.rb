@@ -26,6 +26,10 @@ require "view_component/test_helpers"
 # Load test-prof for optimization
 require 'test_prof'
 require 'test_prof/recipes/rspec/let_it_be'
+require 'test_prof/recipes/logging'
+
+# Load n_plus_one_control for N+1 query detection
+require 'n_plus_one_control/rspec'
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.

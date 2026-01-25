@@ -112,6 +112,42 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
     end
   end
 
+  describe "N+1 queries", :n_plus_one do
+    let_it_be(:technologies) { create_list(:technology, 3) }
+
+    before do
+      NPlusOneControl.verbose = true
+      technologies.each do |tech|
+        create(:team_technology, team: team, technology: tech, criticality: [:high, :normal, :low].sample)
+      end
+    end
+
+    after do
+      NPlusOneControl.verbose = false
+    end
+
+    populate do |n|
+      # Create n users for the team
+      users = create_list(:user, n, team: team)
+
+      # Create skill ratings for each user for each technology
+      users.each do |user|
+        technologies.each do |tech|
+          create(:skill_rating,
+                 user: user,
+                 technology: tech,
+                 quarter: current_quarter,
+                 rating: rand(0..3),
+                 team: team)
+        end
+      end
+    end
+
+    specify do
+      expect { described_class.new(team: team).team_member_metrics }.to perform_constant_number_of_queries
+    end
+  end
+
   describe "rendering" do
     context "when there is no data" do
       it "renders empty state message" do

@@ -58,4 +58,5 @@ group :test do
 
   # N+1 query detection
   gem "bullet"
+  gem "n_plus_one_control"
 end
