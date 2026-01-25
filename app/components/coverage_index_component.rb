@@ -15,19 +15,27 @@ class CoverageIndexComponent < ViewComponent::Base
   private
 
   def calculate
-    technologies = @team.technologies.order(:name)
-    return 0 if technologies.empty?
+    team_technologies = @team.team_technologies.includes(:technology)
+    return 0 if team_technologies.empty?
 
     current_quarter = Quarter.current
     return 0 unless current_quarter
 
-    covered_count = @team.team_technologies.includes(:technology).count do |team_tech|
-      expert_count = team_tech.technology.skill_ratings
-        .where(quarter: current_quarter, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: @team.id)
-        .count
+    technology_ids = team_technologies.map(&:technology_id)
+    
+    expert_counts = SkillRating
+      .where(quarter: current_quarter, 
+             rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, 
+             team_id: @team.id, 
+             technology_id: technology_ids)
+      .group(:technology_id)
+      .count
+
+    covered_count = team_technologies.count do |team_tech|
+      expert_count = expert_counts[team_tech.technology_id] || 0
       expert_count >= team_tech.target_experts
     end
 
-    ((covered_count.to_f / technologies.count) * 100).round
+    ((covered_count.to_f / team_technologies.size) * 100).round
   end
 end

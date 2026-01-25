@@ -129,4 +129,38 @@ RSpec.describe RedZonesCardComponent, type: :component do
       end
     end
   end
+
+  describe "N+1 queries", :n_plus_one do
+    let_it_be(:technologies) { create_list(:technology, 3) }
+
+    before do
+      technologies.each do |tech|
+        create(:team_technology, team: team, technology: tech, 
+               criticality: [:normal, :high].sample, target_experts: 2)
+      end
+    end
+
+    populate do |n|
+      ActiveRecord::Base.connection.clear_query_cache
+      team.reload
+      team.users.reset
+
+      users = create_list(:user, n, team: team)
+
+      users.each do |user|
+        technologies.each do |tech|
+          create(:skill_rating,
+                 user: user,
+                 technology: tech,
+                 quarter: current_quarter,
+                 rating: rand(0..3),
+                 team: team)
+        end
+      end
+    end
+
+    specify do
+      expect { render_inline(described_class.new(team: team)) }.to perform_constant_number_of_queries
+    end
+  end
 end
