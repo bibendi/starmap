@@ -116,17 +116,18 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
     let_it_be(:technologies) { create_list(:technology, 3) }
 
     before do
-      NPlusOneControl.verbose = true
       technologies.each do |tech|
         create(:team_technology, team: team, technology: tech, criticality: [:high, :normal, :low].sample)
       end
     end
 
-    after do
-      NPlusOneControl.verbose = false
-    end
-
     populate do |n|
+      # Clear ActiveRecord query cache between iterations
+      ActiveRecord::Base.connection.clear_query_cache
+      # Reset team association to ensure users are loaded fresh
+      team.reload
+      team.users.reset
+
       # Create n users for the team
       users = create_list(:user, n, team: team)
 

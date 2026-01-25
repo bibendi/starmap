@@ -3,6 +3,9 @@
 class TeamMemberMetricsComponent < ViewComponent::Base
   include ExpertConstants
 
+  METRIC_TYPES = [:competence_level, :universality, :expertise_concentration].freeze
+  CRITICALITY_LEVELS = [:total, :high, :normal, :low].freeze
+
   attr_reader :team, :team_member_metrics, :team_members
 
   def initialize(team:)
@@ -56,50 +59,69 @@ class TeamMemberMetricsComponent < ViewComponent::Base
     ratings.group_by(&:quarter_id)
   end
 
+  def initialize_metrics
+    @team_members.each_with_object({}) do |user, metrics|
+      metrics[user.id] = METRIC_TYPES.each_with_object({}) do |metric_type, user_metrics|
+        user_metrics[metric_type] = CRITICALITY_LEVELS.each_with_object({}) do |criticality, values|
+          values[criticality] = 0
+        end
+      end
+    end
+  end
+
   def calculate_metrics_for_ratings(ratings)
     metrics = initialize_metrics
-
     return metrics if ratings.empty?
 
-    experts_by_tech = ratings
-      .select { |r| r.rating >= EXPERT_MIN_RATING }
-      .group_by(&:technology_id)
-      .transform_values { |tech_ratings| tech_ratings.map(&:user_id).uniq.count }
+    experts_by_tech = calculate_experts_by_technology(ratings)
 
     ratings.each do |rating|
-      user_id = rating.user_id
-      next unless metrics.key?(user_id)
-
-      criticality = rating.effective_criticality || 'normal'
-      user_metrics = metrics[user_id]
-
-      user_metrics[:competence_level][:total] += rating.rating
-      user_metrics[:competence_level][criticality.to_sym] += rating.rating
-
-      if rating.rating > 1
-        user_metrics[:universality][:total] += 1
-        user_metrics[:universality][criticality.to_sym] += 1
-      end
-
-      if rating.rating >= EXPERT_MIN_RATING && experts_by_tech[rating.technology_id] == 1
-        user_metrics[:expertise_concentration][:total] += 1
-        user_metrics[:expertise_concentration][criticality.to_sym] += 1
-      end
+      process_rating(rating, metrics, experts_by_tech)
     end
 
     metrics
   end
 
-  def initialize_metrics
-    metrics = {}
-    @team_members.each do |user|
-      metrics[user.id] = {
-        competence_level: { total: 0, high: 0, normal: 0, low: 0 },
-        universality: { total: 0, high: 0, normal: 0, low: 0 },
-        expertise_concentration: { total: 0, high: 0, normal: 0, low: 0 }
-      }
-    end
-    metrics
+  def calculate_experts_by_technology(ratings)
+    ratings
+      .select { |rating| rating.rating >= EXPERT_MIN_RATING }
+      .group_by(&:technology_id)
+      .transform_values { |tech_ratings| tech_ratings.map(&:user_id).uniq.count }
+  end
+
+  def process_rating(rating, metrics, experts_by_tech)
+    user_id = rating.user_id
+    return unless metrics.key?(user_id)
+
+    criticality = extract_criticality(rating)
+    user_metrics = metrics[user_id]
+
+    update_competence_level(user_metrics, rating, criticality)
+    update_universality(user_metrics, rating, criticality)
+    update_expertise_concentration(user_metrics, rating, criticality, experts_by_tech)
+  end
+
+  def extract_criticality(rating)
+    (rating.effective_criticality || 'normal').to_sym
+  end
+
+  def update_competence_level(user_metrics, rating, criticality)
+    user_metrics[:competence_level][:total] += rating.rating
+    user_metrics[:competence_level][criticality] += rating.rating
+  end
+
+  def update_universality(user_metrics, rating, criticality)
+    return unless rating.rating > 1
+
+    user_metrics[:universality][:total] += 1
+    user_metrics[:universality][criticality] += 1
+  end
+
+  def update_expertise_concentration(user_metrics, rating, criticality, experts_by_tech)
+    return unless rating.rating >= EXPERT_MIN_RATING && experts_by_tech[rating.technology_id] == 1
+
+    user_metrics[:expertise_concentration][:total] += 1
+    user_metrics[:expertise_concentration][criticality] += 1
   end
 
   def add_changes(current_metrics, previous_metrics)
@@ -109,8 +131,8 @@ class TeamMemberMetricsComponent < ViewComponent::Base
       prev_data = previous_metrics[user_id]
       next unless prev_data
 
-      [:competence_level, :universality, :expertise_concentration].each do |metric_type|
-        [:total, :high, :normal, :low].each do |criticality|
+      METRIC_TYPES.each do |metric_type|
+        CRITICALITY_LEVELS.each do |criticality|
           current_value = user_data[metric_type][criticality]
           previous_value = prev_data[metric_type][criticality]
           user_data[metric_type]["#{criticality}_change".to_sym] = current_value - previous_value
