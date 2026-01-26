@@ -5,6 +5,10 @@
 @source "../../../app/views/**/*.erb";
 @source "../../../app/helpers/**/*.rb";
 @source "../../../app/controllers/**/*.rb";
+@source "../../../app/components/**/*.haml";
+@source "../../../app/components/**/*.html";
+@source "../../../app/components/**/*.erb";
+@source "../../../app/components/**/*.rb";
 
 @theme {
   --font-family-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
