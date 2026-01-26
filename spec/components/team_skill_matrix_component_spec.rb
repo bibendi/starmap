@@ -163,7 +163,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "renders empty state message" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Нет данных о навыках команды.")
+        expect(page).to have_text("No team skill data")
       end
     end
 
@@ -177,7 +177,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "renders the table header" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Технология")
+        expect(page).to have_text("Technology")
         expect(page).to have_text("Bus Factor")
       end
 
@@ -206,10 +206,10 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "renders the legend" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Может учить других")
-        expect(page).to have_text("Свободно владеет")
-        expect(page).to have_text("Имеет представление")
-        expect(page).to have_text("Не владеет")
+        expect(page).to have_text("Can teach others")
+        expect(page).to have_text("Proficient")
+        expect(page).to have_text("Has basic understanding")
+        expect(page).to have_text("No knowledge")
       end
     end
 

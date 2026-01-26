@@ -129,7 +129,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
         render_inline(component)
 
         expect(page).to have_text("Red Zones")
-        expect(page).to have_text("Технологии с высокой/обычной критичностью и низким покрытием.")
+        expect(page).to have_text("Critical technologies with insufficient coverage")
         expect(page).to have_text(technology1.name)
         expect(page).to have_text("Experts: 1")
       end
@@ -141,7 +141,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
         render_inline(component)
 
         expect(page).to have_text("Red Zones")
-        expect(page).to have_text("Красных зон не обнаружено.")
+        expect(page).to have_text("No red zones detected")
       end
     end
   end

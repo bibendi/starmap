@@ -111,7 +111,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("Key Person Risks")
-        expect(page).to have_text("Риски единоличной экспертизы")
+        expect(page).to have_text("Single expert risks")
       end
     end
 

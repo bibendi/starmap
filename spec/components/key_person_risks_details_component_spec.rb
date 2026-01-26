@@ -115,7 +115,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("Key Person Risks")
-        expect(page).to have_text("Технологии с единственным экспертом.")
+        expect(page).to have_text("Technologies with single expert")
       end
     end
 
@@ -123,7 +123,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       it "renders empty state message" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Риски единоличной экспертизы не обнаружены.")
+        expect(page).to have_text("No key person risks detected")
       end
     end
   end

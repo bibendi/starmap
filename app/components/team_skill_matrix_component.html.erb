@@ -1,15 +1,15 @@
 <div class="bg-white shadow sm:rounded-lg border border-gray-200 mt-6">
   <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-    <h3 class="text-lg leading-6 font-medium text-gray-900">Карта навыков команды</h3>
-    <p class="mt-1 max-w-2xl text-sm text-gray-500">Показатель покрытия технологий и уровень зрелости компетенций.</p>
+     <h3 class="text-lg leading-6 font-medium text-gray-900"><%= t('components.team_skill_matrix.title') %></h3>
+     <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= t('components.team_skill_matrix.description') %></p>
   </div>
   <div class="px-6 py-6 overflow-x-auto">
     <% if any_data? %>
       <table class="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
-            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Технология</th>
-            <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Bus Factor</th>
+             <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('components.team_skill_matrix.technology') %></th>
+             <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"><%= t('components.team_skill_matrix.bus_factor') %></th>
             <% team_members.each do |member| %>
               <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"><%= member.full_name.split.first %></th>
             <% end %>
@@ -31,21 +31,21 @@
                         <svg class="w-3 h-3 mr-1 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
-                        High
+                         <%= t('components.team_skill_matrix.criticality.high') %>
                       </span>
                     <% elsif criticality == 'normal' %>
                       <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
                         <svg class="w-3 h-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                         </svg>
-                        Norm
+                         <%= t('components.team_skill_matrix.criticality.normal') %>
                       </span>
                     <% elsif criticality == 'low' %>
                       <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500">
                         <svg class="w-3 h-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                         </svg>
-                        Low
+                         <%= t('components.team_skill_matrix.criticality.low') %>
                       </span>
                     <% end %>
                   </div>
@@ -134,13 +134,13 @@
         </tbody>
       </table>
       <div class="mt-4 flex gap-4 text-xs text-gray-500">
-        <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-green-100 text-green-800 inline-flex items-center justify-center mr-1">3</span> Может учить других</div>
-        <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-blue-100 text-blue-800 inline-flex items-center justify-center mr-1">2</span> Свободно владеет</div>
-        <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-yellow-100 text-yellow-800 inline-flex items-center justify-center mr-1">1</span> Имеет представление</div>
-        <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-gray-100 text-gray-400 inline-flex items-center justify-center mr-1">0</span> Не владеет</div>
+         <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-green-100 text-green-800 inline-flex items-center justify-center mr-1">3</span> <%= t('components.team_skill_matrix.legend.expert') %></div>
+         <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-blue-100 text-blue-800 inline-flex items-center justify-center mr-1">2</span> <%= t('components.team_skill_matrix.legend.proficient') %></div>
+         <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-yellow-100 text-yellow-800 inline-flex items-center justify-center mr-1">1</span> <%= t('components.team_skill_matrix.legend.basic') %></div>
+         <div class="flex items-center"><span class="w-4 h-4 rounded-full bg-gray-100 text-gray-400 inline-flex items-center justify-center mr-1">0</span> <%= t('components.team_skill_matrix.legend.none') %></div>
       </div>
     <% else %>
-      <p class="text-sm text-gray-500 text-center py-4">Нет данных о навыках команды.</p>
+       <p class="text-sm text-gray-500 text-center py-4"><%= t('components.team_skill_matrix.no_data') %></p>
     <% end %>
   </div>
 </div>

@@ -103,7 +103,7 @@ RSpec.describe RedZonesCardComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("Red Zones")
-        expect(page).to have_text("Важные технологии без покрытия")
+        expect(page).to have_text("Critical technologies without coverage")
       end
     end
 

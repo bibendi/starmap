@@ -5,10 +5,10 @@ class RedZonesCardComponent < ViewComponent::Base
 
   attr_reader :red_zones_count, :label, :description
 
-  def initialize(team:, label: "Red Zones", description: "Важные технологии без покрытия")
+  def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label
-    @description = description
+    @label = label || I18n.t('components.red_zones_card.label')
+    @description = description || I18n.t('components.red_zones_card.description')
     @red_zones_count = calculate
   end
 

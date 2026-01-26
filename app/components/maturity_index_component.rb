@@ -3,10 +3,10 @@
 class MaturityIndexComponent < ViewComponent::Base
   attr_reader :maturity_index, :label, :description
 
-  def initialize(team:, label: "Maturity Index", description: "Уровень зрелости компетенций")
+  def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label
-    @description = description
+    @label = label || I18n.t('components.maturity_index.label')
+    @description = description || I18n.t('components.maturity_index.description')
     @maturity_index = calculate
   end
 

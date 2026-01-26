@@ -48,10 +48,13 @@ Rails.application.routes.draw do
   end
 
   # API routes for AJAX/Hotwire updates
-  namespace :api do
-    namespace :v1 do
-      resources :metrics, only: [:index]
-      resources :notifications, only: [:index, :create]
-    end
-  end
-end
+   namespace :api do
+     namespace :v1 do
+       resources :metrics, only: [:index]
+       resources :notifications, only: [:index, :create]
+     end
+   end
+
+    # Locale switching
+    post 'locale/:locale', to: 'locales#switch', as: :switch_locale
+ end

@@ -82,6 +82,9 @@ RSpec.configure do |config|
   config.include ViewComponent::TestHelpers, type: :component
   config.include Capybara::RSpecMatchers, type: :component
 
+  # Devise test helpers
+  config.include Devise::Test::ControllerHelpers, type: :controller
+
   # Database Cleaner configuration for better database isolation
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
@@ -96,11 +99,13 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Bullet.start_request
+    I18n.locale = :en
   end
 
   config.after(:each) do
     Bullet.perform_out_of_channel_notifications if Bullet.notification?
     Bullet.end_request
+    I18n.locale = :en
   end
 end
 

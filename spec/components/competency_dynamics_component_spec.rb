@@ -143,7 +143,7 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
       it "displays empty state message" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Нет данных о динамике компетенций.")
+        expect(page).to have_text("No competency dynamics data")
       end
     end
 
@@ -164,13 +164,13 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
       it "displays correct title" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Динамика компетенций")
+        expect(page).to have_text("Competency Dynamics")
       end
 
       it "displays correct description" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Изменение навыков относительно прошлого квартала.")
+        expect(page).to have_text("Skill changes compared to previous quarter")
       end
     end
   end

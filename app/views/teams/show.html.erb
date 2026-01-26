@@ -2,8 +2,8 @@
   <main class="flex-1 flex flex-col">
     <div class="bg-white border-b border-gray-200 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-6">
-          <h1 class="text-3xl font-bold text-gray-900">Team Dashboard</h1>
+         <div class="flex justify-between items-center py-6">
+           <h1 class="text-3xl font-bold text-gray-900"><%= t('teams.show.title') %></h1>
           <% if @current_quarter %>
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
               <%= @current_quarter.name %>
@@ -19,24 +19,24 @@
           <div class="px-6 py-6">
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-8">
-                <div>
-                  <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Team</dt>
-                  <dd class="text-2xl font-bold text-gray-900"><%= @team&.name || 'Not assigned' %></dd>
-                </div>
-                <div>
-                  <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Team Lead</dt>
-                  <dd class="text-lg font-medium text-gray-700"><%= @team&.team_lead&.display_name_or_full_name || '-' %></dd>
-                </div>
+                 <div>
+                   <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide"><%= t('teams.show.team') %></dt>
+                   <dd class="text-2xl font-bold text-gray-900"><%= @team&.name || t('teams.show.not_assigned') %></dd>
+                 </div>
+                 <div>
+                   <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide"><%= t('teams.show.team_lead') %></dt>
+                   <dd class="text-lg font-medium text-gray-700"><%= @team&.team_lead&.display_name_or_full_name || '-' %></dd>
+                 </div>
               </div>
               <div class="flex items-center gap-8">
-                <div>
-                  <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Unit</dt>
-                  <dd class="text-xl font-semibold text-gray-700"><%= @team&.unit&.name || '-' %></dd>
-                </div>
-                <div>
-                  <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide">Unit Lead</dt>
-                  <dd class="text-lg font-medium text-gray-700"><%= @team&.unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
-                </div>
+                 <div>
+                   <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide"><%= t('teams.show.unit') %></dt>
+                   <dd class="text-xl font-semibold text-gray-700"><%= @team&.unit&.name || '-' %></dd>
+                 </div>
+                 <div>
+                   <dt class="text-xs font-medium text-gray-500 uppercase tracking-wide"><%= t('teams.show.unit_lead') %></dt>
+                   <dd class="text-lg font-medium text-gray-700"><%= @team&.unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
+                 </div>
               </div>
             </div>
             <div class="flex items-center gap-6 text-sm text-gray-600">
@@ -44,15 +44,15 @@
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
-                <strong><%= @team_members.size %></strong> участников
+                 <strong><%= @team_members.size %></strong> <%= t('teams.show.members', count: @team_members.size) %>
               </span>
               <span class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
                 </svg>
-                <strong><%= @technology_counts.values.sum %></strong> технологий
-                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">High: <%= @technology_counts[:high] %></span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Normal: <%= @technology_counts[:normal] %></span>
+                 <strong><%= @technology_counts.values.sum %></strong> <%= t('teams.show.technologies', count: @technology_counts.values.sum) %>
+                 <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800"><%= t('teams.show.criticality.high') %>: <%= @technology_counts[:high] %></span>
+                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"><%= t('teams.show.criticality.normal') %>: <%= @technology_counts[:normal] %></span>
               </span>
             </div>
           </div>
@@ -88,7 +88,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm text-yellow-700">
-                Нет активного квартала. Пожалуйста, создайте квартал в админке.
+                 <%= t('teams.show.no_active_quarter.message') %>
               </p>
             </div>
           </div>

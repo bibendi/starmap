@@ -1,16 +1,16 @@
 <div class="bg-white shadow sm:rounded-lg border border-gray-200 mt-6">
   <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-    <h3 class="text-lg leading-6 font-medium text-gray-900">Метрики участников команды</h3>
-    <p class="mt-1 max-w-2xl text-sm text-gray-500">
-      Показатель уровня компетенций, универсальности и концентрации экспертизы в разрезе критичности технологий.
-    </p>
+     <h3 class="text-lg leading-6 font-medium text-gray-900"><%= t('components.team_member_metrics.title') %></h3>
+     <p class="mt-1 max-w-2xl text-sm text-gray-500">
+       <%= t('components.team_member_metrics.description') %>
+     </p>
   </div>
   <div class="px-6 py-6 overflow-x-auto">
     <% if any_data? %>
       <table class="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Метрика</th>
+             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50"><%= t('components.team_member_metrics.metric') %></th>
             <% team_members.each do |member| %>
               <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 min-w-[100px]">
                 <div class="font-semibold text-gray-900"><%= member.full_name.split.first %></div>
@@ -24,15 +24,15 @@
           <tr class="bg-indigo-50">
             <td colspan="<%= team_members.size + 1 %>" class="px-4 py-3 text-sm font-bold text-indigo-900 border-b border-indigo-200">
               <div class="flex items-center gap-2">
-                <span>Уровень компетенций</span>
+                 <span><%= t('components.team_member_metrics.competence_level') %></span>
                 <span class="inline-flex items-center text-xs text-gray-600 bg-indigo-100/50 px-2 py-0.5 rounded">
-                  Сумма всех оценок по технологиям
+                   <%= t('components.team_member_metrics.competence_level_hint') %>
                 </span>
               </div>
             </td>
           </tr>
           <tr>
-            <td class="px-4 py-2 text-sm font-medium text-gray-700">Всего</td>
+            <td class="px-4 py-2 text-sm font-medium text-gray-700"><%= t('components.team_member_metrics.total') %></td>
             <% team_members.each do |member| %>
               <% value = team_member_metrics[member.id]&.dig(:competence_level, :total) || 0 %>
               <% change = team_member_metrics[member.id]&.dig(:competence_level, :total_change) %>
@@ -62,7 +62,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-red-700 bg-red-50 px-2 py-0.5 rounded">
-                Высокая
+                <%= t('components.team_member_metrics.high') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -92,7 +92,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded">
-                Обычная
+                <%= t('components.team_member_metrics.normal') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -122,7 +122,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded">
-                Низкая
+                <%= t('components.team_member_metrics.low') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -154,15 +154,15 @@
           <tr class="bg-blue-50">
             <td colspan="<%= team_members.size + 1 %>" class="px-4 py-3 text-sm font-bold text-blue-900 border-b border-blue-200">
               <div class="flex items-center gap-2">
-                <span>Универсальность</span>
+                 <span><%= t('components.team_member_metrics.universality') %></span>
                 <span class="inline-flex items-center text-xs text-gray-600 bg-blue-100/50 px-2 py-0.5 rounded">
-                  Количество технологий со свободным владением
+                   <%= t('components.team_member_metrics.universality_hint') %>
                 </span>
               </div>
             </td>
           </tr>
           <tr>
-            <td class="px-4 py-2 text-sm font-medium text-gray-700">Всего</td>
+            <td class="px-4 py-2 text-sm font-medium text-gray-700"><%= t('components.team_member_metrics.total') %></td>
             <% team_members.each do |member| %>
               <% value = team_member_metrics[member.id]&.dig(:universality, :total) || 0 %>
               <% change = team_member_metrics[member.id]&.dig(:universality, :total_change) %>
@@ -192,7 +192,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-red-700 bg-red-50 px-2 py-0.5 rounded">
-                Высокая
+                <%= t('components.team_member_metrics.high') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -222,7 +222,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded">
-                Обычная
+                <%= t('components.team_member_metrics.normal') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -252,7 +252,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded">
-                Низкая
+                <%= t('components.team_member_metrics.low') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -284,15 +284,15 @@
           <tr class="bg-red-50">
             <td colspan="<%= team_members.size + 1 %>" class="px-4 py-3 text-sm font-bold text-red-900 border-b border-red-200">
               <div class="flex items-center gap-2">
-                <span>Концентрация экспертизы</span>
+                 <span><%= t('components.team_member_metrics.expertise_concentration') %></span>
                 <span class="inline-flex items-center text-xs text-gray-600 bg-red-100/50 px-2 py-0.5 rounded">
-                  Единственные эксперты по технологиям
+                   <%= t('components.team_member_metrics.expertise_concentration_hint') %>
                 </span>
               </div>
             </td>
           </tr>
           <tr>
-            <td class="px-4 py-2 text-sm font-medium text-gray-700">Всего</td>
+            <td class="px-4 py-2 text-sm font-medium text-gray-700"><%= t('components.team_member_metrics.total') %></td>
             <% team_members.each do |member| %>
               <% value = team_member_metrics[member.id]&.dig(:expertise_concentration, :total) || 0 %>
               <% change = team_member_metrics[member.id]&.dig(:expertise_concentration, :total_change) %>
@@ -322,7 +322,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-red-700 bg-red-50 px-2 py-0.5 rounded">
-                Высокая
+                <%= t('components.team_member_metrics.high') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -352,7 +352,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded">
-                Обычная
+                <%= t('components.team_member_metrics.normal') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -382,7 +382,7 @@
           <tr>
             <td class="px-4 py-2 pl-8">
               <span class="inline-flex items-center text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded">
-                Низкая
+                <%= t('components.team_member_metrics.low') %>
               </span>
             </td>
             <% team_members.each do |member| %>
@@ -413,7 +413,7 @@
         </tbody>
       </table>
     <% else %>
-      <p class="text-sm text-gray-500 text-center py-4">Нет данных о метриках участников команды.</p>
+       <p class="text-sm text-gray-500 text-center py-4"><%= t('components.team_member_metrics.no_data') %></p>
     <% end %>
   </div>
 </div>

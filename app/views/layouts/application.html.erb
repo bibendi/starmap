@@ -23,35 +23,48 @@
                 Starmap
               <% end %>
               <% unless user_signed_in? %>
-                <%= link_to "Войти", new_user_session_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+                 <%= link_to t('locale.sign_in'), new_user_session_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
               <% end %>
             </div>
             <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
-              <%= link_to "Обзор", overview_dashboard_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(overview_dashboard_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+               <%= link_to t('navigation.overview'), overview_dashboard_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(overview_dashboard_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
 
               <% if user_signed_in? %>
-                <%= link_to "Инженер", personal_dashboard_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(personal_dashboard_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                 <%= link_to t('navigation.engineer'), personal_dashboard_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(personal_dashboard_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
 
                 <% if policy(:navigation).show_team? %>
-                  <%= link_to "Команда", team_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                   <%= link_to t('navigation.team'), team_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
                 <% end %>
 
-                <%= link_to "Оценки", skill_ratings_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(skill_ratings_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                 <%= link_to t('navigation.ratings'), skill_ratings_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(skill_ratings_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
 
                 <% if policy(:navigation).show_admin? %>
-                  <%= link_to "Админка", "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?('/admin') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                   <%= link_to t('navigation.admin'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?('/admin') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
                 <% end %>
               <% end %>
             </div>
           </div>
-          <div class="flex items-center">
-            <% if user_signed_in? %>
-              <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-700"><%= current_user.display_name %></span>
-                <%= button_to "Выйти", destroy_user_session_path, method: :delete, class: "inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
-              </div>
-            <% end %>
-          </div>
+           <div class="flex items-center space-x-4">
+             <!-- Language switcher -->
+               <div class="relative group pb-2">
+               <button type="button" class="flex items-center space-x-2 text-sm text-gray-700 hover:text-gray-900 focus:outline-none">
+                 <span><%= t("locale.names.#{I18n.locale}", default: I18n.locale.to_s) %></span>
+                 <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                   <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                 </svg>
+               </button>
+                 <div class="opacity-0 invisible pointer-events-none absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto hover:opacity-100 hover:visible hover:pointer-events-auto transition-opacity duration-150" role="menu" aria-orientation="vertical" tabindex="-1">
+                 <% I18n.available_locales.each do |locale| %>
+                   <%= button_to t("locale.names.#{locale}", default: locale.to_s), switch_locale_path(locale: locale), method: :post, class: "block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-left", role: "menuitem", tabindex: "-1" %>
+                 <% end %>
+               </div>
+             </div>
+
+             <% if user_signed_in? %>
+               <span class="text-sm text-gray-700"><%= current_user.display_name %></span>
+                <%= button_to t('locale.sign_out'), destroy_user_session_path, method: :delete, class: "inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+             <% end %>
+           </div>
         </div>
       </div>
     </nav>

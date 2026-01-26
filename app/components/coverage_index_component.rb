@@ -5,10 +5,10 @@ class CoverageIndexComponent < ViewComponent::Base
 
   attr_reader :coverage_index, :label, :description
 
-  def initialize(team:, label: "Coverage Index", description: "Показатель покрытия технологий")
+  def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label
-    @description = description
+    @label = label || I18n.t('components.coverage_index.label')
+    @description = description || I18n.t('components.coverage_index.description')
     @coverage_index = calculate
   end
 

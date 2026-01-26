@@ -28,4 +28,106 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  teams:
+    show:
+      title: "Team Dashboard"
+      team: "Team"
+      not_assigned: "Not assigned"
+      team_lead: "Team Lead"
+      unit: "Unit"
+      unit_lead: "Unit Lead"
+      members:
+        one: "member"
+        other: "members"
+      technologies:
+        one: "technology"
+        other: "technologies"
+      criticality:
+        high: "High"
+        normal: "Normal"
+      no_active_quarter:
+        title: "No active quarter"
+        message: "Please create a quarter in the admin panel."
+  components:
+    coverage_index:
+      label: "Coverage Index"
+      description: "Technology coverage indicator"
+    maturity_index:
+      label: "Maturity Index"
+      description: "Competency maturity level"
+    red_zones_card:
+      label: "Red Zones"
+      description: "Critical technologies without coverage"
+    key_person_risks:
+      label: "Key Person Risks"
+      description: "Single expert risks"
+    red_zones_details:
+      title: "Red Zones"
+      description: "Critical technologies with insufficient coverage"
+      no_data: "No red zones detected"
+      experts: "Experts"
+    key_person_risks_details:
+      title: "Key Person Risks"
+      description: "Technologies with single expert"
+      no_data: "No key person risks detected"
+    competency_dynamics:
+      title: "Competency Dynamics"
+      description: "Skill changes compared to previous quarter"
+      no_data: "No competency dynamics data"
+    universality_index:
+      title: "Universality Index"
+      description: "Number of technologies with level 2-3"
+      technologies: "technologies"
+    team_skill_matrix:
+      title: "Team Skill Matrix"
+      description: "Technology coverage and competency maturity indicators"
+      technology: "Technology"
+      bus_factor: "Bus Factor"
+      criticality:
+        high: "High"
+        normal: "Norm"
+        low: "Low"
+      legend:
+        expert: "Can teach others"
+        proficient: "Proficient"
+        basic: "Has basic understanding"
+        none: "No knowledge"
+      no_data: "No team skill data"
+    team_member_metrics:
+      title: "Team Member Metrics"
+      description: "Competency level, universality and expertise concentration by technology criticality"
+      metric: "Metric"
+      competence_level: "Competence Level"
+      competence_level_hint: "Sum of all ratings across technologies"
+      universality: "Universality"
+      universality_hint: "Number of technologies with proficiency"
+      expertise_concentration: "Expertise Concentration"
+      expertise_concentration_hint: "Single experts per technology"
+      total: "Total"
+      high: "High"
+      normal: "Normal"
+      low: "Low"
+      no_data: "No team member metrics data"
+  locale:
+    names:
+      en: "English"
+      ru: "Russian"
+    switched: "Language switched to %{language}"
+    select_language: "Select language"
+    current_language: "Current language"
+    sign_in: "Sign in"
+    sign_out: "Sign out"
+
+  navigation:
+    overview: "Overview"
+    engineer: "Engineer"
+    team: "Team"
+    ratings: "Ratings"
+    admin: "Admin"
+
+  activerecord:
+    attributes:
+      technology:
+        criticality:
+          high: "High"
+          normal: "Normal"

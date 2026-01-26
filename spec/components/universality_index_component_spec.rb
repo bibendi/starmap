@@ -82,7 +82,7 @@ RSpec.describe UniversalityIndexComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text(user1.full_name)
-        expect(page).to have_text("2 технологий")
+        expect(page).to have_text("2 technologies")
       end
     end
   end

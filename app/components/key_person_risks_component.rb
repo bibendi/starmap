@@ -5,10 +5,10 @@ class KeyPersonRisksComponent < ViewComponent::Base
 
   attr_reader :key_person_risks_count, :label, :description
 
-  def initialize(team:, label: "Key Person Risks", description: "Риски единоличной экспертизы")
+  def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label
-    @description = description
+    @label = label || I18n.t('components.key_person_risks.label')
+    @description = description || I18n.t('components.key_person_risks.description')
     @key_person_risks_count = calculate
   end
 

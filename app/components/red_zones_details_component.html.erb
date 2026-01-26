@@ -1,7 +1,7 @@
 <div class="bg-white shadow sm:rounded-lg border border-gray-200">
   <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-    <h3 class="text-lg leading-6 font-medium text-gray-900">Red Zones</h3>
-    <p class="mt-1 max-w-2xl text-sm text-gray-500">Технологии с высокой/обычной критичностью и низким покрытием.</p>
+     <h3 class="text-lg leading-6 font-medium text-gray-900"><%= t('components.red_zones_details.title') %></h3>
+     <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= t('components.red_zones_details.description') %></p>
   </div>
   <div class="px-6 py-6">
     <% if any_red_zones? %>
@@ -14,14 +14,14 @@
             </div>
             <div class="flex items-center">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                <%= "Experts: #{red_zone[:expert_count]}" %>
+                 <%= "#{t('components.red_zones_details.experts')}: #{red_zone[:expert_count]}" %>
               </span>
             </div>
           </div>
         <% end %>
       </div>
     <% else %>
-      <p class="text-sm text-gray-500 text-center py-4">Красных зон не обнаружено.</p>
+       <p class="text-sm text-gray-500 text-center py-4"><%= t('components.red_zones_details.no_data') %></p>
     <% end %>
   </div>
 </div>

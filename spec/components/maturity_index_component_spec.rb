@@ -84,7 +84,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("Maturity Index")
-        expect(page).to have_text("Уровень зрелости компетенций")
+        expect(page).to have_text("Competency maturity level")
       end
     end
 

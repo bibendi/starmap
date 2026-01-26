@@ -154,7 +154,7 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
       it "renders empty state message" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Нет данных о метриках участников команды.")
+        expect(page).to have_text("No team member metrics data")
       end
     end
 
@@ -168,8 +168,8 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
       it "renders the table header" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Метрики участников команды")
-        expect(page).to have_text("Показатель уровня компетенций")
+        expect(page).to have_text("Team Member Metrics")
+        expect(page).to have_text("Competency level, universality and expertise concentration by technology criticality")
       end
 
       it "renders user first names" do
@@ -182,20 +182,20 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
       it "renders competence level section" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Уровень компетенций")
-        expect(page).to have_text("Всего")
+        expect(page).to have_text("Competence Level")
+        expect(page).to have_text("Total")
       end
 
       it "renders universality section" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Универсальность")
+        expect(page).to have_text("Universality")
       end
 
       it "renders expertise concentration section" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Концентрация экспертизы")
+        expect(page).to have_text("Expertise Concentration")
       end
 
       it "renders metric values" do

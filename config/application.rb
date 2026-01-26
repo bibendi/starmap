@@ -46,5 +46,6 @@ module Starmap
 
     # Set default locale
     config.i18n.default_locale = :en
+    config.i18n.available_locales = [:en, :ru]
   end
 end

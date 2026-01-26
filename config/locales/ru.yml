@@ -1,0 +1,108 @@
+ru:
+  teams:
+    show:
+      title: "Дашборд команды"
+      team: "Команда"
+      not_assigned: "Не назначено"
+      team_lead: "Тимлид"
+      unit: "Отдел"
+      unit_lead: "Руководитель отдела"
+      members:
+        one: "участник"
+        few: "участника"
+        many: "участников"
+        other: "участников"
+      technologies:
+        one: "технология"
+        few: "технологии"
+        many: "технологий"
+        other: "технологий"
+      criticality:
+        high: "Высокая"
+        normal: "Обычная"
+      no_active_quarter:
+        title: "Нет активного квартала"
+        message: "Пожалуйста, создайте квартал в админке."
+  components:
+    coverage_index:
+      label: "Coverage Index"
+      description: "Показатель покрытия технологий"
+    maturity_index:
+      label: "Maturity Index"
+      description: "Уровень зрелости компетенций"
+    red_zones_card:
+      label: "Red Zones"
+      description: "Важные технологии без покрытия"
+    key_person_risks:
+      label: "Key Person Risks"
+      description: "Риски единоличной экспертизы"
+    red_zones_details:
+      title: "Red Zones"
+      description: "Технологии с высокой/обычной критичностью и низким покрытием"
+      no_data: "Красных зон не обнаружено"
+      experts: "Эксперты"
+    key_person_risks_details:
+      title: "Key Person Risks"
+      description: "Технологии с единственным экспертом"
+      no_data: "Риски единоличной экспертизы не обнаружены"
+    competency_dynamics:
+      title: "Динамика компетенций"
+      description: "Изменение навыков относительно прошлого квартала"
+      no_data: "Нет данных о динамике компетенций"
+    universality_index:
+      title: "Индекс универсальности"
+      description: "Количество технологий с уровнем 2-3"
+      technologies: "технологий"
+    team_skill_matrix:
+      title: "Карта навыков команды"
+      description: "Показатель покрытия технологий и уровень зрелости компетенций"
+      technology: "Технология"
+      bus_factor: "Bus Factor"
+      criticality:
+        high: "Высокая"
+        normal: "Обычная"
+        low: "Низкая"
+      legend:
+        expert: "Может учить других"
+        proficient: "Свободно владеет"
+        basic: "Имеет представление"
+        none: "Не владеет"
+      no_data: "Нет данных о навыках команды"
+    team_member_metrics:
+      title: "Метрики участников команды"
+      description: "Показатель уровня компетенций, универсальности и концентрации экспертизы в разрезе критичности технологий"
+      metric: "Метрика"
+      competence_level: "Уровень компетенций"
+      competence_level_hint: "Сумма всех оценок по технологиям"
+      universality: "Универсальность"
+      universality_hint: "Количество технологий со свободным владением"
+      expertise_concentration: "Концентрация экспертизы"
+      expertise_concentration_hint: "Единственные эксперты по технологиям"
+      total: "Всего"
+      high: "Высокая"
+      normal: "Обычная"
+      low: "Низкая"
+      no_data: "Нет данных о метриках участников команды"
+  locale:
+    names:
+      en: "Английский"
+      ru: "Русский"
+    switched: "Язык изменен на %{language}"
+    select_language: "Выберите язык"
+    current_language: "Текущий язык"
+    sign_in: "Войти"
+    sign_out: "Выйти"
+
+  navigation:
+    overview: "Обзор"
+    engineer: "Инженер"
+    team: "Команда"
+    ratings: "Оценки"
+    admin: "Админка"
+
+  activerecord:
+    attributes:
+      technology:
+        criticality:
+          high: "Высокая"
+          normal: "Обычная"

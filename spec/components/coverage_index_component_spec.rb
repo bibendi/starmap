@@ -91,7 +91,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("Coverage Index")
-        expect(page).to have_text("Показатель покрытия технологий")
+        expect(page).to have_text("Technology coverage indicator")
       end
     end
 
