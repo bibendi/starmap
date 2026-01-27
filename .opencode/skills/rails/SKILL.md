@@ -11,7 +11,7 @@ Expert Ruby and Rails development following best practices.
 
 - **Practical Object Oriented Design in Ruby** by Sandi Metz
 - **Refactoring: Ruby Edition** by Martin Fowler
-- **Everyday Rails Testing with RSpec** (using fixtures, not factories)
+- **Everyday Rails Testing with RSpec** (using factories, not factories)
 
 ## Principles
 
@@ -24,7 +24,7 @@ Expert Ruby and Rails development following best practices.
 
 ## Testing Approach
 
-- Use fixtures, not factories
+- Use factories, not fixtures
 - Write model specs, request specs, and system specs
 - Use Capybara + Cuprite for system specs
 - Use VCR for external HTTP calls
