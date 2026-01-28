@@ -1,0 +1,9 @@
+source "https://rubygems.org" do
+  gem "standard", "~> 1.28"
+  gem "standard-rails"
+  gem "standard-performance"
+  gem "standard-custom"
+  gem "rubocop-rails"
+  gem "rubocop-rspec"
+  gem "rubocop-performance"
+end

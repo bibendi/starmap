@@ -1,0 +1,16 @@
+# RSpec configuration
+plugins:
+  - rubocop-rspec
+
+RSpec:
+  Enabled: true
+
+# Disable some overly strict cops
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 4
