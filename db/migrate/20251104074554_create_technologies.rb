@@ -1,3 +1,4 @@
+# rubocop:disable Rails/ThreeStateBooleanColumn
 class CreateTechnologies < ActiveRecord::Migration[8.1]
   def change
     create_table :technologies do |t|
@@ -22,3 +23,4 @@ class CreateTechnologies < ActiveRecord::Migration[8.1]
     add_index :technologies, :sort_order
   end
 end
+# rubocop:enable Rails/ThreeStateBooleanColumn

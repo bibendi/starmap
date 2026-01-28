@@ -1,3 +1,4 @@
+# rubocop:disable Rails/ThreeStateBooleanColumn
 class AddUnitModelAndMigrateData < ActiveRecord::Migration[8.1]
   def up
     create_table :units do |t|
@@ -54,3 +55,4 @@ class AddUnitModelAndMigrateData < ActiveRecord::Migration[8.1]
     drop_table :units
   end
 end
+# rubocop:enable Rails/ThreeStateBooleanColumn

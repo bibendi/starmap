@@ -12,6 +12,7 @@ FactoryBot.define do
     last_name { generate(:last_name) }
     role { "engineer" }
     active { true }
+    confirmed_at { true }
 
     # Association with team (optional)
     team

@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_28_201508) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "action_plans", force: :cascade do |t|
-    t.boolean "active", default: true
+    t.boolean "active", default: true, null: false
     t.bigint "assigned_to_id"
     t.date "completed_at"
     t.text "completion_notes"
@@ -49,7 +49,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
     t.date "end_date", null: false
     t.date "evaluation_end_date"
     t.date "evaluation_start_date"
-    t.boolean "is_current", default: false
+    t.boolean "is_current", default: false, null: false
     t.string "name", null: false
     t.bigint "previous_quarter_id"
     t.integer "quarter_number", null: false
@@ -60,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
     t.index ["created_by_id"], name: "index_quarters_on_created_by_id"
     t.index ["end_date"], name: "index_quarters_on_end_date"
     t.index ["is_current"], name: "index_quarters_on_is_current"
+    t.index ["name", "year"], name: "index_quarters_on_name_and_year", unique: true
     t.index ["previous_quarter_id"], name: "index_quarters_on_previous_quarter_id"
     t.index ["start_date"], name: "index_quarters_on_start_date"
     t.index ["status"], name: "index_quarters_on_status"
@@ -72,7 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
     t.text "comment"
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
-    t.boolean "locked", default: false
+    t.boolean "locked", default: false, null: false
     t.bigint "quarter_id", null: false
     t.integer "rating", null: false
     t.string "status", default: "draft", null: false
@@ -109,7 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
   end
 
   create_table "teams", force: :cascade do |t|
-    t.boolean "active", default: true
+    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "description"
     t.string "name", null: false
@@ -125,7 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
   end
 
   create_table "technologies", force: :cascade do |t|
-    t.boolean "active", default: true
+    t.boolean "active", default: true, null: false
     t.string "category"
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
@@ -146,7 +147,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
   end
 
   create_table "units", force: :cascade do |t|
-    t.boolean "active", default: true
+    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
@@ -160,11 +161,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_12_200814) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.boolean "active", default: true
-    t.boolean "admin", default: false
+    t.boolean "active", default: true, null: false
+    t.boolean "admin", default: false, null: false
     t.string "avatar_url"
     t.datetime "confirmation_sent_at"
-    t.boolean "confirmed_at"
+    t.boolean "confirmed_at", null: false
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "current_sign_in_ip"

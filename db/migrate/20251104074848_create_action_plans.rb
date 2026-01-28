@@ -1,3 +1,4 @@
+# rubocop:disable Rails/ThreeStateBooleanColumn
 class CreateActionPlans < ActiveRecord::Migration[8.1]
   def change
     create_table :action_plans do |t|
@@ -26,3 +27,4 @@ class CreateActionPlans < ActiveRecord::Migration[8.1]
     add_index :action_plans, :active
   end
 end
+# rubocop:enable Rails/ThreeStateBooleanColumn

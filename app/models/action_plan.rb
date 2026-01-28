@@ -159,7 +159,7 @@ class ActionPlan < ApplicationRecord
   end
 
   def update_progress(percentage)
-    percentage = [0, [percentage, 100].min].max
+    percentage = percentage.clamp(0, 100)
     update!(progress_percentage: percentage)
 
     # Auto-complete if 100%
@@ -279,7 +279,7 @@ class ActionPlan < ApplicationRecord
     return true if user.admin?
     return user == created_by if created_by.present?
     return user == assigned_to if assigned_to.present?
-    return user == user if user_id.present? && user == self.user
+    return true if user_id.present? && user == self.user
     return user.team_lead_of?(user.team) if user_id.present? && user.team_lead?
     false
   end
@@ -288,7 +288,7 @@ class ActionPlan < ApplicationRecord
     return true if user.admin?
     return user == created_by if created_by.present?
     return user == assigned_to if assigned_to.present?
-    return user == user if user_id.present? && user == self.user
+    return true if user_id.present? && user == self.user
     false
   end
 

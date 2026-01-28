@@ -1,3 +1,4 @@
+# rubocop:disable Rails/ThreeStateBooleanColumn
 class CreateSkillRatings < ActiveRecord::Migration[8.1]
   def change
     create_table :skill_ratings do |t|
@@ -25,3 +26,4 @@ class CreateSkillRatings < ActiveRecord::Migration[8.1]
     add_index :skill_ratings, :locked
   end
 end
+# rubocop:enable Rails/ThreeStateBooleanColumn

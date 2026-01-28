@@ -26,12 +26,10 @@ RSpec.describe "Locales", type: :request do
       end
 
       context "when switching to Russian" do
-        before do
-          I18n.locale = :ru
-        end
-
-        after do
-          I18n.locale = :en
+        around do |example|
+          I18n.with_locale(:ru) do
+            example.run
+          end
         end
 
         it "sets the locale cookie" do

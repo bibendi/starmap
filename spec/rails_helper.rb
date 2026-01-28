@@ -97,15 +97,19 @@ RSpec.configure do |config|
     end
   end
 
+  config.around do |example|
+    I18n.with_locale(:en) do
+      example.run
+    end
+  end
+
   config.before do
     Bullet.start_request
-    I18n.locale = :en
   end
 
   config.after do
     Bullet.perform_out_of_channel_notifications if Bullet.notification?
     Bullet.end_request
-    I18n.locale = :en
   end
 end
 

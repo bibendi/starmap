@@ -1,3 +1,4 @@
+# rubocop:disable Rails/ThreeStateBooleanColumn
 class CreateTeams < ActiveRecord::Migration[8.1]
   def change
     create_table :teams do |t|
@@ -23,3 +24,4 @@ class CreateTeams < ActiveRecord::Migration[8.1]
     add_foreign_key :users, :teams
   end
 end
+# rubocop:enable Rails/ThreeStateBooleanColumn

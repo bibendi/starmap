@@ -18,10 +18,6 @@ class ApplicationPolicy
     def resolve
       raise NotImplementedError, "You must implement #resolve"
     end
-
-    private
-
-    attr_reader :user, :scope
   end
 
   private

@@ -1,3 +1,4 @@
+# rubocop:disable Rails/ThreeStateBooleanColumn
 class CreateQuarters < ActiveRecord::Migration[8.1]
   def change
     create_table :quarters do |t|
@@ -25,3 +26,4 @@ class CreateQuarters < ActiveRecord::Migration[8.1]
     add_index :quarters, :end_date
   end
 end
+# rubocop:enable Rails/ThreeStateBooleanColumn

@@ -37,7 +37,6 @@ class SkillRating < ApplicationRecord
   scope :submitted, -> { where(status: "submitted") }
   scope :locked, -> { where(locked: true) }
   scope :unlocked, -> { where(locked: false) }
-  scope :high_skills, -> { where(rating: 2..3) }
   scope :experts, -> { where(rating: 2..3) }
   scope :novices, -> { where(rating: 0..1) }
   scope :active_users, -> { joins(:user).where(users: {active: true}) }
