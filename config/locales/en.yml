@@ -48,6 +48,12 @@ en:
       no_active_quarter:
         title: "No active quarter"
         message: "Please create a quarter in the admin panel."
+  units:
+    show:
+      title: "Unit Dashboard"
+      unit_details: "Unit details and leadership"
+      unit_lead: "Unit Lead"
+      not_assigned: "Not assigned"
   components:
     coverage_index:
       label: "Coverage Index"
@@ -122,6 +128,7 @@ en:
     overview: "Overview"
     engineer: "Engineer"
     team: "Team"
+    unit: "Unit"
     ratings: "Ratings"
     admin: "Admin"
 

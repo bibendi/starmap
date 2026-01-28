@@ -23,6 +23,12 @@ ru:
       no_active_quarter:
         title: "Нет активного квартала"
         message: "Пожалуйста, создайте квартал в админке."
+  units:
+    show:
+      title: "Дашборд юнита"
+      unit_details: "Детали юнита и руководство"
+      unit_lead: "Юнит‑лид"
+      not_assigned: "Не назначен"
   components:
     coverage_index:
       label: "Coverage Index"
@@ -97,6 +103,7 @@ ru:
     overview: "Обзор"
     engineer: "Инженер"
     team: "Команда"
+    unit: "Юнит"
     ratings: "Оценки"
     admin: "Админка"
 

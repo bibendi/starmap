@@ -138,13 +138,20 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
 
       users = create_list(:user, n, team: team)
 
-      users.each do |user|
-        technologies.each do |tech|
+      technologies.each_with_index do |tech, index|
+        users.each_with_index do |user, user_index|
+          # For each technology, make first user an expert (rating 2 or 3)
+          # and other users non-expert (rating 0 or 1) to ensure exactly one expert per technology
+          rating = if user_index == 0
+            [2, 3].sample
+          else
+            [0, 1].sample
+          end
           create(:skill_rating,
             user: user,
             technology: tech,
             quarter: current_quarter,
-            rating: rand(0..3),
+            rating: rating,
             team: team)
         end
       end

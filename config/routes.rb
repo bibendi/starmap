@@ -18,6 +18,9 @@ Rails.application.routes.draw do
   # Teams routes
   get "/team", to: "teams#show", as: :team
 
+  # Unit routes
+  get "/unit", to: "units#show", as: :unit
+
   # Admin routes
   namespace :admin do
     resources :technologies

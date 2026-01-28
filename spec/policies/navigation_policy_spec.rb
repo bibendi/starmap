@@ -15,7 +15,7 @@ RSpec.describe NavigationPolicy, type: :policy do
   describe "when user is nil" do
     let(:user) { nil }
 
-    permissions :show_admin?, :show_personal_dashboard? do
+    permissions :show_admin?, :show_personal_dashboard?, :show_unit? do
       it "denies access" do
         expect(subject).not_to permit(user, nil)
       end
@@ -26,7 +26,7 @@ RSpec.describe NavigationPolicy, type: :policy do
   describe "when user is inactive" do
     let(:user) { inactive_user }
 
-    permissions :show_admin?, :show_personal_dashboard? do
+    permissions :show_admin?, :show_personal_dashboard?, :show_unit? do
       it "denies access" do
         expect(subject).not_to permit(user, nil)
       end
@@ -37,7 +37,7 @@ RSpec.describe NavigationPolicy, type: :policy do
   context "for admin" do
     let(:user) { admin }
 
-    permissions :show_admin?, :show_personal_dashboard? do
+    permissions :show_admin?, :show_personal_dashboard?, :show_unit? do
       it "grants access" do
         expect(subject).to permit(user, nil)
       end
@@ -47,7 +47,7 @@ RSpec.describe NavigationPolicy, type: :policy do
   context "for unit_lead" do
     let(:user) { unit_lead }
 
-    permissions :show_personal_dashboard? do
+    permissions :show_personal_dashboard?, :show_unit? do
       it "grants access" do
         expect(subject).to permit(user, nil)
       end
@@ -69,7 +69,7 @@ RSpec.describe NavigationPolicy, type: :policy do
       end
     end
 
-    permissions :show_admin? do
+    permissions :show_admin?, :show_unit? do
       it "denies access" do
         expect(subject).not_to permit(user, nil)
       end
@@ -85,7 +85,7 @@ RSpec.describe NavigationPolicy, type: :policy do
       end
     end
 
-    permissions :show_admin? do
+    permissions :show_admin?, :show_unit? do
       it "denies access" do
         expect(subject).not_to permit(user, nil)
       end

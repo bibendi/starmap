@@ -44,7 +44,7 @@ class ApplicationPolicy
   end
 
   def unit_lead_of_unit?(unit)
-    unit_lead? # For now, unit leads can see all units
+    unit_lead? && unit&.unit_lead_id == user.id
   end
 
   def same_team?(other_user)

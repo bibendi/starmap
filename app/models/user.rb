@@ -51,9 +51,15 @@ class User < ApplicationRecord
     team_lead? && team_id == team.id
   end
 
+  # Unit leadership check (returns the unit where user is unit lead)
+  def unit
+    return unless unit_lead?
+    Unit.find_by(unit_lead_id: id)
+  end
+
   # Unit leadership check (can see all teams in unit)
   def unit_lead_of_unit?(unit)
-    unit_lead? # For now, unit leads can see all units
+    unit_lead? && unit&.unit_lead_id == id
   end
 
   # Name helpers
