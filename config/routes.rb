@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  get "up" => "rails/health#show", :as => :rails_health_check
 
   # Devise authentication routes
   devise_for :users
@@ -12,11 +12,11 @@ Rails.application.routes.draw do
   root "dashboards#overview"
 
   # Dashboards routes
-  get 'dashboards/overview', to: 'dashboards#overview', as: :overview_dashboard
-  get 'dashboards/personal', to: 'dashboards#personal', as: :personal_dashboard
+  get "dashboards/overview", to: "dashboards#overview", as: :overview_dashboard
+  get "dashboards/personal", to: "dashboards#personal", as: :personal_dashboard
 
   # Teams routes
-  get '/team', to: 'teams#show', as: :team
+  get "/team", to: "teams#show", as: :team
 
   # Admin routes
   namespace :admin do
@@ -48,13 +48,13 @@ Rails.application.routes.draw do
   end
 
   # API routes for AJAX/Hotwire updates
-   namespace :api do
-     namespace :v1 do
-       resources :metrics, only: [:index]
-       resources :notifications, only: [:index, :create]
-     end
-   end
+  namespace :api do
+    namespace :v1 do
+      resources :metrics, only: [:index]
+      resources :notifications, only: [:index, :create]
+    end
+  end
 
-    # Locale switching
-    post 'locale/:locale', to: 'locales#switch', as: :switch_locale
- end
+  # Locale switching
+  post "locale/:locale", to: "locales#switch", as: :switch_locale
+end

@@ -2,11 +2,11 @@
 class Unit < ApplicationRecord
   # Associations
   has_many :teams, dependent: :nullify
-  belongs_to :unit_lead, class_name: 'User', foreign_key: :unit_lead_id, optional: true
+  belongs_to :unit_lead, class_name: "User", optional: true
 
   # Validations
   validates :name, presence: true, uniqueness: true
-  validates :sort_order, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :sort_order, numericality: {only_integer: true, greater_than_or_equal_to: 0}
 
   # Scopes
   scope :active, -> { where(active: true) }

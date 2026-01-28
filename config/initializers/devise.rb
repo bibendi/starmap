@@ -1,11 +1,11 @@
 # Devise configuration for Starmap
-require 'devise'
+require "devise"
 
 # Use database authentication
 Devise.setup do |config|
   # ==> Configuration for any authentication mechanism
   # Configure which e-mail addresses are monitored and used to send notifications on recovery
-  config.mailer_sender = 'please-change-me@example.com'
+  config.mailer_sender = "please-change-me@example.com"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
@@ -15,7 +15,7 @@ Devise.setup do |config|
 
   # ==> ORM configuration
   # Active Record requires the devise_orm gem
-  require 'devise/orm/active_record'
+  require "devise/orm/active_record"
 
   # ==> Configuration for :database_authenticatable
   # For bcrypt, this is the cost for hashing the password and is offered as configuration.

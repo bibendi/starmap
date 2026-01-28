@@ -58,7 +58,7 @@ class SkillRatingPolicy < ApplicationPolicy
   def approve?
     return false unless record
     (team_lead? || unit_lead? || admin?) &&
-    (admin? || unit_lead? || team_lead_of?(record.user.team))
+      (admin? || unit_lead? || team_lead_of?(record.user.team))
   end
 
   def reject?

@@ -24,7 +24,7 @@ class RedZonesDetailsComponent < ViewComponent::Base
       .where(criticality: [:normal, :high])
 
     technology_ids = team_technologies.map(&:technology_id)
-    
+
     expert_counts = SkillRating.where(
       quarter: current_quarter,
       technology_id: technology_ids,

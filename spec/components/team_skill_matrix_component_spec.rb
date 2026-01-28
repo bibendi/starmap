@@ -111,7 +111,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "returns high risk level" do
         component = described_class.new(team: team)
         bus_factor = component.bus_factor_for(technology1.id)
-        expect(bus_factor[:risk_level]).to eq('high')
+        expect(bus_factor[:risk_level]).to eq("high")
         expect(bus_factor[:count]).to eq(0)
       end
     end
@@ -124,7 +124,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "returns medium risk level" do
         component = described_class.new(team: team)
         bus_factor = component.bus_factor_for(technology1.id)
-        expect(bus_factor[:risk_level]).to eq('medium')
+        expect(bus_factor[:risk_level]).to eq("medium")
         expect(bus_factor[:count]).to eq(1)
       end
     end
@@ -138,7 +138,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "returns low risk level" do
         component = described_class.new(team: team)
         bus_factor = component.bus_factor_for(technology1.id)
-        expect(bus_factor[:risk_level]).to eq('low')
+        expect(bus_factor[:risk_level]).to eq("low")
         expect(bus_factor[:count]).to eq(2)
       end
     end
@@ -310,11 +310,11 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       users.each do |user|
         technologies.each do |tech|
           create(:skill_rating,
-                 user: user,
-                 technology: tech,
-                 quarter: current_quarter,
-                 rating: rand(0..3),
-                 team: team)
+            user: user,
+            technology: tech,
+            quarter: current_quarter,
+            rating: rand(0..3),
+            team: team)
         end
       end
     end

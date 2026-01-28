@@ -17,10 +17,10 @@ class TeamsController < ApplicationController
   # Callbacks to set up team context
   def set_team
     @team = if params[:name].present?
-              Team.find_by!(name: params[:name])
-            else
-              current_user.team || Team.new
-            end
+      Team.find_by!(name: params[:name])
+    else
+      current_user.team || Team.new
+    end
     authorize @team
   end
 
@@ -34,6 +34,6 @@ class TeamsController < ApplicationController
       .group(:criticality)
       .count
       .transform_keys(&:to_sym)
-      .then { |counts| { high: counts[:high] || 0, normal: counts[:normal] || 0, low: counts[:low] || 0 } }
+      .then { |counts| {high: counts[:high] || 0, normal: counts[:normal] || 0, low: counts[:low] || 0} }
   end
 end

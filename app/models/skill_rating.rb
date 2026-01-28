@@ -6,20 +6,16 @@ class SkillRating < ApplicationRecord
   belongs_to :technology
   belongs_to :quarter
   belongs_to :team
-  belongs_to :approved_by, class_name: 'User', optional: true
-  belongs_to :created_by, class_name: 'User', optional: true
-  belongs_to :updated_by, class_name: 'User', optional: true
+  belongs_to :approved_by, class_name: "User", optional: true
+  belongs_to :created_by, class_name: "User", optional: true
+  belongs_to :updated_by, class_name: "User", optional: true
 
   # Validations
-  validates :user_id, presence: true
-  validates :technology_id, presence: true
-  validates :quarter_id, presence: true
-  validates :team_id, presence: true
-  validates :rating, presence: true, inclusion: { in: 0..3 }
-  validates :status, presence: true, inclusion: { in: %w[draft submitted approved rejected] }
+  validates :rating, presence: true, inclusion: {in: 0..3}
+  validates :status, presence: true, inclusion: {in: %w[draft submitted approved rejected]}
 
   # Validate unique combination of user, technology, quarter
-  validates :user_id, uniqueness: { scope: [:technology_id, :quarter_id], message: 'уже имеет оценку для этой технологии в данном квартале' }
+  validates :user_id, uniqueness: {scope: [:technology_id, :quarter_id], message: "уже имеет оценку для этой технологии в данном квартале"}
 
   # Validate rating based on status
   validate :validate_rating_for_status
@@ -36,16 +32,16 @@ class SkillRating < ApplicationRecord
   scope :by_user, ->(user) { where(user: user) }
   scope :by_technology, ->(technology) { where(technology: technology) }
   scope :by_rating, ->(rating) { where(rating: rating) }
-  scope :approved, -> { where(status: 'approved') }
-  scope :draft, -> { where(status: 'draft') }
-  scope :submitted, -> { where(status: 'submitted') }
+  scope :approved, -> { where(status: "approved") }
+  scope :draft, -> { where(status: "draft") }
+  scope :submitted, -> { where(status: "submitted") }
   scope :locked, -> { where(locked: true) }
   scope :unlocked, -> { where(locked: false) }
   scope :high_skills, -> { where(rating: 2..3) }
   scope :experts, -> { where(rating: 2..3) }
   scope :novices, -> { where(rating: 0..1) }
-  scope :active_users, -> { joins(:user).where(users: { active: true }) }
-  scope :active_technologies, -> { joins(:technology).where(technologies: { active: true }) }
+  scope :active_users, -> { joins(:user).where(users: {active: true}) }
+  scope :active_technologies, -> { joins(:technology).where(technologies: {active: true}) }
 
   # Scope for current quarter ratings
   scope :current, -> { by_quarter(Quarter.current) }
@@ -53,21 +49,21 @@ class SkillRating < ApplicationRecord
   # Rating level helpers
   def level
     case rating
-    when 0 then 'Не имею представления'
-    when 1 then 'Имею представление'
-    when 2 then 'Свободно владею'
-    when 3 then 'Могу учить других'
-    else 'Неизвестно'
+    when 0 then "Не имею представления"
+    when 1 then "Имею представление"
+    when 2 then "Свободно владею"
+    when 3 then "Могу учить других"
+    else "Неизвестно"
     end
   end
 
   def level_short
     case rating
-    when 0 then 'Нет'
-    when 1 then 'Базовый'
-    when 2 then 'Продвинутый'
-    when 3 then 'Эксперт'
-    else '?'
+    when 0 then "Нет"
+    when 1 then "Базовый"
+    when 2 then "Продвинутый"
+    when 3 then "Эксперт"
+    else "?"
     end
   end
 
@@ -97,19 +93,19 @@ class SkillRating < ApplicationRecord
 
   # Status helpers
   def draft?
-    status == 'draft'
+    status == "draft"
   end
 
   def submitted?
-    status == 'submitted'
+    status == "submitted"
   end
 
   def approved?
-    status == 'approved'
+    status == "approved"
   end
 
   def rejected?
-    status == 'rejected'
+    status == "rejected"
   end
 
   def approved_or_rejected?
@@ -118,14 +114,14 @@ class SkillRating < ApplicationRecord
 
   # Approval workflow
   def submit_for_approval
-    update!(status: 'submitted') if draft?
+    update!(status: "submitted") if draft?
   end
 
   def approve!(approver)
     return false unless can_be_approved?
 
     update!(
-      status: 'approved',
+      status: "approved",
       approved_by: approver,
       approved_at: Time.current
     )
@@ -135,7 +131,7 @@ class SkillRating < ApplicationRecord
     return false unless can_be_rejected?
 
     update!(
-      status: 'rejected',
+      status: "rejected",
       approved_by: approver,
       approved_at: Time.current,
       comment: [comment, "Отклонено: #{reason}"].compact.join("\n")
@@ -143,7 +139,7 @@ class SkillRating < ApplicationRecord
   end
 
   def resubmit
-    update!(status: 'draft') if rejected?
+    update!(status: "draft") if rejected?
   end
 
   # Lock management
@@ -198,7 +194,7 @@ class SkillRating < ApplicationRecord
   # Analytics helpers
   def self.rating_distribution(quarter = nil)
     quarter ||= Quarter.current
-    distribution = { 0 => 0, 1 => 0, 2 => 0, 3 => 0 }
+    distribution = {0 => 0, 1 => 0, 2 => 0, 3 => 0}
 
     active_users.active_technologies.by_quarter(quarter).each do |rating|
       distribution[rating.rating] += 1
@@ -248,7 +244,7 @@ class SkillRating < ApplicationRecord
 
   # Comparison with previous quarters
   def previous_rating_for_same_technology
-    return nil unless quarter.previous_quarter.present?
+    return nil if quarter.previous_quarter.blank?
 
     SkillRating.find_by(
       user: user,
@@ -266,11 +262,11 @@ class SkillRating < ApplicationRecord
       current_rating: rating,
       change: rating - previous.rating,
       trend: case (rating - previous.rating)
-      when 1 then 'improved'
-      when -1 then 'declined'
-      when 0 then 'stable'
-      else 'significant_change'
-      end
+             when 1 then "improved"
+             when -1 then "declined"
+             when 0 then "stable"
+             else "significant_change"
+             end
     }
   end
 
@@ -286,7 +282,7 @@ class SkillRating < ApplicationRecord
         quarter: to_quarter,
         rating: old_rating.rating,
         comment: "Скопировано из #{from_quarter.full_name}",
-        status: 'draft',
+        status: "draft",
         team_id: old_rating.team_id,
         created_by: created_by
       )
@@ -305,7 +301,7 @@ class SkillRating < ApplicationRecord
 
   def self.approve_all_for_quarter(quarter, approver)
     by_quarter(quarter).where(status: %w[draft submitted]).update_all(
-      status: 'approved',
+      status: "approved",
       approved_by: approver,
       approved_at: Time.current
     )
@@ -314,15 +310,15 @@ class SkillRating < ApplicationRecord
   private
 
   def validate_rating_for_status
-    return unless rating.present?
+    return if rating.blank?
 
     if rating == 0 && approved?
-      errors.add(:rating, 'не может быть 0 для утвержденной оценки')
+      errors.add(:rating, "не может быть 0 для утвержденной оценки")
     end
   end
 
   def set_default_status
-    self.status ||= 'draft'
+    self.status ||= "draft"
   end
 
   def set_team_from_user

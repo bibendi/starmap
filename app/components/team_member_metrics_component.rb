@@ -50,10 +50,10 @@ class TeamMemberMetricsComponent < ViewComponent::Base
     ratings = SkillRating
       .joins(:technology)
       .joins("LEFT JOIN team_technologies ON team_technologies.team_id = skill_ratings.team_id AND team_technologies.technology_id = skill_ratings.technology_id")
-      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: { active: true })
+      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: {active: true})
       .select(
-        'skill_ratings.*',
-        'COALESCE(team_technologies.criticality, technologies.criticality) as effective_criticality'
+        "skill_ratings.*",
+        "COALESCE(team_technologies.criticality, technologies.criticality) as effective_criticality"
       )
 
     ratings.group_by(&:quarter_id)
@@ -102,7 +102,7 @@ class TeamMemberMetricsComponent < ViewComponent::Base
   end
 
   def extract_criticality(rating)
-    (rating.effective_criticality || 'normal').to_sym
+    (rating.effective_criticality || "normal").to_sym
   end
 
   def update_competence_level(user_metrics, rating, criticality)
@@ -135,7 +135,7 @@ class TeamMemberMetricsComponent < ViewComponent::Base
         CRITICALITY_LEVELS.each do |criticality|
           current_value = user_data[metric_type][criticality]
           previous_value = prev_data[metric_type][criticality]
-          user_data[metric_type]["#{criticality}_change".to_sym] = current_value - previous_value
+          user_data[metric_type][:"#{criticality}_change"] = current_value - previous_value
         end
       end
     end

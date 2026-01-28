@@ -195,17 +195,17 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
         technologies.each do |tech|
           # Создаём рейтинги для текущего и предыдущего кварталов
           create(:skill_rating,
-                 user: user,
-                 technology: tech,
-                 quarter: previous_quarter,
-                 rating: rand(0..3),
-                 team: team)
+            user: user,
+            technology: tech,
+            quarter: previous_quarter,
+            rating: rand(0..3),
+            team: team)
           create(:skill_rating,
-                 user: user,
-                 technology: tech,
-                 quarter: current_quarter,
-                 rating: rand(0..3),
-                 team: team)
+            user: user,
+            technology: tech,
+            quarter: current_quarter,
+            rating: rand(0..3),
+            team: team)
         end
       end
     end

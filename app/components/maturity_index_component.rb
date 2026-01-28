@@ -5,8 +5,8 @@ class MaturityIndexComponent < ViewComponent::Base
 
   def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label || I18n.t('components.maturity_index.label')
-    @description = description || I18n.t('components.maturity_index.description')
+    @label = label || I18n.t("components.maturity_index.label")
+    @description = description || I18n.t("components.maturity_index.description")
     @maturity_index = calculate
   end
 

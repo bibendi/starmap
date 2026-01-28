@@ -40,12 +40,12 @@ RSpec.describe "Teams", type: :request do
         before { sign_in engineer, scope: :user }
 
         it "returns successful response for user's team" do
-          get team_path, params: { name: team.name }
+          get team_path, params: {name: team.name}
           expect(response).to be_successful
         end
 
         it "renders team dashboard" do
-          get team_path, params: { name: team.name }
+          get team_path, params: {name: team.name}
           expect(response).to be_successful
         end
 
@@ -54,7 +54,7 @@ RSpec.describe "Teams", type: :request do
 
           it "denies access" do
             expect {
-              get team_path, params: { name: other_team.name }
+              get team_path, params: {name: other_team.name}
             }.to raise_error(Pundit::NotAuthorizedError)
           end
         end
@@ -79,7 +79,7 @@ RSpec.describe "Teams", type: :request do
 
         it "denies access" do
           expect {
-            get team_path, params: { name: team.name }
+            get team_path, params: {name: team.name}
           }.to raise_error(Pundit::NotAuthorizedError)
         end
       end
@@ -88,7 +88,7 @@ RSpec.describe "Teams", type: :request do
         before { sign_in unit_lead, scope: :user }
 
         it "allows access to any team" do
-          get team_path, params: { name: team.name }
+          get team_path, params: {name: team.name}
           expect(response).to be_successful
         end
       end
@@ -97,7 +97,7 @@ RSpec.describe "Teams", type: :request do
         before { sign_in admin, scope: :user }
 
         it "allows access to any team" do
-          get team_path, params: { name: team.name }
+          get team_path, params: {name: team.name}
           expect(response).to be_successful
         end
       end

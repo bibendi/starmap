@@ -6,10 +6,10 @@ class CreateActionPlans < ActiveRecord::Migration[8.1]
       t.references :user, foreign_key: true
       t.references :technology, foreign_key: true
       t.references :quarter, foreign_key: true
-      t.references :created_by, foreign_key: { to_table: :users }
-      t.references :assigned_to, foreign_key: { to_table: :users }
-      t.string :status, null: false, default: 'active'
-      t.string :priority, null: false, default: 'medium'
+      t.references :created_by, foreign_key: {to_table: :users}
+      t.references :assigned_to, foreign_key: {to_table: :users}
+      t.string :status, null: false, default: "active"
+      t.string :priority, null: false, default: "medium"
       t.date :due_date
       t.date :completed_at
       t.text :completion_notes

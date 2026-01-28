@@ -2,22 +2,22 @@
 # Represents quarterly cycles for skill evaluations and planning
 class Quarter < ApplicationRecord
   # Associations
-  belongs_to :previous_quarter, class_name: 'Quarter', optional: true
-  belongs_to :created_by, class_name: 'User', optional: true
+  belongs_to :previous_quarter, class_name: "Quarter", optional: true
+  belongs_to :created_by, class_name: "User", optional: true
   has_many :skill_ratings, dependent: :destroy
   has_many :users, through: :skill_ratings
   has_many :technologies, through: :skill_ratings
   has_many :action_plans, dependent: :destroy
 
   # Validations
-  validates :name, presence: true, uniqueness: { scope: [:year] }
-  validates :year, presence: true, numericality: { only_integer: true, greater_than: 2000 }
-  validates :quarter_number, presence: true, inclusion: { in: [1, 2, 3, 4] }
+  validates :name, presence: true, uniqueness: {scope: [:year]}
+  validates :year, presence: true, numericality: {only_integer: true, greater_than: 2000}
+  validates :quarter_number, presence: true, inclusion: {in: [1, 2, 3, 4]}
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :evaluation_start_date, presence: true
   validates :evaluation_end_date, presence: true
-  validates :status, presence: true, inclusion: { in: %w[draft active closed archived] }
+  validates :status, presence: true, inclusion: {in: %w[draft active closed archived]}
 
   # Validate date consistency
   validate :validate_date_sequence
@@ -33,10 +33,10 @@ class Quarter < ApplicationRecord
   # Scopes
   scope :ordered, -> { order(:year, :quarter_number) }
   scope :current, -> { where(is_current: true) }
-  scope :active, -> { where(status: 'active') }
-  scope :closed, -> { where(status: 'closed') }
-  scope :archived, -> { where(status: 'archived') }
-  scope :draft, -> { where(status: 'draft') }
+  scope :active, -> { where(status: "active") }
+  scope :closed, -> { where(status: "closed") }
+  scope :archived, -> { where(status: "archived") }
+  scope :draft, -> { where(status: "draft") }
   scope :by_year, ->(year) { where(year: year) }
   scope :recent, ->(limit = 10) { ordered.limit(limit) }
   scope :evaluable, -> { where(status: %w[active]) }
@@ -55,19 +55,19 @@ class Quarter < ApplicationRecord
   end
 
   def active?
-    status == 'active'
+    status == "active"
   end
 
   def closed?
-    status == 'closed'
+    status == "closed"
   end
 
   def archived?
-    status == 'archived'
+    status == "archived"
   end
 
   def draft?
-    status == 'draft'
+    status == "draft"
   end
 
   def evaluation_period?
@@ -110,7 +110,7 @@ class Quarter < ApplicationRecord
   # Skill ratings management
   def copy_previous_ratings(from_quarter = nil)
     from_quarter ||= previous_quarter
-    return false unless from_quarter.present?
+    return false if from_quarter.blank?
 
     copied_count = 0
     from_quarter.skill_ratings.each do |old_rating|
@@ -121,7 +121,7 @@ class Quarter < ApplicationRecord
         technology: old_rating.technology,
         rating: old_rating.rating,
         comment: "Скопировано из #{from_quarter.full_name}",
-        status: 'draft',
+        status: "draft",
         created_by: created_by
       )
       copied_count += 1
@@ -134,11 +134,11 @@ class Quarter < ApplicationRecord
   end
 
   def completed_skill_ratings
-    skill_ratings.where(status: 'approved').count
+    skill_ratings.where(status: "approved").count
   end
 
   def draft_skill_ratings
-    skill_ratings.where(status: 'draft').count
+    skill_ratings.where(status: "draft").count
   end
 
   def rating_completion_percentage
@@ -148,13 +148,13 @@ class Quarter < ApplicationRecord
 
   # Quarter navigation
   def next_quarter
-    Quarter.where('(year > ? OR (year = ? AND quarter_number > ?))', year, year, quarter_number)
-           .ordered.first
+    Quarter.where("(year > ? OR (year = ? AND quarter_number > ?))", year, year, quarter_number)
+      .ordered.first
   end
 
   def previous_quarter
-    Quarter.where('(year < ? OR (year = ? AND quarter_number < ?))', year, year, quarter_number)
-           .ordered.last
+    Quarter.where("(year < ? OR (year = ? AND quarter_number < ?))", year, year, quarter_number)
+      .ordered.last
   end
 
   def self.current
@@ -181,7 +181,7 @@ class Quarter < ApplicationRecord
     evaluation_end_date = evaluation_start_date + 14.days
 
     # Find previous quarter
-    previous_quarter = if quarter_number > 1
+    if quarter_number > 1
       Quarter.find_by(year: year, quarter_number: quarter_number - 1)
     else
       Quarter.find_by(year: year - 1, quarter_number: 4)
@@ -194,7 +194,7 @@ class Quarter < ApplicationRecord
       end_date: end_date,
       evaluation_start_date: evaluation_start_date,
       evaluation_end_date: evaluation_end_date,
-      status: 'active',
+      status: "active",
       is_current: true,
       description: "Автоматически созданный квартал #{year} Q#{quarter_number}"
     )
@@ -205,7 +205,7 @@ class Quarter < ApplicationRecord
     # Returns maturity data grouped by teams
     data = {}
     Team.active.each do |team|
-      team_ratings = skill_ratings.joins(user: :team).where(users: { team: team })
+      team_ratings = skill_ratings.joins(user: :team).where(users: {team: team})
       total_ratings = team_ratings.count
       next if total_ratings.zero?
 
@@ -232,7 +232,7 @@ class Quarter < ApplicationRecord
         total_ratings: total_ratings,
         expert_count: experts,
         target_experts: tech.target_experts,
-        risk_level: experts < tech.target_experts ? 'medium' : 'low',
+        risk_level: (experts < tech.target_experts) ? "medium" : "low",
         maturity_index: (tech_ratings.where(rating: 3).count.to_f / total_ratings * 100).round(2)
       }
     end.compact
@@ -243,7 +243,7 @@ class Quarter < ApplicationRecord
     total_users = User.active.count
     return 0 if total_users.zero?
 
-    rated_users = skill_ratings.joins(:user).where(users: { active: true }).distinct.count
+    rated_users = skill_ratings.joins(:user).where(users: {active: true}).distinct.count
     (rated_users.to_f / total_users * 100).round(2)
   end
 
@@ -263,9 +263,9 @@ class Quarter < ApplicationRecord
   # Class methods for management
   def self.close_old_quarters
     # Close quarters that are more than 4 quarters old
-    old_quarters = Quarter.where('end_date < ?', 1.year.ago).where.not(status: 'archived')
+    old_quarters = Quarter.where("end_date < ?", 1.year.ago).where.not(status: "archived")
     old_quarters.each do |quarter|
-      quarter.update!(status: 'archived')
+      quarter.update!(status: "archived")
     end
   end
 
@@ -281,17 +281,17 @@ class Quarter < ApplicationRecord
   def validate_date_sequence
     return unless start_date.present? && end_date.present?
 
-    errors.add(:end_date, 'должна быть позже даты начала') if end_date <= start_date
-    errors.add(:evaluation_start_date, 'должна быть в периоде квартала') if evaluation_start_date < start_date || evaluation_start_date > end_date
-    errors.add(:evaluation_end_date, 'должна быть в периоде квартала') if evaluation_end_date < start_date || evaluation_end_date > end_date
-    errors.add(:evaluation_end_date, 'должна быть позже даты начала оценки') if evaluation_end_date <= evaluation_start_date
+    errors.add(:end_date, "должна быть позже даты начала") if end_date <= start_date
+    errors.add(:evaluation_start_date, "должна быть в периоде квартала") if evaluation_start_date < start_date || evaluation_start_date > end_date
+    errors.add(:evaluation_end_date, "должна быть в периоде квартала") if evaluation_end_date < start_date || evaluation_end_date > end_date
+    errors.add(:evaluation_end_date, "должна быть позже даты начала оценки") if evaluation_end_date <= evaluation_start_date
   end
 
   def validate_evaluation_dates
     return unless evaluation_start_date.present? && evaluation_end_date.present?
 
     if evaluation_end_date - evaluation_start_date > 30.days
-      errors.add(:evaluation_end_date, 'период оценки не должен превышать 30 дней')
+      errors.add(:evaluation_end_date, "период оценки не должен превышать 30 дней")
     end
   end
 
@@ -324,10 +324,10 @@ class Quarter < ApplicationRecord
   def handle_status_change
     return unless status_changed?
 
-    if status == 'closed'
+    if status == "closed"
       # Lock all skill ratings when quarter is closed
-      skill_ratings.where(status: %w[draft submitted]).update_all(status: 'approved', locked: true)
-    elsif status == 'draft'
+      skill_ratings.where(status: %w[draft submitted]).update_all(status: "approved", locked: true)
+    elsif status == "draft"
       # Unlock skill ratings when returning to draft
       skill_ratings.update_all(locked: false)
     end

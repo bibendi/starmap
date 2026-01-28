@@ -2,7 +2,7 @@
 # Represents teams within units with team leads
 class Team < ApplicationRecord
   # Associations
-  belongs_to :team_lead, class_name: 'User', optional: true
+  belongs_to :team_lead, class_name: "User", optional: true
   belongs_to :unit, optional: false
   has_many :users, dependent: :nullify
   has_many :skill_ratings, through: :users
@@ -12,7 +12,7 @@ class Team < ApplicationRecord
 
   # Validations
   validates :name, presence: true, uniqueness: true
-  validates :sort_order, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :sort_order, numericality: {only_integer: true, greater_than_or_equal_to: 0}
 
   # Callbacks
   before_validation :set_default_sort_order, on: :create
@@ -57,8 +57,8 @@ class Team < ApplicationRecord
 
     active_members.each do |user|
       user.skill_ratings.joins(:technology)
-        .where('skill_ratings.rating >= 2 AND technologies.active = true')
-        .each do |rating|
+        .where("skill_ratings.rating >= 2 AND technologies.active = true")
+        .find_each do |rating|
           expertise[rating.technology_id] ||= []
           expertise[rating.technology_id] << user.id
         end
@@ -70,7 +70,7 @@ class Team < ApplicationRecord
   def experts_for_technology(technology)
     # Returns users who have rating >= 2 for this technology
     active_members.joins(:skill_ratings)
-      .where(skill_ratings: { technology: technology, rating: 2..3 })
+      .where(skill_ratings: {technology: technology, rating: 2..3})
       .distinct
   end
 
@@ -83,9 +83,9 @@ class Team < ApplicationRecord
   def coverage_gaps
     # Returns technologies where current expert count < target_experts
     gaps = []
-    team_technologies.includes(:technology).each do |team_tech|
+    team_technologies.includes(:technology).find_each do |team_tech|
       current_experts = experts_for_technology(team_tech.technology).count
-      gaps << { technology: team_tech.technology, current: current_experts, target: team_tech.target_experts } if current_experts < team_tech.target_experts
+      gaps << {technology: team_tech.technology, current: current_experts, target: team_tech.target_experts} if current_experts < team_tech.target_experts
     end
     gaps
   end
@@ -104,21 +104,19 @@ class Team < ApplicationRecord
         technology: technology,
         expert_count: experts.count,
         experts: experts,
-        risk_level: 'high'
+        risk_level: "high"
       }
     end
   end
 
   def maturity_level
     # Calculate team maturity based on skill distribution
-    total_ratings = skill_ratings.joins(:technology).where(technologies: { active: true }).count
+    total_ratings = skill_ratings.joins(:technology).where(technologies: {active: true}).count
     return 0 if total_ratings.zero?
 
-    high_skills = skill_ratings.joins(:technology).where(technologies: { active: true }, rating: 3).count
+    high_skills = skill_ratings.joins(:technology).where(technologies: {active: true}, rating: 3).count
     (high_skills.to_f / total_ratings * 100).round(2)
   end
-
-
 
   # Permission helpers
   def can_be_managed_by?(user)

@@ -3,20 +3,19 @@
 class User < ApplicationRecord
   # Include Devise modules for authentication
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+    :recoverable, :rememberable, :trackable, :validatable
 
   # Associations
   belongs_to :team, optional: true
   has_many :skill_ratings, dependent: :destroy
   has_many :action_plans, dependent: :destroy
-  has_many :created_action_plans, class_name: 'ActionPlan', foreign_key: 'created_by_id', dependent: :nullify
+  has_many :created_action_plans, class_name: "ActionPlan", foreign_key: "created_by_id", dependent: :nullify
 
   # Validations
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :role, presence: true, inclusion: { in: %w[engineer team_lead unit_lead admin] }
+  validates :role, presence: true, inclusion: {in: %w[engineer team_lead unit_lead admin]}
   validates :email, presence: true, uniqueness: true
-
 
   # Callbacks
   before_validation :set_default_role, on: :create
@@ -24,28 +23,27 @@ class User < ApplicationRecord
   # Scopes
   scope :active, -> { where(active: true) }
   scope :by_role, ->(role) { where(role: role) }
-  scope :engineers, -> { where(role: 'engineer') }
-  scope :team_leads, -> { where(role: 'team_lead') }
-  scope :unit_leads, -> { where(role: 'unit_lead') }
-  scope :admins, -> { where(role: 'admin') }
+  scope :engineers, -> { where(role: "engineer") }
+  scope :team_leads, -> { where(role: "team_lead") }
+  scope :unit_leads, -> { where(role: "unit_lead") }
+  scope :admins, -> { where(role: "admin") }
   scope :by_team, ->(team_id) { where(team_id: team_id) }
-
 
   # Role checking methods
   def engineer?
-    role == 'engineer'
+    role == "engineer"
   end
 
   def team_lead?
-    role == 'team_lead'
+    role == "team_lead"
   end
 
   def unit_lead?
-    role == 'unit_lead'
+    role == "unit_lead"
   end
 
   def admin?
-    role == 'admin' || admin == true
+    role == "admin" || admin == true
   end
 
   # Team leadership check
@@ -60,7 +58,7 @@ class User < ApplicationRecord
 
   # Name helpers
   def full_name
-    [first_name, last_name].compact.join(' ')
+    [first_name, last_name].compact.join(" ")
   end
 
   def display_name_or_full_name
@@ -93,7 +91,7 @@ class User < ApplicationRecord
   end
 
   def completed_action_plans
-    action_plans.where(status: 'completed')
+    action_plans.where(status: "completed")
   end
 
   # Team management helpers
@@ -105,6 +103,6 @@ class User < ApplicationRecord
   private
 
   def set_default_role
-    self.role ||= 'engineer'
+    self.role ||= "engineer"
   end
 end

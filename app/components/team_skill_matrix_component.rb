@@ -93,18 +93,18 @@ class TeamSkillMatrixComponent < ViewComponent::Base
       target_experts = team_tech&.target_experts || 0
 
       risk_level = if expert_count == 0
-                     'high'
-                   elsif expert_count < target_experts
-                     'medium'
-                   else
-                     'low'
-                   end
+        "high"
+      elsif expert_count < target_experts
+        "medium"
+      else
+        "low"
+      end
 
       bus_factor_data = {
         count: expert_count,
         target: target_experts,
         risk_level: risk_level,
-        criticality: team_tech&.criticality || 'normal'
+        criticality: team_tech&.criticality || "normal"
       }
 
       if previous_quarter

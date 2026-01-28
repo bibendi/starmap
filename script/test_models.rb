@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Test script to verify model functionality
 
-require_relative '../config/environment'
+require_relative "../config/environment"
 
 puts "=== Testing Starmap Models ==="
 
@@ -16,7 +16,7 @@ end
 # Test Team model
 puts "\n2. Testing Team model..."
 puts "Total teams: #{Team.count}"
-Team.all.each do |team|
+Team.all.find_each do |team|
   puts "  #{team.name} (#{team.unit_name}) - Members: #{team.users.count}"
 end
 
@@ -31,7 +31,7 @@ end
 # Test Quarter model
 puts "\n4. Testing Quarter model..."
 puts "Total quarters: #{Quarter.count}"
-Quarter.all.each do |quarter|
+Quarter.all.find_each do |quarter|
   puts "  #{quarter.name} - Status: #{quarter.status}"
 end
 
@@ -56,7 +56,7 @@ puts "\n7. Testing associations..."
 user = User.first
 if user
   puts "First user: #{user.display_name_or_full_name}"
-  puts "  Team: #{user.team&.name || 'No team'}"
+  puts "  Team: #{user.team&.name || "No team"}"
   puts "  Skill ratings: #{user.skill_ratings.count}"
   puts "  Action plans: #{user.action_plans.count}"
 end

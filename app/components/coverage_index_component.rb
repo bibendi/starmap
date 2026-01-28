@@ -7,8 +7,8 @@ class CoverageIndexComponent < ViewComponent::Base
 
   def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label || I18n.t('components.coverage_index.label')
-    @description = description || I18n.t('components.coverage_index.description')
+    @label = label || I18n.t("components.coverage_index.label")
+    @description = description || I18n.t("components.coverage_index.description")
     @coverage_index = calculate
   end
 
@@ -22,12 +22,12 @@ class CoverageIndexComponent < ViewComponent::Base
     return 0 unless current_quarter
 
     technology_ids = team_technologies.map(&:technology_id)
-    
+
     expert_counts = SkillRating
-      .where(quarter: current_quarter, 
-             rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, 
-             team_id: @team.id, 
-             technology_id: technology_ids)
+      .where(quarter: current_quarter,
+        rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
+        team_id: @team.id,
+        technology_id: technology_ids)
       .group(:technology_id)
       .count
 

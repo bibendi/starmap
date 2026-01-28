@@ -13,7 +13,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
     context "when technologies have sufficient experts" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: 'high')
+        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
         create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
         create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
@@ -29,7 +29,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
     context "when technologies have insufficient experts" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: 'high')
+        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
         create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 2, team: team)
         create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 3, team: team)
@@ -55,7 +55,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
 
     context "when technology has low criticality" do
       before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: 'low')
+        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "low")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
       end
 
@@ -81,7 +81,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
   describe "#any_red_zones?" do
     context "when there are red zones" do
       before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: 'high')
+        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
       end
 
@@ -120,7 +120,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
   describe "rendering" do
     context "when there are red zones" do
       before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: 'high')
+        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
       end
 
@@ -151,8 +151,8 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
 
     before do
       technologies.each do |tech|
-        create(:team_technology, team: team, technology: tech, 
-               criticality: [:normal, :high].sample, target_experts: 2)
+        create(:team_technology, team: team, technology: tech,
+          criticality: [:normal, :high].sample, target_experts: 2)
       end
     end
 
@@ -166,11 +166,11 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       users.each do |user|
         technologies.each do |tech|
           create(:skill_rating,
-                 user: user,
-                 technology: tech,
-                 quarter: current_quarter,
-                 rating: rand(0..3),
-                 team: team)
+            user: user,
+            technology: tech,
+            quarter: current_quarter,
+            rating: rand(0..3),
+            team: team)
         end
       end
     end

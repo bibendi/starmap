@@ -123,8 +123,8 @@ RSpec.describe CoverageIndexComponent, type: :component do
 
     before do
       technologies.each do |tech|
-        create(:team_technology, team: team, technology: tech, 
-               criticality: [:normal, :high].sample, target_experts: 2)
+        create(:team_technology, team: team, technology: tech,
+          criticality: [:normal, :high].sample, target_experts: 2)
       end
     end
 
@@ -138,11 +138,11 @@ RSpec.describe CoverageIndexComponent, type: :component do
       users.each do |user|
         technologies.each do |tech|
           create(:skill_rating,
-                 user: user,
-                 technology: tech,
-                 quarter: current_quarter,
-                 rating: rand(0..3),
-                 team: team)
+            user: user,
+            technology: tech,
+            quarter: current_quarter,
+            rating: rand(0..3),
+            team: team)
         end
       end
     end

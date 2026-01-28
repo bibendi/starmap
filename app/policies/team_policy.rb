@@ -6,7 +6,7 @@ class TeamPolicy < ApplicationPolicy
 
   def show?
     return false unless active_user?
-    return false unless record.present?
+    return false if record.blank?
 
     # Admins and unit leads can see all teams
     return true if admin? || unit_lead?
@@ -26,7 +26,7 @@ class TeamPolicy < ApplicationPolicy
 
   def update?
     return false unless active_user?
-    return false unless record.present?
+    return false if record.blank?
 
     # Admins can update any team
     return true if admin?
@@ -41,12 +41,12 @@ class TeamPolicy < ApplicationPolicy
   end
 
   def destroy?
-    return false unless record.present?
+    return false if record.blank?
     admin?
   end
 
   def edit?
-    return false unless record.present?
+    return false if record.blank?
     update?
   end
 
@@ -55,7 +55,7 @@ class TeamPolicy < ApplicationPolicy
   end
 
   def manage_members?
-    return false unless record.present?
+    return false if record.blank?
 
     # Admins and unit leads can manage members in any team
     return true if admin? || unit_lead?
@@ -67,23 +67,23 @@ class TeamPolicy < ApplicationPolicy
   end
 
   def assign_team_lead?
-    return false unless record.present?
+    return false if record.blank?
     unit_lead? || admin?
   end
 
   def view_team_metrics?
     return false unless active_user?
-    return false unless record.present?
+    return false if record.blank?
 
     # Admins, unit leads, team leads of the team, or team members can view metrics
-    (admin? || unit_lead? || team_lead_of?(record) || (user.team_id.present? && user.team_id == record.id))
+    admin? || unit_lead? || team_lead_of?(record) || (user.team_id.present? && user.team_id == record.id)
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user&.role == 'admin' || user&.role == 'unit_lead'
+      if user&.role == "admin" || user&.role == "unit_lead"
         scope.all
-      elsif user&.role == 'team_lead'
+      elsif user&.role == "team_lead"
         scope.where(id: user.team_id)
       elsif user
         scope.where(id: user.team_id)

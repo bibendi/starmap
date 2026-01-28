@@ -11,7 +11,7 @@ class SkillRatingsController < ApplicationController
   # GET /skill_ratings
   def index
     @skill_ratings = policy_scope(SkillRating)
-                    .includes(:user, :technology, :quarter)
+      .includes(:user, :technology, :quarter)
 
     # Apply filters
     @skill_ratings = @skill_ratings.where(quarter_id: params[:quarter_id]) if params[:quarter_id].present?
@@ -26,8 +26,8 @@ class SkillRatingsController < ApplicationController
     @skill_ratings_approved_count = skill_ratings_scope.approved.count
     @average_rating = skill_ratings_scope.average(:rating)
 
-    @skill_ratings = skill_ratings_scope.order('users.first_name ASC, technologies.name ASC')
-                    .page(params[:page])
+    @skill_ratings = skill_ratings_scope.order("users.first_name ASC, technologies.name ASC")
+      .page(params[:page])
 
     respond_to do |format|
       format.html
@@ -74,17 +74,17 @@ class SkillRatingsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Оценка создана успешно" }),
-            turbo_stream.replace("skill_rating_form", partial: "skill_ratings/form", locals: { skill_rating: SkillRating.new(quarter: @quarter) }),
-            turbo_stream.append("skill_ratings_list", partial: "skill_ratings/rating_card", locals: { skill_rating: @skill_rating })
+            turbo_stream.update("flash", partial: "shared/flash", locals: {notice: "Оценка создана успешно"}),
+            turbo_stream.replace("skill_rating_form", partial: "skill_ratings/form", locals: {skill_rating: SkillRating.new(quarter: @quarter)}),
+            turbo_stream.append("skill_ratings_list", partial: "skill_ratings/rating_card", locals: {skill_rating: @skill_rating})
           ]
         end
         format.html { redirect_to skill_ratings_path, notice: "Оценка создана успешно" }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream.update("skill_rating_form", partial: "skill_ratings/form", locals: { skill_rating: @skill_rating }) }
-        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render turbo_stream.update("skill_rating_form", partial: "skill_ratings/form", locals: {skill_rating: @skill_rating}) }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -98,16 +98,16 @@ class SkillRatingsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Оценка обновлена успешно" }),
-            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: { skill_rating: @skill_rating })
+            turbo_stream.update("flash", partial: "shared/flash", locals: {notice: "Оценка обновлена успешно"}),
+            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: {skill_rating: @skill_rating})
           ]
         end
         format.html { redirect_to @skill_rating, notice: "Оценка обновлена успешно" }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream.update("skill_rating_form", partial: "skill_ratings/form", locals: { skill_rating: @skill_rating }) }
-        format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render turbo_stream.update("skill_rating_form", partial: "skill_ratings/form", locals: {skill_rating: @skill_rating}) }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end
@@ -133,15 +133,15 @@ class SkillRatingsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Оценка утверждена" }),
-            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: { skill_rating: @skill_rating })
+            turbo_stream.update("flash", partial: "shared/flash", locals: {notice: "Оценка утверждена"}),
+            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: {skill_rating: @skill_rating})
           ]
         end
         format.html { redirect_to @skill_rating, notice: "Оценка утверждена" }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: { alert: "Ошибка при утверждении оценки" }) }
+        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: {alert: "Ошибка при утверждении оценки"}) }
         format.html { redirect_to @skill_rating, alert: "Ошибка при утверждении оценки" }
       end
     end
@@ -156,15 +156,15 @@ class SkillRatingsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Оценка отправлена на утверждение" }),
-            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: { skill_rating: @skill_rating })
+            turbo_stream.update("flash", partial: "shared/flash", locals: {notice: "Оценка отправлена на утверждение"}),
+            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: {skill_rating: @skill_rating})
           ]
         end
         format.html { redirect_to @skill_rating, notice: "Оценка отправлена на утверждение" }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: { alert: "Ошибка при отправке оценки на утверждение" }) }
+        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: {alert: "Ошибка при отправке оценки на утверждение"}) }
         format.html { redirect_to @skill_rating, alert: "Ошибка при отправке оценки на утверждение" }
       end
     end
@@ -179,15 +179,15 @@ class SkillRatingsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update("flash", partial: "shared/flash", locals: { notice: "Оценка отклонена" }),
-            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: { skill_rating: @skill_rating })
+            turbo_stream.update("flash", partial: "shared/flash", locals: {notice: "Оценка отклонена"}),
+            turbo_stream.replace(@skill_rating, partial: "skill_ratings/rating_card", locals: {skill_rating: @skill_rating})
           ]
         end
         format.html { redirect_to @skill_rating, notice: "Оценка отклонена" }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: { alert: "Ошибка при отклонении оценки" }) }
+        format.turbo_stream { render turbo_stream.update("flash", partial: "shared/flash", locals: {alert: "Ошибка при отклонении оценки"}) }
         format.html { redirect_to @skill_rating, alert: "Ошибка при отклонении оценки" }
       end
     end
@@ -199,10 +199,10 @@ class SkillRatingsController < ApplicationController
     authorize SkillRating.new(user: @user), :show?
 
     @skill_ratings = policy_scope(SkillRating)
-                    .includes(:technology, :quarter)
-                    .where(user: @user)
-                    .order('technologies.name ASC')
-                    .page(params[:page])
+      .includes(:technology, :quarter)
+      .where(user: @user)
+      .order("technologies.name ASC")
+      .page(params[:page])
 
     respond_to do |format|
       format.html { render :user_ratings }
@@ -214,10 +214,10 @@ class SkillRatingsController < ApplicationController
   def team_ratings
     @team = Team.find(params[:team_id])
     @skill_ratings = policy_scope(SkillRating)
-                    .includes(:user, :technology, :quarter)
-                    .where(team_id: @team.id)
-                    .order('users.first_name ASC, technologies.name ASC')
-                    .page(params[:page])
+      .includes(:user, :technology, :quarter)
+      .where(team_id: @team.id)
+      .order("users.first_name ASC, technologies.name ASC")
+      .page(params[:page])
 
     respond_to do |format|
       format.html { render :team_ratings }
@@ -229,10 +229,10 @@ class SkillRatingsController < ApplicationController
   def technology_ratings
     @technology = Technology.find(params[:technology_id])
     @skill_ratings = policy_scope(SkillRating)
-                    .includes(:user, :quarter)
-                    .where(technology: @technology)
-                    .order('users.first_name ASC, quarters.name ASC')
-                    .page(params[:page])
+      .includes(:user, :quarter)
+      .where(technology: @technology)
+      .order("users.first_name ASC, quarters.name ASC")
+      .page(params[:page])
 
     respond_to do |format|
       format.html { render :technology_ratings }
@@ -243,10 +243,10 @@ class SkillRatingsController < ApplicationController
   # GET /skill_ratings/pending_approvals
   def pending_approvals
     @skill_ratings = policy_scope(SkillRating)
-                    .includes(:user, :technology, :quarter)
-                    .where(status: %w[draft submitted])
-                    .order('technologies.name ASC, users.first_name ASC')
-                    .page(params[:page])
+      .includes(:user, :technology, :quarter)
+      .where(status: %w[draft submitted])
+      .order("technologies.name ASC, users.first_name ASC")
+      .page(params[:page])
 
     respond_to do |format|
       format.html { render :pending_approvals }

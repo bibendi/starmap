@@ -15,7 +15,7 @@ RSpec.describe "Locales", type: :request do
         end
 
         it "redirects back with fallback to root" do
-          post switch_locale_path(locale: :en), headers: { "HTTP_REFERER" => "/team" }
+          post switch_locale_path(locale: :en), headers: {"HTTP_REFERER" => "/team"}
           expect(response).to redirect_to("/team")
         end
 
@@ -58,7 +58,7 @@ RSpec.describe "Locales", type: :request do
       end
 
       it "still redirects back" do
-        post switch_locale_path(locale: :fr), headers: { "HTTP_REFERER" => "/team" }
+        post switch_locale_path(locale: :fr), headers: {"HTTP_REFERER" => "/team"}
         expect(response).to redirect_to("/team")
       end
     end

@@ -1,10 +1,10 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-require 'spec_helper'
-ENV['RAILS_ENV'] ||= 'test'
-require_relative '../config/environment'
+require "spec_helper"
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
-require 'rspec/rails'
+require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 require "view_component/test_helpers"
 
@@ -24,19 +24,18 @@ require "view_component/test_helpers"
 # Rails.root.glob('spec/support/**/*.rb').sort.each { |f| require f }
 
 # Load test-prof for optimization
-require 'test_prof'
-require 'test_prof/recipes/rspec/let_it_be'
-require 'test_prof/recipes/logging'
+require "test_prof"
+require "test_prof/recipes/rspec/let_it_be"
+require "test_prof/recipes/logging"
 
 # Load n_plus_one_control for N+1 query detection
-require 'n_plus_one_control/rspec'
+require "n_plus_one_control/rspec"
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
   ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-  puts e.to_s.strip
+rescue ActiveRecord::PendingMigrationError
   exit 1
 end
 
@@ -44,7 +43,7 @@ end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
+    Rails.root.join("spec/fixtures")
   ]
 
   # If you're not using ActiveRecord, or you'd like to use database
@@ -92,18 +91,18 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.around(:each) do |example|
+  config.around do |example|
     DatabaseCleaner.cleaning do
       example.run
     end
   end
 
-  config.before(:each) do
+  config.before do
     Bullet.start_request
     I18n.locale = :en
   end
 
-  config.after(:each) do
+  config.after do
     Bullet.perform_out_of_channel_notifications if Bullet.notification?
     Bullet.end_request
     I18n.locale = :en

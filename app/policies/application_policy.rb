@@ -28,19 +28,19 @@ class ApplicationPolicy
 
   # Helper methods for role checking
   def engineer?
-    user&.role == 'engineer'
+    user&.role == "engineer"
   end
 
   def team_lead?
-    user&.role == 'team_lead'
+    user&.role == "team_lead"
   end
 
   def unit_lead?
-    user&.role == 'unit_lead'
+    user&.role == "unit_lead"
   end
 
   def admin?
-    user&.role == 'admin' || user&.admin?
+    user&.role == "admin" || user&.admin?
   end
 
   def team_lead_of?(team)

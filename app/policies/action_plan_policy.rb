@@ -88,7 +88,7 @@ class ActionPlanPolicy < ApplicationPolicy
     return false unless record
 
     (team_lead? || unit_lead? || admin?) &&
-    (admin? || unit_lead? || (team_lead? && record.user&.team && team_lead_of?(record.user.team)))
+      (admin? || unit_lead? || (team_lead? && record.user&.team && team_lead_of?(record.user.team)))
   end
 
   def complete?
@@ -119,9 +119,9 @@ class ActionPlanPolicy < ApplicationPolicy
     return false unless record
 
     admin? || unit_lead? ||
-    (team_lead? && record.user&.team && team_lead_of?(record.user.team)) ||
-    record.user_id == user.id || record.assigned_to_id == user.id ||
-    (user.team.nil? && record.user_id == user.id)
+      (team_lead? && record.user&.team && team_lead_of?(record.user.team)) ||
+      record.user_id == user.id || record.assigned_to_id == user.id ||
+      (user.team.nil? && record.user_id == user.id)
   end
 
   class Scope < ApplicationPolicy::Scope
@@ -131,7 +131,7 @@ class ActionPlanPolicy < ApplicationPolicy
       if user.admin? || user.unit_lead?
         scope.all
       elsif user.team_lead?
-        scope.joins(:user).where(users: { team_id: user.team_id }).or(scope.where(assigned_to_id: user.id))
+        scope.joins(:user).where(users: {team_id: user.team_id}).or(scope.where(assigned_to_id: user.id))
       else
         scope.where(user_id: user.id).or(scope.where(assigned_to_id: user.id))
       end

@@ -5,13 +5,13 @@ class ActionPlan < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :technology, optional: true
   belongs_to :quarter, optional: true
-  belongs_to :created_by, class_name: 'User'
-  belongs_to :assigned_to, class_name: 'User', optional: true
+  belongs_to :created_by, class_name: "User"
+  belongs_to :assigned_to, class_name: "User", optional: true
 
   # Validations
   validates :title, presence: true
-  validates :status, presence: true, inclusion: { in: %w[active in_progress completed cancelled postponed] }
-  validates :priority, presence: true, inclusion: { in: %w[low medium high critical] }
+  validates :status, presence: true, inclusion: {in: %w[active in_progress completed cancelled postponed]}
+  validates :priority, presence: true, inclusion: {in: %w[low medium high critical]}
 
   # Validate that either user or technology is present
   validate :validate_target_presence
@@ -24,11 +24,11 @@ class ActionPlan < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(status: %w[active in_progress]) }
-  scope :completed, -> { where(status: 'completed') }
-  scope :cancelled, -> { where(status: 'cancelled') }
-  scope :postponed, -> { where(status: 'postponed') }
+  scope :completed, -> { where(status: "completed") }
+  scope :cancelled, -> { where(status: "cancelled") }
+  scope :postponed, -> { where(status: "postponed") }
   scope :high_priority, -> { where(priority: %w[high critical]) }
-  scope :overdue, -> { where('due_date < ? AND status IN (?)', Date.current, %w[active in_progress]) }
+  scope :overdue, -> { where("due_date < ? AND status IN (?)", Date.current, %w[active in_progress]) }
   scope :by_user, ->(user) { where(user: user) }
   scope :by_technology, ->(technology) { where(technology: technology) }
   scope :by_quarter, ->(quarter) { where(quarter: quarter) }
@@ -38,49 +38,49 @@ class ActionPlan < ApplicationRecord
   # Priority helpers
   def priority_label
     case priority
-    when 'low' then 'Низкий'
-    when 'medium' then 'Средний'
-    when 'high' then 'Высокий'
-    when 'critical' then 'Критический'
+    when "low" then "Низкий"
+    when "medium" then "Средний"
+    when "high" then "Высокий"
+    when "critical" then "Критический"
     else priority
     end
   end
 
   def critical_priority?
-    priority == 'critical'
+    priority == "critical"
   end
 
   def high_priority?
-    priority == 'high'
+    priority == "high"
   end
 
   def medium_priority?
-    priority == 'medium'
+    priority == "medium"
   end
 
   def low_priority?
-    priority == 'low'
+    priority == "low"
   end
 
   # Status helpers
   def active?
-    status == 'active'
+    status == "active"
   end
 
   def in_progress?
-    status == 'in_progress'
+    status == "in_progress"
   end
 
   def completed?
-    status == 'completed'
+    status == "completed"
   end
 
   def cancelled?
-    status == 'cancelled'
+    status == "cancelled"
   end
 
   def postponed?
-    status == 'postponed'
+    status == "postponed"
   end
 
   def can_be_started?
@@ -101,28 +101,28 @@ class ActionPlan < ApplicationRecord
 
   # Date helpers
   def due_soon?
-    return false unless due_date.present?
+    return false if due_date.blank?
     due_date <= 7.days.from_now.to_date && !completed?
   end
 
   def overdue?
-    return false unless due_date.present?
+    return false if due_date.blank?
     due_date < Date.current && !completed?
   end
 
   def days_until_due
-    return nil unless due_date.present?
+    return nil if due_date.blank?
     (due_date - Date.current).to_i
   end
 
   def completion_timeframe
-    return nil unless created_at.present?
-    return 'Не установлен' unless due_date.present?
+    return nil if created_at.blank?
+    return "Не установлен" if due_date.blank?
 
     days = (due_date - created_at.to_date).to_i
     case days
-    when 0 then 'Сегодня'
-    when 1 then '1 день'
+    when 0 then "Сегодня"
+    when 1 then "1 день"
     when 2..7 then "#{days} дней"
     when 8..30 then "Около месяца"
     when 31..90 then "Около 3 месяцев"
@@ -132,12 +132,12 @@ class ActionPlan < ApplicationRecord
 
   # Progress tracking
   def start_progress
-    update!(status: 'in_progress') if active?
+    update!(status: "in_progress") if active?
   end
 
   def complete_plan(completion_notes = nil)
     update!(
-      status: 'completed',
+      status: "completed",
       progress_percentage: 100,
       completed_at: Date.current,
       completion_notes: completion_notes
@@ -146,14 +146,14 @@ class ActionPlan < ApplicationRecord
 
   def cancel_plan(reason = nil)
     update!(
-      status: 'cancelled',
+      status: "cancelled",
       completion_notes: [completion_notes, "Отменено: #{reason}"].compact.join("\n")
     )
   end
 
   def postpone_plan(reason = nil)
     update!(
-      status: 'postponed',
+      status: "postponed",
       completion_notes: [completion_notes, "Отложено: #{reason}"].compact.join("\n")
     )
   end
@@ -183,13 +183,13 @@ class ActionPlan < ApplicationRecord
     elsif has_technology_target?
       technology.name
     else
-      'Общий план'
+      "Общий план"
     end
   end
 
   # Risk context
   def risk_context
-    return nil unless technology.present?
+    return nil if technology.blank?
 
     # Determine if this plan addresses a known risk
     experts = technology.current_experts
@@ -198,32 +198,32 @@ class ActionPlan < ApplicationRecord
 
     if expert_count == 0
       {
-        type: 'no_experts',
-        severity: 'critical',
-        description: 'Нет экспертов по технологии',
-        recommendation: 'Критически необходимо обучить специалистов'
+        type: "no_experts",
+        severity: "critical",
+        description: "Нет экспертов по технологии",
+        recommendation: "Критически необходимо обучить специалистов"
       }
     elsif expert_count == 1
       {
-        type: 'single_expert',
-        severity: 'high',
-        description: 'Только один эксперт (риск ключевой фигуры)',
-        recommendation: 'Необходимо обучить дополнительных специалистов',
+        type: "single_expert",
+        severity: "high",
+        description: "Только один эксперт (риск ключевой фигуры)",
+        recommendation: "Необходимо обучить дополнительных специалистов",
         expert_name: experts.first.display_name_or_full_name
       }
     elsif expert_count < target_experts
       {
-        type: 'insufficient_experts',
-        severity: 'medium',
+        type: "insufficient_experts",
+        severity: "medium",
         description: "Недостаточно экспертов (#{expert_count}/#{target_experts})",
         recommendation: "Рекомендуется обучить #{target_experts - expert_count} дополнительных специалистов"
       }
     else
       {
-        type: 'adequate_coverage',
-        severity: 'low',
+        type: "adequate_coverage",
+        severity: "low",
         description: "Достаточно экспертов (#{expert_count}/#{target_experts})",
-        recommendation: 'Поддержание текущего уровня'
+        recommendation: "Поддержание текущего уровня"
       }
     end
   end
@@ -245,17 +245,17 @@ class ActionPlan < ApplicationRecord
     {
       total_overdue: overdue.count,
       by_priority: {
-        critical: overdue.where(priority: 'critical').count,
-        high: overdue.where(priority: 'high').count,
-        medium: overdue.where(priority: 'medium').count,
-        low: overdue.where(priority: 'low').count
+        critical: overdue.where(priority: "critical").count,
+        high: overdue.where(priority: "high").count,
+        medium: overdue.where(priority: "medium").count,
+        low: overdue.where(priority: "low").count
       },
-      by_technology: overdue.joins(:technology).group('technologies.name').count
+      by_technology: overdue.joins(:technology).group("technologies.name").count
     }
   end
 
   def self.completion_statistics(timeframe = 30.days)
-    recent_plans = where('created_at >= ?', timeframe.ago)
+    recent_plans = where("created_at >= ?", timeframe.ago)
     total = recent_plans.count
     completed = recent_plans.completed.count
     cancelled = recent_plans.cancelled.count
@@ -264,14 +264,14 @@ class ActionPlan < ApplicationRecord
       total: total,
       completed: completed,
       cancelled: cancelled,
-      completion_rate: total > 0 ? (completed.to_f / total * 100).round(2) : 0,
-      cancellation_rate: total > 0 ? (cancelled.to_f / total * 100).round(2) : 0
+      completion_rate: (total > 0) ? (completed.to_f / total * 100).round(2) : 0,
+      cancellation_rate: (total > 0) ? (cancelled.to_f / total * 100).round(2) : 0
     }
   end
 
   def self.risk_mitigation_plans
     # Plans that are addressing identified risks
-    joins(:technology).where(technologies: { criticality: 'high' }).active
+    joins(:technology).where(technologies: {criticality: "high"}).active
   end
 
   # Permission helpers
@@ -310,8 +310,8 @@ class ActionPlan < ApplicationRecord
         description: "План развития компетенций для снижения риска по технологии #{tech.name}. Текущее количество экспертов: #{tech.expert_count(quarter)}, целевое: #{tech.target_experts}.",
         technology: tech,
         quarter: quarter,
-        status: 'active',
-        priority: tech.criticality == 'high' ? 'high' : 'medium',
+        status: "active",
+        priority: (tech.criticality == "high") ? "high" : "medium",
         due_date: quarter.end_date,
         created_by: User.admins.first || User.first
       )
@@ -331,8 +331,8 @@ class ActionPlan < ApplicationRecord
         user: user,
         technology: tech,
         quarter: quarter,
-        status: 'active',
-        priority: 'medium',
+        status: "active",
+        priority: "medium",
         due_date: quarter.end_date,
         created_by: user.team_lead || User.admins.first || User.first,
         assigned_to: user
@@ -346,22 +346,22 @@ class ActionPlan < ApplicationRecord
 
   def validate_target_presence
     return if user_id.present? || technology_id.present?
-    errors.add(:base, 'План должен быть привязан к пользователю или технологии')
+    errors.add(:base, "План должен быть привязан к пользователю или технологии")
   end
 
   def validate_dates_logic
     return unless due_date.present? && completed_at.present?
-    errors.add(:due_date, 'должна быть позже даты создания') if due_date < created_at.to_date
-    errors.add(:completed_at, 'должна быть позже даты создания') if completed_at < created_at.to_date
-    errors.add(:completed_at, 'должна быть не раньше планируемой даты завершения') if completed_at > due_date && due_date.present?
+    errors.add(:due_date, "должна быть позже даты создания") if due_date < created_at.to_date
+    errors.add(:completed_at, "должна быть позже даты создания") if completed_at < created_at.to_date
+    errors.add(:completed_at, "должна быть не раньше планируемой даты завершения") if completed_at > due_date && due_date.present?
   end
 
   def set_default_priority
-    self.priority ||= 'medium'
+    self.priority ||= "medium"
   end
 
   def set_completed_at
-    return unless status == 'completed'
+    return unless status == "completed"
     self.completed_at ||= Date.current
     self.progress_percentage = 100
   end
@@ -370,13 +370,13 @@ class ActionPlan < ApplicationRecord
     return unless status_changed?
 
     case status
-    when 'in_progress'
+    when "in_progress"
       # Could trigger notifications
-    when 'completed'
+    when "completed"
       # Could trigger notifications or celebrations
-    when 'cancelled'
+    when "cancelled"
       # Could trigger notifications about cancellation
-    when 'postponed'
+    when "postponed"
       # Could trigger notifications about postponement
     end
   end

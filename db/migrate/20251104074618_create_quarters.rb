@@ -8,11 +8,11 @@ class CreateQuarters < ActiveRecord::Migration[8.1]
       t.date :end_date, null: false
       t.date :evaluation_start_date
       t.date :evaluation_end_date
-      t.string :status, null: false, default: 'active'
+      t.string :status, null: false, default: "active"
       t.text :description
       t.boolean :is_current, default: false
-      t.references :previous_quarter, foreign_key: { to_table: :quarters }
-      t.references :created_by, foreign_key: { to_table: :users }
+      t.references :previous_quarter, foreign_key: {to_table: :quarters}
+      t.references :created_by, foreign_key: {to_table: :users}
 
       t.timestamps
     end

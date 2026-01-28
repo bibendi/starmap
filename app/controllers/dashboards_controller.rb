@@ -9,7 +9,7 @@ class DashboardsController < ApplicationController
     authorize :dashboard, :overview?
 
     @current_quarter = Quarter.current
-    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current }).order(:name)
+    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: {quarter: Quarter.current}).order(:name)
     @teams = Team.includes(:users)
 
     # Метрики для Overview Dashboard
@@ -24,7 +24,7 @@ class DashboardsController < ApplicationController
 
     @current_quarter = Quarter.current
     @user_skill_ratings = current_user.skill_ratings.includes(:technology, :quarter).where(quarter: Quarter.current)
-    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: { quarter: Quarter.current }).order(:name)
+    @technologies = Technology.includes(:skill_ratings).where(skill_ratings: {quarter: Quarter.current}).order(:name)
 
     # Метрики для Personal Dashboard
     @personal_growth = calculate_personal_growth
@@ -38,7 +38,7 @@ class DashboardsController < ApplicationController
     # Coverage Index = (количество технологий с >= 2 экспертами) / (общее количество технологий)
     total_technologies = Technology.count
     covered_technologies = Technology.joins(:skill_ratings)
-      .where(skill_ratings: { rating: 2..3, quarter: Quarter.current })
+      .where(skill_ratings: {rating: 2..3, quarter: Quarter.current})
       .group(:technology_id)
       .having("COUNT(*) >= 2")
       .count
@@ -53,7 +53,7 @@ class DashboardsController < ApplicationController
   def identify_red_zones
     # Red Zones = технологии с высокой критичностью и низким покрытием
     Technology.joins(:skill_ratings)
-      .where(criticality: 'high', skill_ratings: { quarter: Quarter.current })
+      .where(criticality: "high", skill_ratings: {quarter: Quarter.current})
       .group(:technology_id)
       .having("COUNT(CASE WHEN skill_ratings.rating >= 2 THEN 1 END) < 2")
       .count
@@ -80,12 +80,12 @@ class DashboardsController < ApplicationController
 
   def calculate_critical_expertise_index
     # Индекс критической экспертизы
-    critical_technologies = Technology.where(criticality: 'high')
+    critical_technologies = Technology.where(criticality: "high")
     critical_ratings = current_user.skill_ratings
       .where(technology: critical_technologies, quarter: Quarter.current, rating: 2..3)
       .count
 
     total_critical = critical_technologies.count
-    total_critical > 0 ? (critical_ratings.to_f / total_critical * 100).round(1) : 0
+    (total_critical > 0) ? (critical_ratings.to_f / total_critical * 100).round(1) : 0
   end
 end

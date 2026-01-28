@@ -150,11 +150,11 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       users.each do |user|
         technologies.each do |tech|
           create(:skill_rating,
-                 user: user,
-                 technology: tech,
-                 quarter: current_quarter,
-                 rating: rand(0..3),
-                 team: team)
+            user: user,
+            technology: tech,
+            quarter: current_quarter,
+            rating: rand(0..3),
+            team: team)
         end
       end
     end

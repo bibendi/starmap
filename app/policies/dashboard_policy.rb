@@ -12,7 +12,7 @@ class DashboardPolicy < ApplicationPolicy
       if unit_lead? || admin?
         scope.all
       elsif team_lead?
-        scope.where(user: { team: user.team })
+        scope.where(user: {team: user.team})
       else
         scope.where(user: user)
       end

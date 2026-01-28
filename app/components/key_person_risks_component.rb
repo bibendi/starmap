@@ -7,8 +7,8 @@ class KeyPersonRisksComponent < ViewComponent::Base
 
   def initialize(team:, label: nil, description: nil)
     @team = team
-    @label = label || I18n.t('components.key_person_risks.label')
-    @description = description || I18n.t('components.key_person_risks.description')
+    @label = label || I18n.t("components.key_person_risks.label")
+    @description = description || I18n.t("components.key_person_risks.description")
     @key_person_risks_count = calculate
   end
 
