@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    rubocop:
+      glob: "*.rb"
+      run: bin/rubocop {staged_files}
