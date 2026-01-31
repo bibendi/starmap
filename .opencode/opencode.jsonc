@@ -1,0 +1,4 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [".opencode/skills/rails/SKILL.md", ".opencode/skills/hotwire/SKILL.md"]
+}

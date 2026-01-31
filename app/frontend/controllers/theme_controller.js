@@ -5,15 +5,26 @@ export default class extends Controller {
   static values = { current: String }
 
   connect() {
+    this.isStoring = false
+    this.pendingTheme = null
     this.initializeTheme()
+    this.previousTheme = this.currentValue
     this.setupSystemPreferenceListener()
     this.setupTurboListener()
   }
 
+  disconnect() {
+    if (this.systemMediaQuery && this.systemListener) {
+      this.systemMediaQuery.removeEventListener('change', this.systemListener)
+    }
+    if (this.turboListener) {
+      document.removeEventListener('turbo:load', this.turboListener)
+    }
+  }
+
   setupTurboListener() {
-    document.addEventListener('turbo:load', () => {
-      this.initializeTheme()
-    })
+    this.turboListener = () => this.initializeTheme()
+    document.addEventListener('turbo:load', this.turboListener)
   }
 
   initializeTheme() {
@@ -24,16 +35,15 @@ export default class extends Controller {
   }
 
   getStoredTheme() {
-    const match = document.cookie.match(/theme=([^;]+)/)
-    const result = match ? match[1] : null
-    // Trim and validate
-    if (result && ['light', 'dark', 'system'].includes(result.trim())) {
-      return result.trim()
+    const theme = document.documentElement.dataset.theme
+    if (theme && ['light', 'dark', 'system'].includes(theme)) {
+      return theme
     }
     return null
   }
 
   setTheme(theme) {
+    this.previousTheme = this.currentValue
     this.currentValue = theme
     this.applyTheme()
     this.updateIcon()
@@ -70,6 +80,7 @@ export default class extends Controller {
       return true
     }
     // system
+    if (!window.matchMedia) return false
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   }
 
@@ -80,32 +91,74 @@ export default class extends Controller {
   }
 
   storeTheme(theme) {
+    // If a request is already in flight, save the latest theme and exit
+    if (this.isStoring) {
+      this.pendingTheme = theme
+      return
+    }
+
+    this.isStoring = true
     const csrfToken = this.csrfToken()
+    
+    // Check CSRF token presence
+    if (!csrfToken) {
+      console.error('CSRF token not found')
+      this.rollbackTheme()
+      this.isStoring = false
+      return
+    }
+
     fetch(`/theme/${theme}`, {
       method: 'POST',
       headers: { 'X-CSRF-Token': csrfToken },
       credentials: 'same-origin'
     })
       .then(response => {
-        if (response.ok) {
-          // Reload to apply server-side changes
-          // Turbo.visit(window.location.href)
-        } else {
-          console.error('Failed to store theme:', response.status)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
         }
       })
-      .catch(err => console.error('Failed to store theme:', err))
+      .catch(err => {
+        console.error('Failed to store theme:', err)
+        // Rollback only if there's no pending theme (user hasn't selected another theme yet)
+        if (!this.pendingTheme) {
+          this.rollbackTheme()
+        }
+      })
+      .finally(() => {
+        this.isStoring = false
+        
+        // Process pending theme if any
+        if (this.pendingTheme) {
+          const nextTheme = this.pendingTheme
+          this.pendingTheme = null
+          // Use setTimeout to avoid recursion in the same call stack
+          setTimeout(() => this.storeTheme(nextTheme), 0)
+        }
+      })
   }
 
   csrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
   }
 
+  rollbackTheme() {
+    if (this.previousTheme && this.previousTheme !== this.currentValue) {
+      this.currentValue = this.previousTheme
+      this.applyTheme()
+      this.updateIcon()
+    }
+  }
+
   setupSystemPreferenceListener() {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (!window.matchMedia) return
+    
+    this.systemMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    this.systemListener = () => {
       if (this.currentValue === 'system') {
         this.applyTheme()
       }
-    })
+    }
+    this.systemMediaQuery.addEventListener('change', this.systemListener)
   }
 }
