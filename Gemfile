@@ -15,6 +15,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 
 # Authentication and Authorization
 gem "devise"
+gem "devise-i18n"
 gem "pundit"
 
 # Hotwire for interactivity
