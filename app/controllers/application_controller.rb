@@ -19,6 +19,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :user_signed_in?
 
   helper_method :current_locale, :available_locales
+  helper_method :current_theme, :theme_class
 
   private
 
@@ -57,5 +58,15 @@ class ApplicationController < ActionController::Base
 
   def after_sign_out_path_for(resource_or_scope)
     new_user_session_path
+  end
+
+  def current_theme
+    theme = cookies[:theme]&.to_sym
+    theme if %i[light dark system].include?(theme)
+  end
+
+  def theme_class
+    return "dark" if current_theme == :dark
+    ""
   end
 end

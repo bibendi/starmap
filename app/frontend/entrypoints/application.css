@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source "../../../app/views/**/*.haml";
 @source "../../../app/views/**/*.html";
 @source "../../../app/views/**/*.erb";
@@ -13,4 +15,9 @@
 @theme {
   --font-family-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-dark-bg: #1f2937; /* gray-800 */
+  --color-dark-bg-alt: #111827; /* gray-900 */
+  --color-dark-text: #f3f4f6; /* gray-100 */
+  --color-dark-text-muted: #d1d5db; /* gray-300 */
+  --color-dark-border: #374151; /* gray-700 */
 }

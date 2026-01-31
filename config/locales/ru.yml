@@ -107,6 +107,16 @@ ru:
     ratings: "Оценки"
     admin: "Админка"
 
+  theme:
+    light: "Светлая"
+    dark: "Тёмная"
+    system: "Системная"
+    toggle: "Переключить тему"
+    switched:
+      light: "Тема изменена на светлую"
+      dark: "Тема изменена на тёмную"
+      system: "Тема изменена на системную"
+
   activerecord:
     attributes:
       technology:

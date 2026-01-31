@@ -132,6 +132,16 @@ en:
     ratings: "Ratings"
     admin: "Admin"
 
+  theme:
+    light: "Light"
+    dark: "Dark"
+    system: "System"
+    toggle: "Toggle theme"
+    switched:
+      light: "Theme switched to light"
+      dark: "Theme switched to dark"
+      system: "Theme switched to system"
+
   activerecord:
     attributes:
       technology:

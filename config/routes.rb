@@ -60,4 +60,7 @@ Rails.application.routes.draw do
 
   # Locale switching
   post "locale/:locale", to: "locales#switch", as: :switch_locale
+
+  # Theme switching
+  post "theme/:theme", to: "themes#switch", as: :switch_theme
 end
