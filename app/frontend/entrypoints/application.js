@@ -8,14 +8,10 @@ import { Application } from "@hotwired/stimulus"
 session.start()
 
 // Import Stimulus controllers
-import FiltersController from "../controllers/filters_controller.js"
-import RatingScaleController from "../controllers/rating_scale_controller.js"
 import ThemeController from "../controllers/theme_controller.js"
 
 // Register Stimulus controllers
 const application = Application.start()
-application.register("filters", FiltersController)
-application.register("rating-scale", RatingScaleController)
 application.register("theme", ThemeController)
 
 // Custom application JavaScript

@@ -27,10 +27,8 @@
               <% end %>
             </div>
             <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
-               <%= link_to t('navigation.overview'), overview_dashboard_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(overview_dashboard_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
-
               <% if user_signed_in? %>
-                 <%= link_to t('navigation.engineer'), personal_dashboard_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(personal_dashboard_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                 <%= link_to t('navigation.engineer'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
 
                  <% if policy(:navigation).show_team? %>
                     <%= link_to t('navigation.team'), team_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
@@ -40,7 +38,7 @@
                     <%= link_to t('navigation.unit'), unit_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(unit_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
                  <% end %>
 
-                 <%= link_to t('navigation.ratings'), skill_ratings_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(skill_ratings_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                 <%= link_to t('navigation.ratings'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
 
                 <% if policy(:navigation).show_admin? %>
                    <%= link_to t('navigation.admin'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?('/admin') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
