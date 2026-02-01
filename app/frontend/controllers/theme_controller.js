@@ -1,7 +1,7 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ["button", "iconLight", "iconDark", "iconSystem"]
+  static targets = ['button', 'iconLight', 'iconDark', 'iconSystem']
   static values = { current: String }
 
   connect() {
@@ -99,10 +99,9 @@ export default class extends Controller {
 
     this.isStoring = true
     const csrfToken = this.csrfToken()
-    
+
     // Check CSRF token presence
     if (!csrfToken) {
-      console.error('CSRF token not found')
       this.rollbackTheme()
       this.isStoring = false
       return
@@ -113,13 +112,12 @@ export default class extends Controller {
       headers: { 'X-CSRF-Token': csrfToken },
       credentials: 'same-origin'
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`)
         }
       })
-      .catch(err => {
-        console.error('Failed to store theme:', err)
+      .catch((_err) => {
         // Rollback only if there's no pending theme (user hasn't selected another theme yet)
         if (!this.pendingTheme) {
           this.rollbackTheme()
@@ -127,7 +125,7 @@ export default class extends Controller {
       })
       .finally(() => {
         this.isStoring = false
-        
+
         // Process pending theme if any
         if (this.pendingTheme) {
           const nextTheme = this.pendingTheme
@@ -152,7 +150,7 @@ export default class extends Controller {
 
   setupSystemPreferenceListener() {
     if (!window.matchMedia) return
-    
+
     this.systemMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     this.systemListener = () => {
       if (this.currentValue === 'system') {

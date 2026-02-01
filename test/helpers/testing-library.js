@@ -19,13 +19,13 @@ export function userEvent() {
     async click(element) {
       if (!element) throw new Error('Element not found for click')
       element.click()
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await new Promise((resolve) => setTimeout(resolve, 0))
     },
-    
+
     async keyboard(key) {
       const event = new KeyboardEvent('keydown', { key })
       document.activeElement?.dispatchEvent(event)
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await new Promise((resolve) => setTimeout(resolve, 0))
     }
   }
 }

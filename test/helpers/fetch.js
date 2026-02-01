@@ -1,5 +1,5 @@
 export function mockFetch(response = { ok: true, json: () => Promise.resolve({}) }) {
-  global.fetch = vi.fn().mockImplementation(() => 
+  global.fetch = vi.fn().mockImplementation(() =>
     Promise.resolve({
       ok: true,
       status: 200,
