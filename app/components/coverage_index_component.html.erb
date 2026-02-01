@@ -1,12 +1,12 @@
-<div class="flex-1 min-w-[250px] bg-gradient-to-br from-indigo-50 to-blue-50 shadow rounded-xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300 cursor-pointer">
-  <div class="flex items-center justify-between mb-4">
-    <dt class="text-sm font-medium text-indigo-700 truncate"><%= label %></dt>
-    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-      <svg class="h-4 w-4 text-indigo-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-      </svg>
-    </span>
+<div class="metric-card metric-card--primary">
+   <div class="content-row content-row--between spacing-sm">
+     <dt class="metric-card__label metric-card__label--primary"><%= label %></dt>
+      <span class="badge badge--primary">
+        <svg class="badge__icon badge__icon--primary" viewBox="0 0 20 20" fill="currentColor">
+         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+       </svg>
+     </span>
   </div>
-  <dd class="text-3xl font-bold text-gray-900"><%= "#{@coverage_index}%" %></dd>
-  <div class="text-xs text-gray-500 mt-1"><%= description %></div>
+   <dd class="metric-card__value"><%= "#{@coverage_index}%" %></dd>
+   <div class="metric-card__description"><%= description %></div>
 </div>

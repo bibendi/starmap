@@ -14,45 +14,45 @@
 
   <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <!-- Main navigation -->
-    <nav class="bg-white dark:bg-gray-900 shadow fixed top-0 left-0 right-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
+     <nav class="nav">
+       <div class="nav__container">
+         <div class="nav__content">
+           <div class="nav__section">
             <div class="flex-shrink-0 flex items-center space-x-4">
-               <%= link_to root_path, class: "text-xl font-bold text-indigo-600 dark:text-indigo-400" do %>
+                <%= link_to root_path, class: "brand-link" do %>
                  Starmap
                <% end %>
               <% unless user_signed_in? %>
-                  <%= link_to t('locale.sign_in'), new_user_session_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white dark:text-gray-900 bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900" %>
+                   <%= link_to t('locale.sign_in'), new_user_session_path, class: "btn btn--primary" %>
               <% end %>
             </div>
-            <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
+             <div class="hidden sm:ml-6 sm:flex sm:space-x-4 items-center">
               <% if user_signed_in? %>
-                 <%= link_to t('navigation.engineer'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                  <%= link_to t('navigation.engineer'), "#", class: "nav-link #{current_page?('#') ? 'nav-link--active' : 'nav-link--inactive'}" %>
 
                  <% if policy(:navigation).show_team? %>
-                    <%= link_to t('navigation.team'), team_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                     <%= link_to t('navigation.team'), team_path, class: "nav-link #{current_page?(team_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
                  <% end %>
 
                  <% if policy(:navigation).show_unit? %>
-                    <%= link_to t('navigation.unit'), unit_path, class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(unit_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                     <%= link_to t('navigation.unit'), unit_path, class: "nav-link #{current_page?(unit_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
                  <% end %>
 
-                 <%= link_to t('navigation.ratings'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?(team_path) ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                   <%= link_to t('navigation.ratings'), "#", class: "nav-link #{current_page?('#') ? 'nav-link--active' : 'nav-link--inactive'}" %>
 
                 <% if policy(:navigation).show_admin? %>
-                   <%= link_to t('navigation.admin'), "#", class: "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium #{current_page?('/admin') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}" %>
+                    <%= link_to t('navigation.admin'), "#", class: "nav-link #{current_page?('/admin') ? 'nav-link--active' : 'nav-link--inactive'}" %>
                 <% end %>
               <% end %>
             </div>
           </div>
-           <div class="flex items-center space-x-4">
+            <div class="nav__section space-x-4">
                <!-- Theme switcher -->
-              <div class="relative group pb-2" data-controller="theme">
+               <div class="relative group flex items-center overflow-visible" data-controller="theme">
                 <button type="button"
                         data-action="click->theme#toggle:prevent"
                         data-theme-target="button"
-                        class="flex items-center justify-center w-8 h-8 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none"
+                         class="theme-toggle"
                         aria-label="<%= t('theme.toggle') %>">
                   <svg data-theme-target="iconLight" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -64,37 +64,37 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </button>
-                <div class="opacity-0 invisible pointer-events-none absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto hover:opacity-100 hover:visible hover:pointer-events-auto transition-opacity duration-150" role="menu" aria-orientation="vertical" tabindex="-1">
-                  <button data-action="click->theme#setLight:prevent" class="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-left" role="menuitem" tabindex="-1">
+                <div class="dropdown-menu" role="menu" tabindex="-1">
+                   <button data-action="click->theme#setLight:prevent" class="dropdown-item" role="menuitem" tabindex="-1">
                     <%= t('theme.light') %>
                   </button>
-                  <button data-action="click->theme#setDark:prevent" class="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-left" role="menuitem" tabindex="-1">
+                   <button data-action="click->theme#setDark:prevent" class="dropdown-item" role="menuitem" tabindex="-1">
                     <%= t('theme.dark') %>
                   </button>
-                  <button data-action="click->theme#setSystem:prevent" class="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-left" role="menuitem" tabindex="-1">
-                    <%= t('theme.system') %>
-                  </button>
+                  <button data-action="click->theme#setSystem:prevent" class="dropdown-item" role="menuitem" tabindex="-1">
+                     <%= t('theme.system') %>
+                   </button>
                 </div>
               </div>
 
               <!-- Language switcher -->
-               <div class="relative group pb-2">
+              <div class="relative group flex items-center overflow-visible">
                 <button type="button" class="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none">
                  <span><%= t("locale.names.#{I18n.locale}", default: I18n.locale.to_s) %></span>
                   <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                  </svg>
                </button>
-                  <div class="opacity-0 invisible pointer-events-none absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto hover:opacity-100 hover:visible hover:pointer-events-auto transition-opacity duration-150" role="menu" aria-orientation="vertical" tabindex="-1">
+                  <div class="dropdown-menu" role="menu" tabindex="-1">
                  <% I18n.available_locales.each do |locale| %>
-                    <%= button_to t("locale.names.#{locale}", default: locale.to_s), switch_locale_path(locale: locale), method: :post, class: "block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-left", role: "menuitem", tabindex: "-1" %>
+                     <%= button_to t("locale.names.#{locale}", default: locale.to_s), switch_locale_path(locale: locale), method: :post, class: "dropdown-item", role: "menuitem", tabindex: "-1" %>
                  <% end %>
                </div>
              </div>
 
              <% if user_signed_in? %>
-                <span class="text-sm text-gray-700 dark:text-gray-300"><%= current_user.display_name %></span>
-                 <%= button_to t('locale.sign_out'), destroy_user_session_path, method: :delete, class: "inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900" %>
+                 <span class="text-sm text-gray-700 dark:text-gray-300 inline-flex items-center"><%= current_user.display_name %></span>
+                  <%= button_to t('locale.sign_out'), destroy_user_session_path, method: :delete, class: "btn btn--secondary" %>
              <% end %>
            </div>
         </div>
@@ -102,7 +102,7 @@
     </nav>
 
     <!-- Main container -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 mt-16 bg-white dark:bg-gray-800 rounded-lg shadow">
+     <div class="main-container mt-16">
       <!-- Flash messages -->
       <div id="flash">
         <%= render partial: "shared/flash" %>

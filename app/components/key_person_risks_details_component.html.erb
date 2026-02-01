@@ -1,27 +1,27 @@
-<div class="bg-white shadow sm:rounded-lg border border-gray-200">
-  <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-     <h3 class="text-lg leading-6 font-medium text-gray-900"><%= t('components.key_person_risks_details.title') %></h3>
-     <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= t('components.key_person_risks_details.description') %></p>
+<div class="card">
+  <div class="card__header">
+     <h3 class="card__title"><%= t('components.key_person_risks_details.title') %></h3>
+     <p class="card__description"><%= t('components.key_person_risks_details.description') %></p>
   </div>
-  <div class="px-6 py-6">
+  <div class="card__body">
     <% if any_risks? %>
       <div class="space-y-3">
         <% risks_data.each do |risk| %>
-          <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-white transition-colors duration-200 shadow-sm">
-            <div class="flex flex-col">
-              <span class="text-sm font-medium text-gray-900"><%= risk[:technology]&.name %></span>
-              <span class="text-xs text-gray-500"><%= risk[:technology]&.category %></span>
-            </div>
-            <div class="flex items-center">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                <%= risk[:user]&.full_name %>
-              </span>
-            </div>
-          </div>
+            <div class="card-item">
+              <div class="content-card">
+                <span class="text-heading"><%= risk[:technology]&.name %></span>
+                <span class="text-subtle"><%= risk[:technology]&.category %></span>
+             </div>
+              <div class="content-row">
+               <span class="badge badge--orange">
+                 <%= risk[:user]&.full_name %>
+               </span>
+             </div>
+           </div>
         <% end %>
       </div>
     <% else %>
-       <p class="text-sm text-gray-500 text-center py-4"><%= t('components.key_person_risks_details.no_data') %></p>
+        <p class="text-muted--center py-4"><%= t('components.key_person_risks_details.no_data') %></p>
     <% end %>
   </div>
 </div>
