@@ -117,7 +117,7 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("+2")
-        expect(page).to have_css(".bg-green-100.text-green-800")
+        expect(page).to have_css(".badge--success")
       end
     end
 
@@ -131,7 +131,7 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("-2")
-        expect(page).to have_css(".bg-red-100.text-red-800")
+        expect(page).to have_css(".badge--danger")
       end
     end
 

@@ -96,11 +96,11 @@ RSpec.describe CoverageIndexComponent, type: :component do
     end
 
     context "CSS classes" do
-      it "applies correct gradient and border classes" do
+      it "applies correct component classes" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_css(".bg-gradient-to-br.from-indigo-50.to-blue-50")
-        expect(page).to have_css(".border-indigo-100")
+        expect(page).to have_css(".metric-card")
+        expect(page).to have_css(".metric-card--primary")
       end
     end
 
