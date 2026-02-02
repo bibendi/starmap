@@ -1,52 +1,50 @@
 <div class="flex flex-col min-h-screen">
-  <main class="flex-1 flex flex-col">
-     <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-         <div class="flex justify-between items-center py-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100"><%= t('units.show.title') %></h1>
-          <% if @current_quarter %>
+   <main class="flex-1 flex flex-col">
+     <div class="page-header">
+       <div class="page-header__container">
+         <div class="page-header__content">
+           <h1 class="page-title"><%= t('units.show.title') %></h1>
+           <% if @current_quarter %>
              <span class="badge badge--primary">
                <%= @current_quarter.name %>
              </span>
-          <% end %>
-        </div>
-      </div>
-    </div>
+           <% end %>
+         </div>
+       </div>
+     </div>
 
-    <main class="flex-1 max-w-7xl mx-auto w-full py-6 sm:px-6 lg:px-8">
-      <% if @current_quarter %>
+     <main class="page-main">
+       <% if @current_quarter %>
          <div class="card mb-8">
-          <div class="px-6 py-6">
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-8">
-                 <div>
-                     <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"><%= t('units.show.unit') %></dt>
-                     <dd class="text-2xl font-bold text-gray-900 dark:text-gray-100"><%= @unit&.name || t('units.show.not_assigned') %></dd>
-                 </div>
-                 <div>
-                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"><%= t('units.show.unit_lead') %></dt>
-                    <dd class="text-lg font-medium text-gray-700 dark:text-gray-300"><%= @unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
-                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% else %>
+           <div class="card__body">
+             <div class="flex items-center gap-8">
+               <div>
+                 <dt class="label"><%= t('units.show.unit') %></dt>
+                 <dd class="value--large"><%= @unit&.name || t('units.show.not_assigned') %></dd>
+               </div>
+               <div>
+                 <dt class="label"><%= t('units.show.unit_lead') %></dt>
+                 <dd class="value--medium"><%= @unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
+               </div>
+             </div>
+           </div>
+         </div>
+       <% else %>
          <div class="alert alert--warning">
-          <div class="flex">
-            <div class="flex-shrink-0">
-               <svg class="h-6 w-6 text-yellow-400 dark:text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div class="ml-4">
-               <p class="text-sm text-yellow-700 dark:text-yellow-300">
-                  <%= t('units.show.no_active_quarter.message') %>
-              </p>
-            </div>
-          </div>
-        </div>
-      <% end %>
-    </main>
-  </main>
-</div>
+           <div class="flex">
+             <div class="alert__icon-container">
+               <svg class="h-6 w-6 alert__icon--warning" viewBox="0 0 20 20" fill="currentColor">
+                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+               </svg>
+             </div>
+             <div class="alert__content">
+               <p class="alert__text alert__text--warning">
+                 <%= t('teams.show.no_active_quarter.message') %>
+               </p>
+             </div>
+           </div>
+         </div>
+       <% end %>
+     </main>
+   </main>
+ </div>
