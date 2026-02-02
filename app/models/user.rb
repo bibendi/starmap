@@ -2,8 +2,12 @@
 # Integrates Devise for database authentication
 class User < ApplicationRecord
   # Include Devise modules for authentication
-  devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :trackable, :validatable
+  devise :database_authenticatable,
+    # :registerable,
+    :recoverable,
+    :rememberable,
+    :trackable,
+    :validatable
 
   # Associations
   belongs_to :team, optional: true

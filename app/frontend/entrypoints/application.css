@@ -185,6 +185,26 @@
     @apply h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600;
   }
 
+  .form--vertical {
+    @apply space-y-6;
+  }
+
+  .form-field {
+    @apply mt-1;
+  }
+
+  .form-checkbox-label {
+    @apply ml-2 block text-sm text-gray-900 dark:text-gray-100;
+  }
+
+  .form-actions {
+    @apply flex items-center justify-between;
+  }
+
+  .form-submit {
+    @apply flex w-full justify-center;
+  }
+
   /* === Content cards === */
   .card {
     @apply bg-white dark:bg-gray-800 shadow sm:rounded-lg border border-gray-200 dark:border-gray-700;
@@ -529,6 +549,10 @@
       @apply text-[10px] text-gray-400 dark:text-gray-500;
     }
 
+    .text-body {
+      @apply text-sm text-gray-600 dark:text-gray-400;
+    }
+
     /* === Layout components === */
     .content-card {
       @apply flex flex-col;
@@ -636,6 +660,10 @@
       @apply flex-1 max-w-7xl mx-auto w-full py-6 sm:px-6 lg:px-8;
     }
 
+    .page--centered {
+      @apply flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8;
+    }
+
     .label {
       @apply text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide;
     }
@@ -646,6 +674,59 @@
 
     .value--medium {
       @apply text-lg font-medium text-gray-700 dark:text-gray-300;
+    }
+
+    .heading--centered {
+      @apply text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 text-center;
+    }
+
+    /* === Containers === */
+    .container--narrow {
+      @apply sm:mx-auto sm:w-full sm:max-w-md;
+    }
+
+    /* === Card variants === */
+    .card--centered {
+      @apply mt-8 sm:mx-auto sm:w-full sm:max-w-md;
+    }
+
+    .card--plain {
+      @apply py-8 px-4;
+    }
+
+    /* === Form layout === */
+    .form--vertical {
+      @apply space-y-6;
+    }
+
+    .form-field {
+      @apply mt-1;
+    }
+
+    .form-checkbox-label {
+      @apply ml-2 block text-sm text-gray-900 dark:text-gray-100;
+    }
+
+    .form-actions {
+      @apply flex items-center justify-between;
+    }
+
+    .form-submit {
+      @apply flex w-full justify-center;
+    }
+
+    /* === Alert components === */
+    .alert__heading {
+      @apply font-bold;
+    }
+
+    .alert__list {
+      @apply mt-2 list-disc list-inside;
+    }
+
+    /* === List components === */
+    .list--spaced {
+      @apply space-y-2;
     }
 
     /* === Legend components === */
