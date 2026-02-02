@@ -20,7 +20,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "returns 0 key person risks" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.key_person_risks_count).to eq(0)
       end
     end
@@ -33,7 +33,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "returns 1 key person risk" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.key_person_risks_count).to eq(1)
       end
     end
@@ -46,7 +46,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "returns 3 key person risks" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.key_person_risks_count).to eq(3)
       end
     end
@@ -55,7 +55,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       let(:empty_team) { create(:team) }
 
       it "returns 0 key person risks" do
-        component = described_class.new(team: empty_team)
+        component = described_class.new(teams: [empty_team])
         expect(component.key_person_risks_count).to eq(0)
       end
     end
@@ -66,7 +66,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "returns 0 key person risks" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.key_person_risks_count).to eq(0)
       end
     end
@@ -78,7 +78,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "returns 0 key person risks" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.key_person_risks_count).to eq(0)
       end
     end
@@ -90,8 +90,24 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "does not count non-expert ratings" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.key_person_risks_count).to eq(0)
+      end
+    end
+
+    context "when multiple teams are provided" do
+      let_it_be(:team2) { create(:team) }
+      let_it_be(:user2) { create(:user, team: team2) }
+
+      before do
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team2)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "counts technologies with single expert across all teams" do
+        component = described_class.new(teams: [team, team2])
+        expect(component.key_person_risks_count).to eq(1)
       end
     end
   end
@@ -99,7 +115,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
   describe "rendering" do
     context "with custom label and description" do
       it "renders custom text" do
-        component = described_class.new(team: team, label: "Custom Label", description: "Custom Description")
+        component = described_class.new(teams: [team], label: "Custom Label", description: "Custom Description")
         render_inline(component)
         expect(page).to have_text("Custom Label")
         expect(page).to have_text("Custom Description")
@@ -108,7 +124,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
 
     context "with default label and description" do
       it "renders default text" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Key Person Risks")
         expect(page).to have_text("Single expert risks")
@@ -122,7 +138,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
       end
 
       it "displays count" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("2")
       end
@@ -130,7 +146,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
 
     context "when count is 0" do
       it "displays 0" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("0")
       end
@@ -160,7 +176,7 @@ RSpec.describe KeyPersonRisksComponent, type: :component do
     end
 
     specify do
-      expect { render_inline(described_class.new(team: team)) }.to perform_constant_number_of_queries
+      expect { render_inline(described_class.new(teams: [team])) }.to perform_constant_number_of_queries
     end
   end
 end

@@ -62,7 +62,7 @@
           <%= render CoverageIndexComponent.new(teams: [@team]) %>
           <%= render MaturityIndexComponent.new(teams: [@team]) %>
           <%= render RedZonesCardComponent.new(teams: [@team]) %>
-          <%= render KeyPersonRisksComponent.new(team: @team) %>
+          <%= render KeyPersonRisksComponent.new(teams: [@team]) %>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
