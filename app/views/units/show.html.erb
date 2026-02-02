@@ -13,23 +13,25 @@
        </div>
      </div>
 
-     <main class="page-main">
-       <% if @current_quarter %>
-         <div class="card mb-8">
-           <div class="card__body">
-             <div class="flex items-center gap-8">
-               <div>
-                 <dt class="label"><%= t('units.show.unit') %></dt>
-                 <dd class="value--large"><%= @unit&.name || t('units.show.not_assigned') %></dd>
-               </div>
-               <div>
-                 <dt class="label"><%= t('units.show.unit_lead') %></dt>
-                 <dd class="value--medium"><%= @unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
-               </div>
-             </div>
-           </div>
-         </div>
-       <% else %>
+      <main class="page-main">
+        <% if @current_quarter %>
+          <div class="card mb-8">
+            <div class="card__body">
+              <div class="flex items-center gap-8">
+                <div>
+                  <dt class="label"><%= t('units.show.unit') %></dt>
+                  <dd class="value--large"><%= @unit&.name || t('units.show.not_assigned') %></dd>
+                </div>
+                <div>
+                  <dt class="label"><%= t('units.show.unit_lead') %></dt>
+                  <dd class="value--medium"><%= @unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <%= render CoverageIndexComponent.new(teams: @teams) %>
+        <% else %>
          <div class="alert alert--warning">
            <div class="flex">
              <div class="alert__icon-container">

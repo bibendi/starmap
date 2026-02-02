@@ -20,5 +20,6 @@ class UnitsController < ApplicationController
 
   def set_unit_context
     @current_quarter = Quarter.current
+    @teams = @unit.teams.includes(:team_lead, :users, :team_technologies)
   end
 end

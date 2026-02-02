@@ -24,7 +24,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
       end
 
       it "returns 100% coverage" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.coverage_index).to eq(100)
       end
     end
@@ -37,7 +37,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
       end
 
       it "returns 50% coverage" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.coverage_index).to eq(50)
       end
     end
@@ -46,7 +46,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
       let(:empty_team) { create(:team) }
 
       it "returns 0% coverage" do
-        component = described_class.new(team: empty_team)
+        component = described_class.new(teams: [empty_team])
         expect(component.coverage_index).to eq(0)
       end
     end
@@ -59,7 +59,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
       end
 
       it "calculates based on custom target" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.coverage_index).to eq(50)
       end
     end
@@ -70,7 +70,27 @@ RSpec.describe CoverageIndexComponent, type: :component do
       end
 
       it "returns 0% coverage" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
+        expect(component.coverage_index).to eq(0)
+      end
+    end
+
+    context "with multiple teams" do
+      let_it_be(:team2) { create(:team) }
+      let_it_be(:user2) { create(:user, team: team2) }
+
+      before do
+        create(:team_technology, team: team2, technology: technology1, target_experts: 2)
+        create(:team_technology, team: team2, technology: technology2, target_experts: 2)
+
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 2, team: team2)
+        create(:skill_rating, user: user2, technology: technology2, quarter: current_quarter, rating: 2, team: team2)
+      end
+
+      it "calculates coverage across all team+technology combinations" do
+        component = described_class.new(teams: [team, team2])
         expect(component.coverage_index).to eq(0)
       end
     end
@@ -79,7 +99,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
   describe "rendering" do
     context "with custom label and description" do
       it "renders custom text" do
-        component = described_class.new(team: team, label: "Custom Label", description: "Custom Description")
+        component = described_class.new(teams: [team], label: "Custom Label", description: "Custom Description")
         render_inline(component)
         expect(page).to have_text("Custom Label")
         expect(page).to have_text("Custom Description")
@@ -88,7 +108,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
 
     context "with default label and description" do
       it "renders default text" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Coverage Index")
         expect(page).to have_text("Technology coverage indicator")
@@ -97,7 +117,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
 
     context "CSS classes" do
       it "applies correct component classes" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_css(".metric-card")
         expect(page).to have_css(".metric-card--primary")
@@ -111,7 +131,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
       end
 
       it "displays percentage" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("50%")
       end
@@ -148,7 +168,7 @@ RSpec.describe CoverageIndexComponent, type: :component do
     end
 
     specify do
-      expect { render_inline(described_class.new(team: team)) }.to perform_constant_number_of_queries
+      expect { render_inline(described_class.new(teams: [team])) }.to perform_constant_number_of_queries
     end
   end
 end

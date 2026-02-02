@@ -5,8 +5,8 @@ class CoverageIndexComponent < ViewComponent::Base
 
   attr_reader :coverage_index, :label, :description
 
-  def initialize(team:, label: nil, description: nil)
-    @team = team
+  def initialize(teams:, label: nil, description: nil)
+    @teams = teams
     @label = label || I18n.t("components.coverage_index.label")
     @description = description || I18n.t("components.coverage_index.description")
     @coverage_index = calculate
@@ -15,24 +15,25 @@ class CoverageIndexComponent < ViewComponent::Base
   private
 
   def calculate
-    team_technologies = @team.team_technologies.includes(:technology)
+    team_technologies = TeamTechnology.includes(:technology).where(team_id: @teams)
     return 0 if team_technologies.empty?
 
     current_quarter = Quarter.current
     return 0 unless current_quarter
 
-    technology_ids = team_technologies.map(&:technology_id)
+    team_ids = @teams.map(&:id)
 
     expert_counts = SkillRating
       .where(quarter: current_quarter,
         rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
-        team_id: @team.id,
-        technology_id: technology_ids)
-      .group(:technology_id)
+        team_id: team_ids)
+      .group(:team_id, :technology_id)
       .count
+      .transform_keys { |k| "#{k[0]}-#{k[1]}" }
 
     covered_count = team_technologies.count do |team_tech|
-      expert_count = expert_counts[team_tech.technology_id] || 0
+      key = "#{team_tech.team_id}-#{team_tech.technology_id}"
+      expert_count = expert_counts[key] || 0
       expert_count >= team_tech.target_experts
     end
 
