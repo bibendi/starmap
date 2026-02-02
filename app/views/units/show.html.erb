@@ -33,6 +33,7 @@
           <div class="flex flex-wrap gap-6 mb-8">
             <%= render CoverageIndexComponent.new(teams: @teams) %>
             <%= render MaturityIndexComponent.new(teams: @teams) %>
+            <%= render RedZonesCardComponent.new(teams: @teams) %>
           </div>
         <% else %>
          <div class="alert alert--warning">
