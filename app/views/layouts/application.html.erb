@@ -28,17 +28,15 @@
             </div>
              <div class="hidden sm:ml-6 sm:flex sm:space-x-4 items-center">
               <% if user_signed_in? %>
-                  <%= link_to t('navigation.engineer'), "#", class: "nav-link #{current_page?('#') ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <% if policy(:navigation).show_unit? %>
+                    <%= link_to t('navigation.unit'), unit_path, class: "nav-link #{current_page?(unit_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <% end %>
 
-                 <% if policy(:navigation).show_team? %>
-                     <%= link_to t('navigation.team'), team_path, class: "nav-link #{current_page?(team_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
-                 <% end %>
+                  <% if policy(:navigation).show_team? %>
+                    <%= link_to t('navigation.team'), team_path, class: "nav-link #{current_page?(team_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <% end %>
 
-                 <% if policy(:navigation).show_unit? %>
-                     <%= link_to t('navigation.unit'), unit_path, class: "nav-link #{current_page?(unit_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
-                 <% end %>
-
-                   <%= link_to t('navigation.ratings'), "#", class: "nav-link #{current_page?('#') ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <%#= link_to t('navigation.engineer'), "#", class: "nav-link #{current_page?('#') ? 'nav-link--active' : 'nav-link--inactive'}" %>
 
                 <% if policy(:navigation).show_admin? %>
                     <%= link_to t('navigation.admin'), "#", class: "nav-link #{current_page?('/admin') ? 'nav-link--active' : 'nav-link--inactive'}" %>
