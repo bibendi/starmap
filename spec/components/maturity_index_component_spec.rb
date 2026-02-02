@@ -17,14 +17,14 @@ RSpec.describe MaturityIndexComponent, type: :component do
       end
 
       it "calculates average rating" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.maturity_index).to eq(2.5)
       end
     end
 
     context "when no ratings exist" do
       it "returns 0" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.maturity_index).to eq(0)
       end
     end
@@ -35,7 +35,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
       end
 
       it "returns 0" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.maturity_index).to eq(0)
       end
     end
@@ -51,7 +51,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
       end
 
       it "calculates average across all ratings" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.maturity_index).to eq(2.0)
       end
     end
@@ -63,8 +63,24 @@ RSpec.describe MaturityIndexComponent, type: :component do
       end
 
       it "includes zero values in average calculation" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.maturity_index).to eq(1.5)
+      end
+    end
+
+    context "when multiple teams are provided" do
+      let_it_be(:team2) { create(:team) }
+      let_it_be(:user2) { create(:user, team: team2) }
+
+      before do
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 1, team: team2)
+      end
+
+      it "calculates average across all teams" do
+        component = described_class.new(teams: [team, team2])
+        expect(component.maturity_index).to eq(2.0)
       end
     end
   end
@@ -72,7 +88,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
   describe "rendering" do
     context "with custom label and description" do
       it "renders custom text" do
-        component = described_class.new(team: team, label: "Custom Label", description: "Custom Description")
+        component = described_class.new(teams: [team], label: "Custom Label", description: "Custom Description")
         render_inline(component)
         expect(page).to have_text("Custom Label")
         expect(page).to have_text("Custom Description")
@@ -81,7 +97,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
 
     context "with default label and description" do
       it "renders default text" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Maturity Index")
         expect(page).to have_text("Competency maturity level")
@@ -95,7 +111,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
       end
 
       it "displays value with max scale" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("2.5/3.0")
       end
@@ -103,7 +119,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
 
     context "when maturity index is 0" do
       it "displays 0/3.0" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("0/3.0")
       end
@@ -133,7 +149,7 @@ RSpec.describe MaturityIndexComponent, type: :component do
     end
 
     specify do
-      expect { render_inline(described_class.new(team: team)) }.to perform_constant_number_of_queries
+      expect { render_inline(described_class.new(teams: [team])) }.to perform_constant_number_of_queries
     end
   end
 end

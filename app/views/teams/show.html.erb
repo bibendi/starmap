@@ -60,7 +60,7 @@
 
         <div class="flex flex-wrap gap-6 mb-8">
           <%= render CoverageIndexComponent.new(teams: [@team]) %>
-          <%= render MaturityIndexComponent.new(team: @team) %>
+          <%= render MaturityIndexComponent.new(teams: [@team]) %>
           <%= render RedZonesCardComponent.new(team: @team) %>
           <%= render KeyPersonRisksComponent.new(team: @team) %>
         </div>
