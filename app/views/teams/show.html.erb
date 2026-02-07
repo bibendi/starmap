@@ -67,7 +67,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <%= render RedZonesDetailsComponent.new(team: @team) %>
-          <%= render KeyPersonRisksDetailsComponent.new(team: @team) %>
+           <%= render KeyPersonRisksDetailsComponent.new(teams: [@team]) %>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">

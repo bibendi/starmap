@@ -20,18 +20,20 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       end
 
       it "returns 3 key person risks" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.risks_data.size).to eq(3)
         expect(component.any_risks?).to be true
       end
 
-      it "includes technology and user data" do
-        component = described_class.new(team: team)
+      it "includes technology, team and user data" do
+        component = described_class.new(teams: [team])
         tech_names = component.risks_data.map { |r| r[:technology]&.name }
         user_names = component.risks_data.map { |r| r[:user]&.full_name }
+        team_names = component.risks_data.map { |r| r[:team]&.name }
 
         expect(tech_names).to include("Ruby", "PostgreSQL", "React")
         expect(user_names).to include("John Doe", "Jane Smith")
+        expect(team_names).to all eq(team.name)
       end
     end
 
@@ -42,7 +44,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       end
 
       it "returns 0 key person risks" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.risks_data).to be_empty
         expect(component.any_risks?).to be false
       end
@@ -52,7 +54,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       let(:empty_team) { create(:team) }
 
       it "returns empty array" do
-        component = described_class.new(team: empty_team)
+        component = described_class.new(teams: [empty_team])
         expect(component.risks_data).to be_empty
         expect(component.any_risks?).to be false
       end
@@ -65,7 +67,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       end
 
       it "returns empty array" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.risks_data).to be_empty
         expect(component.any_risks?).to be false
       end
@@ -77,9 +79,38 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       end
 
       it "does not count non-expert ratings" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.risks_data).to be_empty
         expect(component.any_risks?).to be false
+      end
+    end
+
+    context "when multiple teams are provided" do
+      let_it_be(:team2) { create(:team) }
+      let_it_be(:user3) { create(:user, team: team2, first_name: "Bob", last_name: "Brown") }
+
+      before do
+        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user3, technology: technology2, quarter: current_quarter, rating: 3, team: team2)
+        create(:skill_rating, user: user2, technology: technology3, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "returns key person risks across all teams" do
+        component = described_class.new(teams: [team, team2])
+        expect(component.risks_data.size).to eq(3)
+        expect(component.any_risks?).to be true
+      end
+
+      it "includes team information for each risk" do
+        component = described_class.new(teams: [team, team2])
+        team_names = component.risks_data.map { |r| r[:team]&.name }
+        expect(team_names).to include(team.name, team2.name)
+      end
+
+      it "sorts by technology name" do
+        component = described_class.new(teams: [team, team2])
+        tech_names = component.risks_data.map { |r| r[:technology]&.name }
+        expect(tech_names).to eq(["PostgreSQL", "React", "Ruby"])
       end
     end
   end
@@ -92,36 +123,59 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
       end
 
       it "renders technology names" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Ruby")
         expect(page).to have_text("PostgreSQL")
       end
 
       it "renders technology categories" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Backend")
         expect(page).to have_text("Database")
       end
 
       it "renders user names" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("John Doe")
       end
 
       it "renders header" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Key Person Risks")
         expect(page).to have_text("Technologies with single expert")
+      end
+
+      context "with single team" do
+        it "does not render team name" do
+          component = described_class.new(teams: [team])
+          render_inline(component)
+          expect(page).not_to have_text(team.name)
+        end
+      end
+
+      context "with multiple teams" do
+        let_it_be(:team2) { create(:team) }
+
+        before do
+          create(:skill_rating, user: user2, technology: technology3, quarter: current_quarter, rating: 2, team: team2)
+        end
+
+        it "renders team names" do
+          component = described_class.new(teams: [team, team2])
+          render_inline(component)
+          expect(page).to have_text(team.name)
+          expect(page).to have_text(team2.name)
+        end
       end
     end
 
     context "when there are no key person risks" do
       it "renders empty state message" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("No key person risks detected")
       end
@@ -158,7 +212,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
     end
 
     specify do
-      expect { render_inline(described_class.new(team: team)) }.to perform_constant_number_of_queries
+      expect { render_inline(described_class.new(teams: [team])) }.to perform_constant_number_of_queries
     end
   end
 end

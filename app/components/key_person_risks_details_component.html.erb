@@ -1,4 +1,4 @@
-<div class="card">
+ <div class="card">
   <div class="card__header">
      <h3 class="card__title"><%= t('components.key_person_risks_details.title') %></h3>
      <p class="card__description"><%= t('components.key_person_risks_details.description') %></p>
@@ -13,11 +13,14 @@
                 <span class="text-subtle"><%= risk[:technology]&.category %></span>
              </div>
               <div class="content-row">
-               <span class="badge badge--orange">
-                 <%= risk[:user]&.full_name %>
-               </span>
-             </div>
-           </div>
+                <span class="badge badge--orange">
+                  <%= risk[:user]&.full_name %>
+                </span>
+                <% if multiple_teams? %>
+                  <span class="text-subtle ml-2"><%= risk[:team]&.name %></span>
+                <% end %>
+              </div>
+            </div>
         <% end %>
       </div>
     <% else %>

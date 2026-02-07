@@ -36,6 +36,10 @@
             <%= render RedZonesCardComponent.new(teams: @teams) %>
             <%= render KeyPersonRisksComponent.new(teams: @teams) %>
           </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <%= render KeyPersonRisksDetailsComponent.new(teams: @teams) %>
+          </div>
         <% else %>
          <div class="alert alert--warning">
            <div class="flex">
