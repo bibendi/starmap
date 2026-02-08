@@ -69,7 +69,7 @@ en:
       description: "Single expert risks"
     red_zones_details:
       title: "Red Zones"
-      description: "%{count} critical technologies with insufficient coverage"
+      description: "%{count} critical coverage gaps"
       no_data: "No red zones detected"
       experts: "Experts"
     key_person_risks_details:

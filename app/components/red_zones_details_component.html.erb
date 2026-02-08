@@ -39,21 +39,42 @@
                         <% slide[:red_zones].each_with_index do |red_zone, index| %>
                           <span class="group relative inline-block">
                             <%= link_to red_zone[:team]&.name, team_path(name: red_zone[:team]&.name), class: "link hover:underline truncate max-w-[140px]" %><% if index < slide[:red_zones].size - 1 %>,<% end %>
-                            <div class="tooltip tooltip--bottom opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
-                              <span class="badge badge--danger badge--sm">
-                                <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
-                              </span>
-                              <span class="tooltip__arrow"></span>
-                            </div>
+                             <div class="tooltip tooltip--bottom !whitespace-normal max-w-[280px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+                               <div class="flex items-start gap-2 py-1">
+                                 <span class="badge badge--danger badge--sm flex-shrink-0">
+                                   <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
+                                 </span>
+                                 <% if red_zone[:experts].any? %>
+                                   <div class="text-sm text-gray-800 dark:text-gray-200 leading-snug">
+                                     <%= red_zone[:experts].map { |e| "<span class='whitespace-nowrap'>#{e.full_name}</span>" }.join(", ").html_safe %>
+                                   </div>
+                                 <% end %>
+                               </div>
+                               <span class="tooltip__arrow"></span>
+                             </div>
                           </span>
                         <% end %>
                       </div>
                     </div>
                 <% else %>
-                  <div class="content-row mt-2">
-                    <span class="badge badge--danger">
-                      <%= "#{slide[:red_zones].first[:expert_count]}/#{slide[:red_zones].first[:target_experts]}" %>
+                  <% red_zone = slide[:red_zones].first %>
+                  <div class="content-row mt-2 group relative inline-block">
+                    <span class="badge badge--danger cursor-help">
+                      <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
                     </span>
+                    <% if red_zone[:experts].any? %>
+                      <div class="tooltip tooltip--bottom !whitespace-normal max-w-[280px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+                        <div class="flex items-start gap-2 py-1">
+                          <span class="badge badge--danger badge--sm flex-shrink-0">
+                            <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
+                          </span>
+                          <div class="text-sm text-gray-800 dark:text-gray-200 leading-snug">
+                            <%= red_zone[:experts].map { |e| "<span class='whitespace-nowrap'>#{e.full_name}</span>" }.join(", ").html_safe %>
+                          </div>
+                        </div>
+                        <span class="tooltip__arrow"></span>
+                      </div>
+                    <% end %>
                   </div>
                 <% end %>
               </div>

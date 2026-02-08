@@ -44,7 +44,7 @@ ru:
       description: "Риски единоличной экспертизы"
     red_zones_details:
       title: "Red Zones"
-      description: "%{count} технологий с высокой/обычной критичностью и низким покрытием"
+      description: "%{count} критических проблем покрытия"
       no_data: "Красных зон не обнаружено"
       experts: "Эксперты"
     key_person_risks_details:

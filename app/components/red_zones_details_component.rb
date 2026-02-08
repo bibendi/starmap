@@ -25,11 +25,7 @@ class RedZonesDetailsComponent < ViewComponent::Base
   end
 
   def red_zones_technologies_count
-    if multiple_teams?
-      grouped_red_zones.size
-    else
-      red_zones_data.pluck(:technology).uniq.size
-    end
+    red_zones_data.size
   end
 
   def carousel_slides
@@ -64,25 +60,35 @@ class RedZonesDetailsComponent < ViewComponent::Base
     technology_ids = team_technologies.map(&:technology_id)
     team_ids = @teams.map(&:id)
 
-    expert_counts = SkillRating
+    expert_ratings = SkillRating
+      .preload(:user)
       .where(
         quarter: current_quarter,
         technology_id: technology_ids,
         rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
         team_id: team_ids
       )
-      .group(:technology_id, :team_id)
-      .count
+
+    # Group experts by technology_id and team_id
+    experts_by_tech_team = expert_ratings.each_with_object({}) do |rating, hash|
+      key = [rating.technology_id, rating.team_id]
+      hash[key] ||= []
+      hash[key] << rating.user
+    end
 
     red_zones = team_technologies.each_with_object([]) do |team_tech, result|
-      expert_count = expert_counts[[team_tech.technology_id, team_tech.team_id]] || 0
+      key = [team_tech.technology_id, team_tech.team_id]
+      experts = experts_by_tech_team[key] || []
+      expert_count = experts.size
+
       if expert_count < team_tech.target_experts
         result << {
           technology: team_tech.technology,
           team: team_tech.team,
           expert_count: expert_count,
           target_experts: team_tech.target_experts,
-          deficit: team_tech.target_experts - expert_count
+          deficit: team_tech.target_experts - expert_count,
+          experts: experts
         }
       end
     end

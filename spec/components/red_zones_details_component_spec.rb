@@ -102,7 +102,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
           render_inline(component)
 
           expect(page).to have_text("Red Zones")
-          expect(page).to have_text(/critical technologies with insufficient coverage/i)
+          expect(page).to have_text(/critical coverage gaps/i)
           expect(page).to have_text(technology1.name)
           expect(page).to have_text("1/2")
         end
@@ -126,7 +126,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
           render_inline(component)
 
           expect(page).to have_text("Red Zones")
-          expect(page).to have_text(/critical technologies with insufficient coverage/i)
+          expect(page).to have_text(/critical coverage gaps/i)
           expect(page).to have_text(test_technology.name, count: 1) # Technology appears once
           expect(page).to have_text(team.name)
           expect(page).to have_text(team2.name)
