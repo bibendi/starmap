@@ -41,6 +41,10 @@
              <%= render RedZonesDetailsComponent.new(teams: @teams) %>
              <%= render KeyPersonRisksDetailsComponent.new(teams: @teams) %>
            </div>
+
+           <div class="mb-8">
+             <%= render UnitTechnologyTreemapComponent.new(teams: @teams) %>
+           </div>
         <% else %>
          <div class="alert alert--warning">
            <div class="flex">

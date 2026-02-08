@@ -93,6 +93,11 @@ en:
         high: "High"
         normal: "Norm"
         low: "Low"
+    unit_technology_treemap:
+      title: "Technology Heatmap"
+      description: "%{count} technologies with experts"
+      no_data: "No technologies with experts found"
+      experts: "experts"
       legend:
         expert: "Can teach others"
         proficient: "Proficient"

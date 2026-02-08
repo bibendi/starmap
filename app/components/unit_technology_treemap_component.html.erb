@@ -1,0 +1,18 @@
+<div class="card">
+  <div class="card__header">
+    <h3 class="card__title"><%= t('components.unit_technology_treemap.title') %></h3>
+    <p class="card__description"><%= t('components.unit_technology_treemap.description', count: technologies_count) %></p>
+  </div>
+  <div class="card__body">
+    <% if any_technologies? %>
+      <div class="treemap-chart-container" style="height: 400px;">
+        <canvas
+          data-controller="treemap-chart"
+          data-treemap-chart-data-value="<%= chart_data.to_json %>"
+        ></canvas>
+      </div>
+    <% else %>
+      <p class="text-muted--center py-4"><%= t('components.unit_technology_treemap.no_data') %></p>
+    <% end %>
+  </div>
+</div>

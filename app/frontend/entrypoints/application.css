@@ -787,4 +787,9 @@
     .icon-btn__icon {
       @apply w-4 h-4 text-gray-600 dark:text-gray-300;
     }
+
+    /* === Treemap Chart === */
+    .treemap-chart-container {
+      @apply w-full relative;
+    }
 }

@@ -10,12 +10,14 @@ session.start()
 
 // Import Stimulus controllers
 import ThemeController from '../controllers/theme_controller.js'
+import TreemapChartController from '../controllers/treemap_chart_controller.js'
 import VerticalPaginationController from '../controllers/vertical_pagination_controller.js'
 
 // Register Stimulus controllers
 const application = Application.start()
 application.register('theme', ThemeController)
 application.register('vertical-pagination', VerticalPaginationController)
+application.register('treemap-chart', TreemapChartController)
 
 // Custom application JavaScript
 document.addEventListener('DOMContentLoaded', () => {

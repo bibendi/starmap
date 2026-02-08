@@ -68,6 +68,11 @@ ru:
         high: "Высокая"
         normal: "Обычная"
         low: "Низкая"
+    unit_technology_treemap:
+      title: "Карта технологий"
+      description: "%{count} технологий с экспертами"
+      no_data: "Технологий с экспертами не найдено"
+      experts: "экспертов"
       legend:
         expert: "Может учить других"
         proficient: "Свободно владеет"
