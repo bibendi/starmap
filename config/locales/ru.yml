@@ -27,7 +27,9 @@ ru:
     show:
       title: "Дашборд юнита"
       unit_details: "Детали юнита и руководство"
+      unit: "Юнит"
       unit_lead: "Юнит‑лид"
+      teams: "Команды"
       not_assigned: "Не назначен"
   components:
     coverage_index:
@@ -71,7 +73,6 @@ ru:
     unit_technology_treemap:
       title: "Карта технологий"
       description: "%{count} технологий с экспертами"
-      no_data: "Технологий с экспертами не найдено"
       experts: "экспертов"
       legend:
         expert: "Может учить других"

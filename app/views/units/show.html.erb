@@ -16,19 +16,33 @@
       <main class="page-main">
         <% if @current_quarter %>
           <div class="card mb-8">
-            <div class="card__body">
-              <div class="flex items-center gap-8">
-                <div>
-                  <dt class="label"><%= t('units.show.unit') %></dt>
-                  <dd class="value--large"><%= @unit&.name || t('units.show.not_assigned') %></dd>
-                </div>
-                <div>
-                  <dt class="label"><%= t('units.show.unit_lead') %></dt>
-                  <dd class="value--medium"><%= @unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
-                </div>
-              </div>
-            </div>
-          </div>
+             <div class="card__body">
+               <div class="flex items-center justify-between gap-8">
+                 <div class="flex items-center gap-8">
+                   <div>
+                     <dt class="label"><%= t('units.show.unit') %></dt>
+                     <dd class="value--large"><%= @unit&.name || t('units.show.not_assigned') %></dd>
+                   </div>
+                   <div>
+                     <dt class="label"><%= t('units.show.unit_lead') %></dt>
+                     <dd class="value--medium"><%= @unit&.unit_lead&.display_name_or_full_name || '-' %></dd>
+                   </div>
+                 </div>
+
+                  <% if @teams&.any? %>
+                    <div class="flex-shrink-0">
+                      <div class="inline-flex flex-wrap gap-2">
+                        <% @teams.each do |team| %>
+                          <%= link_to team_path(name: team.name), class: "team-link" do %>
+                            <span class="truncate max-w-[150px]"><%= team.name %></span>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+               </div>
+             </div>
+           </div>
 
           <div class="flex flex-wrap gap-6 mb-8">
             <%= render CoverageIndexComponent.new(teams: @teams) %>

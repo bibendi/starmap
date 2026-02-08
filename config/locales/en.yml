@@ -52,7 +52,9 @@ en:
     show:
       title: "Unit Dashboard"
       unit_details: "Unit details and leadership"
+      unit: "Unit"
       unit_lead: "Unit Lead"
+      teams: "Teams"
       not_assigned: "Not assigned"
   components:
     coverage_index:
@@ -96,7 +98,6 @@ en:
     unit_technology_treemap:
       title: "Technology Heatmap"
       description: "%{count} technologies with experts"
-      no_data: "No technologies with experts found"
       experts: "experts"
       legend:
         expert: "Can teach others"
