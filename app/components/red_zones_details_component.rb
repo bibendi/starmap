@@ -18,6 +18,39 @@ class RedZonesDetailsComponent < ViewComponent::Base
     @teams.size > 1
   end
 
+  def grouped_red_zones
+    return red_zones_data unless multiple_teams?
+
+    red_zones_data.group_by { |red_zone| red_zone[:technology] }
+  end
+
+  def red_zones_technologies_count
+    if multiple_teams?
+      grouped_red_zones.size
+    else
+      red_zones_data.pluck(:technology).uniq.size
+    end
+  end
+
+  def carousel_slides
+    if multiple_teams?
+      grouped_red_zones.map do |technology, red_zones|
+        {
+          technology: technology,
+          red_zones: red_zones
+        }
+      end
+    else
+      # Group by technology for single team (though usually one technology per red_zone)
+      red_zones_data.group_by { |rz| rz[:technology] }.map do |technology, red_zones|
+        {
+          technology: technology,
+          red_zones: red_zones
+        }
+      end
+    end
+  end
+
   private
 
   def calculate
