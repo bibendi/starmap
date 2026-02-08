@@ -1,30 +1,66 @@
-<div class="card">
-  <div class="card__header">
-     <h3 class="card__title"><%= t('components.red_zones_details.title') %></h3>
-     <p class="card__description"><%= t('components.red_zones_details.description') %></p>
+<div class="card" data-controller="vertical-pagination" data-vertical-pagination-items-per-page-value="6">
+  <div class="card__header relative">
+     <div class="pr-20">
+       <h3 class="card__title"><%= t('components.red_zones_details.title') %></h3>
+       <p class="card__description"><%= t('components.red_zones_details.description', count: red_zones_technologies_count) %></p>
+     </div>
+     
+     <% if any_red_zones? && carousel_slides.size > 6 %>
+       <div class="absolute right-4 bottom-4 flex items-center space-x-2">
+          <button data-vertical-pagination-target="prevButton"
+                  data-action="click->vertical-pagination#prev"
+                  class="icon-btn icon-btn--nav">
+            <svg class="icon-btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button data-vertical-pagination-target="nextButton"
+                  data-action="click->vertical-pagination#next"
+                  class="icon-btn icon-btn--nav">
+            <svg class="icon-btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+       </div>
+     <% end %>
   </div>
   <div class="card__body">
     <% if any_red_zones? %>
-      <div class="space-y-3">
-        <% red_zones_data.each do |red_zone| %>
-           <div class="card-item">
-               <div class="content-card">
-                 <span class="text-heading"><%= red_zone[:technology]&.name %></span>
-                 <span class="text-subtle"><%= red_zone[:technology]&.category %></span>
-              </div>
-                <div class="content-row">
-                  <% if multiple_teams? %>
-                    <span class="text-subtle mr-2"><%= red_zone[:team]&.name %></span>
-                  <% end %>
-                  <span class="badge badge--danger">
-                     <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
-                  </span>
+          <div data-vertical-pagination-target="container" class="space-y-4">
+            <% carousel_slides.each_with_index do |slide, index| %>
+              <div data-vertical-pagination-target="item" class="card-item">
+                <div class="content-card">
+                  <span class="text-heading"><%= slide[:technology]&.name %></span>
+                  <span class="text-subtle"><%= slide[:technology]&.category %></span>
                 </div>
-           </div>
-        <% end %>
-      </div>
+                <% if multiple_teams? %>
+                    <div class="mt-2">
+                      <div class="flex flex-wrap gap-x-1 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
+                        <% slide[:red_zones].each_with_index do |red_zone, index| %>
+                          <span class="group relative inline-block">
+                            <%= link_to red_zone[:team]&.name, team_path(name: red_zone[:team]&.name), class: "link hover:underline truncate max-w-[140px]" %><% if index < slide[:red_zones].size - 1 %>,<% end %>
+                            <div class="tooltip tooltip--bottom opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+                              <span class="badge badge--danger badge--sm">
+                                <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
+                              </span>
+                              <span class="tooltip__arrow"></span>
+                            </div>
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                <% else %>
+                  <div class="content-row mt-2">
+                    <span class="badge badge--danger">
+                      <%= "#{slide[:red_zones].first[:expert_count]}/#{slide[:red_zones].first[:target_experts]}" %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
     <% else %>
-        <p class="text-muted--center py-4"><%= t('components.red_zones_details.no_data') %></p>
+      <p class="text-muted--center py-4"><%= t('components.red_zones_details.no_data') %></p>
     <% end %>
   </div>
 </div>
