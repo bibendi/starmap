@@ -1,11 +1,11 @@
-<div class="card" data-controller="vertical-pagination" data-vertical-pagination-items-per-page-value="6">
+<div class="card" data-controller="vertical-pagination" data-vertical-pagination-items-per-page-value="5">
   <div class="card__header relative">
      <div class="pr-20">
        <h3 class="card__title"><%= t('components.red_zones_details.title') %></h3>
        <p class="card__description"><%= t('components.red_zones_details.description', count: red_zones_technologies_count) %></p>
      </div>
      
-     <% if any_red_zones? && carousel_slides.size > 6 %>
+      <% if any_red_zones? && carousel_slides.size > 5 %>
        <div class="absolute right-4 bottom-4 flex items-center space-x-2">
           <button data-vertical-pagination-target="prevButton"
                   data-action="click->vertical-pagination#prev"

@@ -146,7 +146,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
         component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Key Person Risks")
-        expect(page).to have_text("Technologies with single expert")
+        expect(page).to have_text("2 technologies with single expert")
       end
 
       context "with single team" do
@@ -154,21 +154,6 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
           component = described_class.new(teams: [team])
           render_inline(component)
           expect(page).not_to have_text(team.name)
-        end
-      end
-
-      context "with multiple teams" do
-        let_it_be(:team2) { create(:team) }
-
-        before do
-          create(:skill_rating, user: user2, technology: technology3, quarter: current_quarter, rating: 2, team: team2)
-        end
-
-        it "renders team names" do
-          component = described_class.new(teams: [team, team2])
-          render_inline(component)
-          expect(page).to have_text(team.name)
-          expect(page).to have_text(team2.name)
         end
       end
     end

@@ -49,7 +49,7 @@ ru:
       experts: "Эксперты"
     key_person_risks_details:
       title: "Key Person Risks"
-      description: "Технологии с единственным экспертом"
+      description: "%{count} технологий с единственным экспертом"
       no_data: "Риски единоличной экспертизы не обнаружены"
     competency_dynamics:
       title: "Динамика компетенций"

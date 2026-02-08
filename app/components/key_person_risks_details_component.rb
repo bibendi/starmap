@@ -18,6 +18,18 @@ class KeyPersonRisksDetailsComponent < ViewComponent::Base
     @teams.size > 1
   end
 
+  def risks_count
+    risks_data.size
+  end
+
+  def paginated_risks
+    risks_data
+  end
+
+  def has_pagination?
+    risks_count > 5
+  end
+
   private
 
   def calculate

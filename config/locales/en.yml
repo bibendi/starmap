@@ -74,7 +74,7 @@ en:
       experts: "Experts"
     key_person_risks_details:
       title: "Key Person Risks"
-      description: "Technologies with single expert"
+      description: "%{count} technologies with single expert"
       no_data: "No key person risks detected"
     competency_dynamics:
       title: "Competency Dynamics"

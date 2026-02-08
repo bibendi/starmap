@@ -1,30 +1,48 @@
- <div class="card">
-  <div class="card__header">
-     <h3 class="card__title"><%= t('components.key_person_risks_details.title') %></h3>
-     <p class="card__description"><%= t('components.key_person_risks_details.description') %></p>
-  </div>
-  <div class="card__body">
-    <% if any_risks? %>
-      <div class="space-y-3">
-        <% risks_data.each do |risk| %>
-            <div class="card-item">
-              <div class="content-card">
-                <span class="text-heading"><%= risk[:technology]&.name %></span>
-                <span class="text-subtle"><%= risk[:technology]&.category %></span>
-             </div>
-               <div class="content-row">
-                 <% if multiple_teams? %>
-                   <span class="text-subtle mr-2"><%= risk[:team]&.name %></span>
-                 <% end %>
-                 <span class="badge badge--orange">
-                   <%= risk[:user]&.full_name %>
-                 </span>
-               </div>
-            </div>
-        <% end %>
+<div class="card" data-controller="vertical-pagination" data-vertical-pagination-items-per-page-value="5">
+   <div class="card__header relative">
+      <div class="pr-20">
+        <h3 class="card__title"><%= t('components.key_person_risks_details.title') %></h3>
+        <p class="card__description"><%= t('components.key_person_risks_details.description', count: risks_count) %></p>
       </div>
-    <% else %>
-        <p class="text-muted--center py-4"><%= t('components.key_person_risks_details.no_data') %></p>
-    <% end %>
-  </div>
+      
+      <% if any_risks? && has_pagination? %>
+        <div class="absolute right-4 bottom-4 flex items-center space-x-2">
+           <button data-vertical-pagination-target="prevButton"
+                   data-action="click->vertical-pagination#prev"
+                   class="icon-btn icon-btn--nav">
+             <svg class="icon-btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+             </svg>
+           </button>
+           <button data-vertical-pagination-target="nextButton"
+                   data-action="click->vertical-pagination#next"
+                   class="icon-btn icon-btn--nav">
+             <svg class="icon-btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+             </svg>
+           </button>
+        </div>
+      <% end %>
+   </div>
+   <div class="card__body">
+     <% if any_risks? %>
+           <div data-vertical-pagination-target="container" class="space-y-4">
+             <% risks_data.each_with_index do |risk, index| %>
+               <div data-vertical-pagination-target="item" class="card-item">
+                 <div class="content-card">
+                   <span class="text-heading"><%= risk[:technology]&.name %></span>
+                   <span class="text-subtle"><%= risk[:technology]&.category %></span>
+                 </div>
+                 <div class="content-row mt-2">
+                   <span class="badge badge--orange">
+                     <%= risk[:user]&.full_name %>
+                   </span>
+                 </div>
+               </div>
+             <% end %>
+           </div>
+     <% else %>
+         <p class="text-muted--center py-4"><%= t('components.key_person_risks_details.no_data') %></p>
+     <% end %>
+   </div>
 </div>
