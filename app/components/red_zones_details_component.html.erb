@@ -8,15 +8,18 @@
       <div class="space-y-3">
         <% red_zones_data.each do |red_zone| %>
            <div class="card-item">
-              <div class="content-card">
-                <span class="text-heading"><%= red_zone[:technology]&.name %></span>
-                <span class="text-subtle"><%= red_zone[:technology]&.category %></span>
-             </div>
-              <div class="content-row">
-               <span class="badge badge--danger">
-                  <%= "#{t('components.red_zones_details.experts')}: #{red_zone[:expert_count]}" %>
-               </span>
-             </div>
+               <div class="content-card">
+                 <span class="text-heading"><%= red_zone[:technology]&.name %></span>
+                 <span class="text-subtle"><%= red_zone[:technology]&.category %></span>
+              </div>
+                <div class="content-row">
+                  <% if multiple_teams? %>
+                    <span class="text-subtle mr-2"><%= red_zone[:team]&.name %></span>
+                  <% end %>
+                  <span class="badge badge--danger">
+                     <%= "#{red_zone[:expert_count]}/#{red_zone[:target_experts]}" %>
+                  </span>
+                </div>
            </div>
         <% end %>
       </div>

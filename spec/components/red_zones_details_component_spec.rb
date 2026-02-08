@@ -21,7 +21,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "returns empty array" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.red_zones_data).to be_empty
       end
     end
@@ -36,7 +36,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "returns red zone with expert count" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         red_zone = component.red_zones_data.first
 
         expect(red_zone[:technology]).to eq(technology1)
@@ -48,7 +48,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       let(:empty_team) { create(:team) }
 
       it "returns empty array" do
-        component = described_class.new(team: empty_team)
+        component = described_class.new(teams: [empty_team])
         expect(component.red_zones_data).to be_empty
       end
     end
@@ -60,7 +60,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "does not include low criticality technologies" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.red_zones_data).to be_empty
       end
     end
@@ -72,7 +72,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "returns empty array" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.red_zones_data).to be_empty
       end
     end
@@ -86,7 +86,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "returns true" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.any_red_zones?).to be true
       end
     end
@@ -99,7 +99,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "returns false" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.any_red_zones?).to be false
       end
     end
@@ -111,7 +111,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "returns false" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         expect(component.any_red_zones?).to be false
       end
     end
@@ -125,19 +125,19 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       it "renders red zones list" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
 
         expect(page).to have_text("Red Zones")
         expect(page).to have_text("Critical technologies with insufficient coverage")
         expect(page).to have_text(technology1.name)
-        expect(page).to have_text("Experts: 1")
+        expect(page).to have_text("1/2")
       end
     end
 
     context "when there are no red zones" do
       it "renders empty state message" do
-        component = described_class.new(team: team)
+        component = described_class.new(teams: [team])
         render_inline(component)
 
         expect(page).to have_text("Red Zones")
@@ -176,7 +176,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
     end
 
     specify do
-      expect { render_inline(described_class.new(team: team)) }.to perform_constant_number_of_queries
+      expect { render_inline(described_class.new(teams: [team])) }.to perform_constant_number_of_queries
     end
   end
 end

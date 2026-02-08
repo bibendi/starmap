@@ -12,14 +12,14 @@
                 <span class="text-heading"><%= risk[:technology]&.name %></span>
                 <span class="text-subtle"><%= risk[:technology]&.category %></span>
              </div>
-              <div class="content-row">
-                <span class="badge badge--orange">
-                  <%= risk[:user]&.full_name %>
-                </span>
-                <% if multiple_teams? %>
-                  <span class="text-subtle ml-2"><%= risk[:team]&.name %></span>
-                <% end %>
-              </div>
+               <div class="content-row">
+                 <% if multiple_teams? %>
+                   <span class="text-subtle mr-2"><%= risk[:team]&.name %></span>
+                 <% end %>
+                 <span class="badge badge--orange">
+                   <%= risk[:user]&.full_name %>
+                 </span>
+               </div>
             </div>
         <% end %>
       </div>
