@@ -63,8 +63,26 @@ en:
         title: "No active quarter"
         message: "Please create a quarter in the admin panel."
   units:
+    index:
+      title: "Available Units"
+      units_count:
+        one: "Unit: %{count}"
+        other: "Units: %{count}"
+      empty:
+        title: "You have no available units"
+        message: "Contact your administrator to get access."
+      unit_card:
+        unit_lead: "Unit Lead"
+        teams_count:
+          one: "team"
+          other: "teams"
+        teams: "Teams"
+        more_teams: "more"
     show:
       title: "Unit Dashboard"
+      no_active_quarter:
+        title: "No active quarter"
+        message: "Please create a quarter in the admin panel."
       unit_details: "Unit details and leadership"
       unit: "Unit"
       unit_lead: "Unit Lead"

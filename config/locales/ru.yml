@@ -42,8 +42,30 @@ ru:
         title: "Нет активного квартала"
         message: "Пожалуйста, создайте квартал в админке."
   units:
+    index:
+      title: "Доступные юниты"
+      units_count:
+        one: "Юнит: %{count}"
+        few: "Юнита: %{count}"
+        many: "Юнитов: %{count}"
+        other: "Юнитов: %{count}"
+      empty:
+        title: "У вас нет доступных юнитов"
+        message: "Обратитесь к администратору для получения доступа."
+      unit_card:
+        unit_lead: "Руководитель"
+        teams_count:
+          one: "команда"
+          few: "команды"
+          many: "команд"
+          other: "команд"
+        teams: "Команды"
+        more_teams: "еще"
     show:
       title: "Дашборд юнита"
+      no_active_quarter:
+        title: "Нет активного квартала"
+        message: "Пожалуйста, создайте квартал в админке."
       unit_details: "Детали юнита и руководство"
       unit: "Юнит"
       unit_lead: "Юнит‑лид"

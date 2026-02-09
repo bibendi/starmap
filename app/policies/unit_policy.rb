@@ -1,5 +1,9 @@
 # Unit policy for role‑based access control
 class UnitPolicy < ApplicationPolicy
+  def index?
+    active_user?
+  end
+
   def show?
     return false unless active_user?
     return false if record.blank?
