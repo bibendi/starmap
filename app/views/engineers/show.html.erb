@@ -20,12 +20,16 @@
       <div class="card mb-8">
         <div class="card__body">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-8">
-              <div>
-                <dt class="label"><%= t('engineers.show.role') %></dt>
-                <dd class="value--medium"><%= t("activerecord.attributes.user.roles.#{@user.role}") %></dd>
-              </div>
-            </div>
+             <div class="flex items-center gap-8">
+               <div>
+                 <dt class="label"><%= t('engineers.show.position') %></dt>
+                 <dd class="value--medium"><%= @user.position || '-' %></dd>
+               </div>
+               <div>
+                 <dt class="label"><%= t('engineers.show.role') %></dt>
+                 <dd class="value--medium"><%= t("activerecord.attributes.user.roles.#{@user.role}") %></dd>
+               </div>
+             </div>
             <% if @user.team.present? %>
               <div class="flex items-center gap-8">
                 <div>

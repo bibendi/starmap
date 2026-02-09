@@ -46,6 +46,7 @@ ru:
     show:
       title: "Дашборд инженера"
       email: "Email"
+      position: "Должность"
       role: "Роль"
       team: "Команда"
       unit: "Юнит"

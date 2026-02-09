@@ -797,4 +797,35 @@
     .treemap-chart-container {
       @apply w-full relative;
     }
+
+    /* === Member cards === */
+    .member-card {
+      @apply block p-3 rounded-lg border bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100;
+      @apply dark:from-blue-900/20 dark:to-cyan-900/20 dark:border-blue-800 dark:bg-gray-800;
+      @apply hover:from-blue-100 hover:to-cyan-100 dark:hover:from-blue-900/30 dark:hover:to-cyan-900/30;
+      @apply transition-colors duration-200;
+    }
+
+    .member-card--lead {
+      @apply from-indigo-50 to-blue-50 border-indigo-200;
+      @apply dark:from-indigo-900/20 dark:to-blue-900/20 dark:border-indigo-700;
+      @apply hover:from-indigo-100 hover:to-blue-100 dark:hover:from-indigo-900/30 dark:hover:to-blue-900/30;
+      @apply shadow-md;
+    }
+
+    .member-card--disabled {
+      @apply opacity-60 cursor-not-allowed hover:bg-white dark:hover:bg-gray-800;
+    }
+
+    .member-card__content {
+      @apply flex flex-col gap-1;
+    }
+
+    .member-card__name {
+      @apply font-medium text-gray-900 dark:text-gray-100 leading-tight;
+    }
+
+    .member-card__position {
+      @apply text-sm text-gray-500 dark:text-gray-400;
+    }
 }

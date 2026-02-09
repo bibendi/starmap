@@ -67,6 +67,7 @@ en:
     show:
       title: "Engineer Dashboard"
       email: "Email"
+      position: "Position"
       role: "Role"
       team: "Team"
       unit: "Unit"

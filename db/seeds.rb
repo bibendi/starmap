@@ -210,6 +210,7 @@ User.find_or_create_by!(email: "admin@company.com") do |user|
   user.password_confirmation = "password123"
   user.active = true
   user.team_id = nil
+  user.confirmed_at = Time.current
 end
 
 # Create unit lead
@@ -226,6 +227,7 @@ unit_lead_user = User.find_or_create_by!(email: "unit.lead@company.com") do |use
   user.password_confirmation = "password123"
   user.active = true
   user.team_id = nil
+  user.confirmed_at = Time.current
 end
 
 # Set unit lead for unit
@@ -245,6 +247,7 @@ backend_team_lead = User.find_or_create_by!(email: "backend.lead@company.com") d
   user.password = "password123"
   user.password_confirmation = "password123"
   user.active = true
+  user.confirmed_at = Time.current
 end
 
 frontend_team_lead = User.find_or_create_by!(email: "frontend.lead@company.com") do |user|
@@ -260,6 +263,7 @@ frontend_team_lead = User.find_or_create_by!(email: "frontend.lead@company.com")
   user.password = "password123"
   user.password_confirmation = "password123"
   user.active = true
+  user.confirmed_at = Time.current
 end
 
 devops_team_lead = User.find_or_create_by!(email: "devops.lead@company.com") do |user|
@@ -275,6 +279,7 @@ devops_team_lead = User.find_or_create_by!(email: "devops.lead@company.com") do 
   user.password = "password123"
   user.password_confirmation = "password123"
   user.active = true
+  user.confirmed_at = Time.current
 end
 
 # Set team leads
@@ -355,6 +360,30 @@ engineers = [
     department: "Engineering",
     position: "Mobile Developer",
     phone: "+7 (999) 123-45-77"
+  },
+  {
+    email: "james.miller@company.com",
+    first_name: "James",
+    last_name: "Miller",
+    display_name: "James Miller",
+    role: "engineer",
+    team_id: teams[:backend].id,
+    employee_id: "EMP012",
+    department: "Engineering",
+    position: "Backend Developer",
+    phone: "+7 (999) 123-45-78"
+  },
+  {
+    email: "emma.taylor@company.com",
+    first_name: "Emma",
+    last_name: "Taylor",
+    display_name: "Emma Taylor",
+    role: "engineer",
+    team_id: teams[:backend].id,
+    employee_id: "EMP013",
+    department: "Engineering",
+    position: "Senior Backend Developer",
+    phone: "+7 (999) 123-45-79"
   }
 ]
 
@@ -364,6 +393,7 @@ engineers.each do |engineer_data|
     user.password = "password123"
     user.password_confirmation = "password123"
     user.active = true
+    user.confirmed_at = Time.current
   end
 end
 
@@ -435,6 +465,18 @@ engineer_skills = {
     technologies[:javascript].id => 2,
     technologies[:nodejs].id => 1,
     technologies[:aws].id => 1
+  },
+  "james.miller@company.com" => {
+    technologies[:ruby_on_rails].id => 2,
+    technologies[:postgresql].id => 1,
+    technologies[:redis].id => 1,
+    technologies[:nodejs].id => 1
+  },
+  "emma.taylor@company.com" => {
+    technologies[:ruby_on_rails].id => 3,
+    technologies[:postgresql].id => 3,
+    technologies[:redis].id => 2,
+    technologies[:graphql].id => 2
   }
 }
 
@@ -536,6 +578,18 @@ previous_engineer_skills = {
     technologies[:javascript].id => 1,
     technologies[:nodejs].id => 0,
     technologies[:aws].id => 0
+  },
+  "james.miller@company.com" => {
+    technologies[:ruby_on_rails].id => 1,
+    technologies[:postgresql].id => 0,
+    technologies[:redis].id => 0,
+    technologies[:nodejs].id => 0
+  },
+  "emma.taylor@company.com" => {
+    technologies[:ruby_on_rails].id => 2,
+    technologies[:postgresql].id => 2,
+    technologies[:redis].id => 1,
+    technologies[:graphql].id => 1
   }
 }
 
@@ -623,5 +677,5 @@ Rails.logger.debug "Unit Lead: unit.lead@company.com"
 Rails.logger.debug "Backend Team Lead: backend.lead@company.com"
 Rails.logger.debug "Frontend Team Lead: frontend.lead@company.com"
 Rails.logger.debug "DevOps Team Lead: devops.lead@company.com"
-Rails.logger.debug "Engineers: john.doe@company.com, jane.smith@company.com, mike.wilson@company.com, sarah.brown@company.com, tom.johnson@company.com, lisa.davis@company.com"
+Rails.logger.debug "Engineers: john.doe@company.com, jane.smith@company.com, mike.wilson@company.com, sarah.brown@company.com, tom.johnson@company.com, lisa.davis@company.com, james.miller@company.com, emma.taylor@company.com"
 Rails.logger.debug "\nAll users have password: password123"
