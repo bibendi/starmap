@@ -29,6 +29,20 @@
 
 en:
   teams:
+    index:
+      title: "Available Teams"
+      teams_count:
+        one: "Team: %{count}"
+        other: "Teams: %{count}"
+      empty:
+        title: "You have no available teams"
+        message: "Contact your unit lead or administrator to get access."
+      team_card:
+        unit: "Unit"
+        team_lead: "Team Lead"
+        members_count:
+          one: "member"
+          other: "members"
     show:
       title: "Team Dashboard"
       team: "Team"

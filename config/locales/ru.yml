@@ -1,5 +1,23 @@
 ru:
   teams:
+    index:
+      title: "Доступные команды"
+      teams_count:
+        one: "Команда: %{count}"
+        few: "Команды: %{count}"
+        many: "Команд: %{count}"
+        other: "Команд: %{count}"
+      empty:
+        title: "У вас нет доступных команд"
+        message: "Обратитесь к руководителю юнита или администратору для получения доступа."
+      team_card:
+        unit: "Отдел"
+        team_lead: "Тимлид"
+        members_count:
+          one: "участник"
+          few: "участника"
+          many: "участников"
+          other: "участников"
     show:
       title: "Дашборд команды"
       team: "Команда"

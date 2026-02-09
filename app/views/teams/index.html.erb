@@ -1,0 +1,75 @@
+<div class="flex flex-col min-h-screen">
+  <main class="flex-1 flex flex-col">
+    <div class="page-header">
+      <div class="page-header__container">
+        <div class="page-header__content">
+          <h1 class="page-title"><%= t('teams.index.title') %></h1>
+          <% if @teams.any? %>
+            <span class="badge badge--primary">
+              <%= t('teams.index.teams_count', count: @teams.total_count) %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main">
+      <% if @teams.any? %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <% @teams.each do |team| %>
+            <div class="card hover:shadow-lg transition-shadow duration-200">
+              <div class="card__body">
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      <%= link_to team.name, team_path(name: team.name), class: "link" %>
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <%= t('teams.index.team_card.unit') %>: <%= team.unit_name %>
+                    </p>
+                  </div>
+                  <span class="badge badge--neutral">
+                    <%= team.users.active.count %> <%= t('teams.index.team_card.members_count', count: team.users.active.count) %>
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>
+                      <%= t('teams.index.team_card.team_lead') %>: <%= team.team_lead&.display_name_or_full_name || '-' %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="flex justify-center">
+          <%= paginate @teams %>
+        </div>
+      <% else %>
+        <div class="alert alert--warning">
+          <div class="flex">
+            <div class="alert__icon-container">
+              <svg class="h-6 w-6 alert__icon--warning" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="alert__content">
+              <h3 class="text-lg font-medium text-yellow-800 dark:text-yellow-300 mb-2">
+                <%= t('teams.index.empty.title') %>
+              </h3>
+              <p class="alert__text alert__text--warning">
+                <%= t('teams.index.empty.message') %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </main>
+  </main>
+</div>

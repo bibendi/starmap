@@ -2,10 +2,15 @@ class TeamsController < ApplicationController
   include ExpertConstants
 
   before_action :authenticate_user!
-  before_action :set_team, :set_team_context
+  before_action :set_team, :set_team_context, only: [:show]
 
   # Skip policy scope verification as we use explicit authorization
   skip_after_action :verify_policy_scoped
+
+  def index
+    @teams = policy_scope(Team).includes(:unit, :team_lead).ordered.page(params[:page]).per(20)
+    authorize Team
+  end
 
   def show
     @technologies = @team.technologies.order(:name)
@@ -18,8 +23,10 @@ class TeamsController < ApplicationController
   def set_team
     @team = if params[:name].present?
       Team.find_by!(name: params[:name])
+    elsif current_user.team.present?
+      current_user.team
     else
-      current_user.team || Team.new
+      redirect_to teams_path and return
     end
     authorize @team
   end
