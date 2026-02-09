@@ -18,6 +18,9 @@ Rails.application.routes.draw do
   get "/units", to: "units#index", as: :units
   get "/unit", to: "units#show", as: :unit
 
+  # Engineer routes
+  get "/engineer", to: "engineers#show", as: :engineer
+
   # Locale switching
   post "locale/:locale", to: "locales#switch", as: :switch_locale
 

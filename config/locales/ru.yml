@@ -23,6 +23,7 @@ ru:
       team: "Команда"
       not_assigned: "Не назначено"
       team_lead: "Тимлид"
+      team_lead_short: "Лид"
       unit: "Отдел"
       unit_lead: "Руководитель отдела"
       members:
@@ -41,6 +42,16 @@ ru:
       no_active_quarter:
         title: "Нет активного квартала"
         message: "Пожалуйста, создайте квартал в админке."
+  engineers:
+    show:
+      title: "Дашборд инженера"
+      email: "Email"
+      role: "Роль"
+      team: "Команда"
+      unit: "Юнит"
+      status:
+        inactive: "Неактивен"
+
   units:
     index:
       title: "Доступные юниты"
@@ -165,6 +176,12 @@ ru:
 
   activerecord:
     attributes:
+      user:
+        roles:
+          engineer: "Инженер"
+          team_lead: "Тимлид"
+          unit_lead: "Юнит-лид"
+          admin: "Админ"
       technology:
         criticality:
           high: "Высокая"

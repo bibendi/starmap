@@ -1,0 +1,54 @@
+<div class="flex flex-col min-h-screen">
+  <main class="flex-1 flex flex-col">
+    <div class="page-header">
+      <div class="page-header__container">
+        <div class="page-header__content">
+          <div>
+            <h1 class="page-title"><%= @user.full_name %></h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1"><%= @user.email %></p>
+          </div>
+          <% unless @user.active? %>
+            <span class="badge badge--secondary">
+              <%= t('engineers.show.status.inactive') %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main">
+      <div class="card mb-8">
+        <div class="card__body">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-8">
+              <div>
+                <dt class="label"><%= t('engineers.show.role') %></dt>
+                <dd class="value--medium"><%= t("activerecord.attributes.user.roles.#{@user.role}") %></dd>
+              </div>
+            </div>
+            <% if @user.team.present? %>
+              <div class="flex items-center gap-8">
+                <div>
+                  <dt class="label"><%= t('engineers.show.team') %></dt>
+                  <dd class="value--large">
+                    <%= link_to @user.team.name,
+                        team_path(name: @user.team.name),
+                        class: "link" %>
+                  </dd>
+                </div>
+                <% if @user.team.unit.present? %>
+                  <div>
+                    <dt class="label"><%= t('engineers.show.unit') %></dt>
+                    <dd class="value--medium"><%= @user.team.unit.name %></dd>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <%# Здесь будет контент страницы инженера %>
+    </main>
+  </main>
+</div>

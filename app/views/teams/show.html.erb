@@ -58,14 +58,50 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-6 mb-8">
-          <%= render CoverageIndexComponent.new(teams: [@team]) %>
-          <%= render MaturityIndexComponent.new(teams: [@team]) %>
-          <%= render RedZonesCardComponent.new(teams: [@team]) %>
-          <%= render KeyPersonRisksComponent.new(teams: [@team]) %>
-        </div>
+         <div class="flex flex-wrap gap-6 mb-8">
+           <%= render CoverageIndexComponent.new(teams: [@team]) %>
+           <%= render MaturityIndexComponent.new(teams: [@team]) %>
+           <%= render RedZonesCardComponent.new(teams: [@team]) %>
+           <%= render KeyPersonRisksComponent.new(teams: [@team]) %>
+         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+         <% if @team_members.any? %>
+           <div class="card mb-8">
+             <div class="card__body">
+               <div class="flex flex-wrap gap-3 justify-center">
+                 <% @team_members.each do |member| %>
+                   <% if EngineerPolicy.new(current_user, member).show? %>
+                     <%= link_to engineer_path(id: member.id), class: "team-link" do %>
+                       <span class="flex items-center gap-2">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                         </svg>
+                         <%= member.full_name %>
+                         <% if member.id == @team.team_lead_id %>
+                           <span class="badge badge--primary text-xs ml-1"><%= t('teams.show.team_lead_short') %></span>
+                         <% end %>
+                       </span>
+                     <% end %>
+                   <% else %>
+                     <span class="team-link team-link--disabled">
+                       <span class="flex items-center gap-2">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                         </svg>
+                         <%= member.full_name %>
+                         <% if member.id == @team.team_lead_id %>
+                           <span class="badge badge--primary text-xs ml-1"><%= t('teams.show.team_lead_short') %></span>
+                         <% end %>
+                       </span>
+                     </span>
+                   <% end %>
+                 <% end %>
+               </div>
+             </div>
+           </div>
+         <% end %>
+
+         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <%= render RedZonesDetailsComponent.new(teams: [@team]) %>
            <%= render KeyPersonRisksDetailsComponent.new(teams: [@team]) %>
         </div>

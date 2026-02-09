@@ -33,7 +33,18 @@ class TeamsController < ApplicationController
 
   def set_team_context
     @current_quarter = Quarter.current
-    @team_members = @team&.users || []
+    @team_members = sorted_team_members
+  end
+
+  def sorted_team_members
+    return [] if @team.blank?
+
+    members = @team.users.to_a
+    team_lead = members.find { |u| u.id == @team.team_lead_id }
+    other_members = members.reject { |u| u.id == @team.team_lead_id }
+      .sort_by { |u| u.full_name.downcase }
+
+    team_lead ? [team_lead] + other_members : other_members
   end
 
   def technology_counts_by_criticality

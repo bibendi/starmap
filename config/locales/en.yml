@@ -48,6 +48,7 @@ en:
       team: "Team"
       not_assigned: "Not assigned"
       team_lead: "Team Lead"
+      team_lead_short: "Lead"
       unit: "Unit"
       unit_lead: "Unit Lead"
       members:
@@ -62,6 +63,16 @@ en:
       no_active_quarter:
         title: "No active quarter"
         message: "Please create a quarter in the admin panel."
+  engineers:
+    show:
+      title: "Engineer Dashboard"
+      email: "Email"
+      role: "Role"
+      team: "Team"
+      unit: "Unit"
+      status:
+        inactive: "Inactive"
+
   units:
     index:
       title: "Available Units"
@@ -182,6 +193,12 @@ en:
 
   activerecord:
     attributes:
+      user:
+        roles:
+          engineer: "Engineer"
+          team_lead: "Team Lead"
+          unit_lead: "Unit Lead"
+          admin: "Admin"
       technology:
         criticality:
           high: "High"

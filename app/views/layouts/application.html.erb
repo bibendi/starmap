@@ -36,7 +36,9 @@
                     <%= link_to t('navigation.team'), team_path, class: "nav-link #{current_page?(team_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
                   <% end %>
 
-                  <%#= link_to t('navigation.engineer'), "#", class: "nav-link #{current_page?('#') ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <% if policy(:navigation).show_personal_dashboard? %>
+                    <%= link_to t('navigation.engineer'), engineer_path, class: "nav-link #{current_page?(engineer_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <% end %>
 
                 <% if policy(:navigation).show_admin? %>
                     <%= link_to t('navigation.admin'), "#", class: "nav-link #{current_page?('/admin') ? 'nav-link--active' : 'nav-link--inactive'}" %>
