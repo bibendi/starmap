@@ -35,7 +35,7 @@ export default class extends Controller {
   }
 
   getStoredTheme() {
-    const theme = document.documentElement.dataset.theme
+    const theme = document.body.dataset.theme
     if (theme && ['light', 'dark', 'system'].includes(theme)) {
       return theme
     }
@@ -69,7 +69,7 @@ export default class extends Controller {
 
   applyTheme() {
     const shouldDark = this.shouldApplyDark()
-    document.documentElement.classList.toggle('dark', shouldDark)
+    document.body.classList.toggle('dark', shouldDark)
   }
 
   shouldApplyDark() {

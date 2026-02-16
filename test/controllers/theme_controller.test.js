@@ -33,7 +33,7 @@ describe('ThemeController', () => {
 
   describe('initialization', () => {
     beforeEach(() => {
-      delete document.documentElement.dataset.theme
+      delete document.body.dataset.theme
     })
 
     it('shows system icon by default', async () => {
@@ -49,7 +49,7 @@ describe('ThemeController', () => {
     })
 
     it('shows correct icon for dark theme', async () => {
-      document.documentElement.dataset.theme = 'dark'
+      document.body.dataset.theme = 'dark'
 
       const result = await renderController(ThemeController, {
         html: createThemeSwitcherHTML(),
@@ -65,7 +65,7 @@ describe('ThemeController', () => {
 
   describe('theme switching', () => {
     beforeEach(() => {
-      delete document.documentElement.dataset.theme
+      delete document.body.dataset.theme
     })
 
     it('cycles through themes when clicked', async () => {

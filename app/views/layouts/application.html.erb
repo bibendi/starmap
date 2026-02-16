@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="<%= theme_class %>" lang="<%= I18n.locale %>" data-theme="<%= current_theme %>">
+<html lang="<%= I18n.locale %>">
   <head>
     <title>Starmap</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,7 +12,7 @@
     <%= vite_javascript_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <body class="<%= theme_class %> bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-theme="<%= current_theme %>">
     <!-- Main navigation -->
      <nav class="nav">
        <div class="nav__container">
