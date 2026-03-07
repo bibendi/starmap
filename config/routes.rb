@@ -21,6 +21,11 @@ Rails.application.routes.draw do
   # Engineer routes
   get "/engineer", to: "engineers#show", as: :engineer
 
+  # Skill ratings routes - nested under users for proper REST
+  resources :users do
+    resource :skill_ratings, only: [:show, :edit, :update]
+  end
+
   # Locale switching
   post "locale/:locale", to: "locales#switch", as: :switch_locale
 

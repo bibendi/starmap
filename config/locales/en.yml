@@ -73,6 +73,44 @@ en:
       unit: "Unit"
       status:
         inactive: "Inactive"
+      skill_ratings:
+        title: "Skill Ratings"
+        evaluation_open: "Evaluation period open"
+        view_button: "View Ratings"
+
+  skill_ratings:
+    show:
+      title: "Skill Ratings"
+      technology: "Technology"
+      criticality: "Criticality"
+      target_experts: "Target Experts"
+      rating: "Rating"
+      level: "Skill Level"
+      status: "Status"
+      edit_button: "Edit"
+      back_to_engineer: "Back to Profile"
+      no_technologies: "Team has no assigned technologies"
+    edit:
+      title: "Edit Ratings"
+      technology: "Technology"
+      criticality: "Criticality"
+      target_experts: "Target Experts"
+      rating: "Rating"
+      level: "Skill Level"
+      save: "Save"
+      cancel: "Cancel"
+      no_technologies: "Team has no assigned technologies to edit"
+      back_to_show: "Back to view"
+    update:
+      success: "Ratings saved successfully"
+    errors:
+      not_evaluation_period: "Evaluation period is closed"
+      no_team: "User is not assigned to a team"
+    status:
+      draft: "Draft"
+      submitted: "Pending Approval"
+      approved: "Approved"
+      rejected: "Rejected"
 
   units:
     index:
@@ -204,3 +242,4 @@ en:
         criticality:
           high: "High"
           normal: "Normal"
+          low: "Low"

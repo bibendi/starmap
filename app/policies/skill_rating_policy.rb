@@ -16,9 +16,6 @@ class SkillRatingPolicy < ApplicationPolicy
     # Team leads can see their team's ratings
     return team_lead_of?(record.user.team) if team_lead?
 
-    # Engineers can see aggregated data for overview dashboard
-    return true if engineer? && record.user != user
-
     false
   end
 

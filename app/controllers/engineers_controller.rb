@@ -1,6 +1,7 @@
 class EngineersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_user
+  before_action :set_current_quarter
   skip_after_action :verify_policy_scoped
 
   def show
@@ -15,5 +16,9 @@ class EngineersController < ApplicationController
     else
       current_user
     end
+  end
+
+  def set_current_quarter
+    @current_quarter = Quarter.current
   end
 end

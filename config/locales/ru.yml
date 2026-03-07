@@ -52,6 +52,44 @@ ru:
       unit: "Юнит"
       status:
         inactive: "Неактивен"
+      skill_ratings:
+        title: "Оценки навыков"
+        evaluation_open: "Период оценки открыт"
+        view_button: "Просмотреть оценки"
+
+  skill_ratings:
+    show:
+      title: "Оценки навыков"
+      technology: "Технология"
+      criticality: "Критичность"
+      target_experts: "Целевое количество экспертов"
+      rating: "Оценка"
+      level: "Уровень владения"
+      status: "Статус"
+      edit_button: "Редактировать"
+      back_to_engineer: "Вернуться к профилю"
+      no_technologies: "У команды нет назначенных технологий"
+    edit:
+      title: "Редактирование оценок"
+      technology: "Технология"
+      criticality: "Критичность"
+      target_experts: "Целевое количество экспертов"
+      rating: "Оценка"
+      level: "Уровень владения"
+      save: "Сохранить"
+      cancel: "Отмена"
+      no_technologies: "У команды нет назначенных технологий для редактирования"
+      back_to_show: "Вернуться к просмотру"
+    update:
+      success: "Оценки успешно сохранены"
+    errors:
+      not_evaluation_period: "Период оценки закрыт"
+      no_team: "Пользователь не назначен в команду"
+    status:
+      draft: "Черновик"
+      submitted: "На утверждении"
+      approved: "Утверждено"
+      rejected: "Отклонено"
 
   units:
     index:
@@ -187,3 +225,4 @@ ru:
         criticality:
           high: "Высокая"
           normal: "Обычная"
+          low: "Низкая"

@@ -144,9 +144,27 @@ RSpec.describe SkillRatingPolicy, type: :policy do
   context "for engineer" do
     let(:user) { engineer }
 
-    permissions :index?, :show? do
+    permissions :index? do
       it "grants access" do
         expect(subject).to permit(user, build(:skill_rating))
+      end
+    end
+
+    permissions :show? do
+      context "when viewing own rating" do
+        let(:record) { own_rating }
+
+        it "grants access" do
+          expect(subject).to permit(user, record)
+        end
+      end
+
+      context "when viewing other user's rating" do
+        let(:record) { team_lead_rating }
+
+        it "denies access" do
+          expect(subject).not_to permit(user, record)
+        end
       end
     end
 
@@ -286,17 +304,17 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
     context "when user has no team assigned" do
       let(:user) { build(:engineer, team: nil) }
-      let(:record) { own_rating }
+      let(:record) { build(:skill_rating, user: user, technology: technology, quarter: quarter) }
 
-      permissions :update?, :edit?, :approve?, :reject? do
-        it "denies access" do
-          expect(subject).not_to permit(user, record)
+      permissions :show?, :update?, :edit? do
+        it "grants access for own rating" do
+          expect(subject).to permit(user, record)
         end
       end
 
-      permissions :show? do
-        it "grants access for own rating" do
-          expect(subject).to permit(user, record)
+      permissions :approve?, :reject? do
+        it "denies access" do
+          expect(subject).not_to permit(user, record)
         end
       end
     end

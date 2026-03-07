@@ -1,0 +1,127 @@
+<div class="flex flex-col min-h-screen">
+  <main class="flex-1 flex flex-col">
+    <div class="page-header">
+      <div class="page-header__container">
+        <div class="page-header__content">
+          <div>
+            <h1 class="page-title"><%= t("skill_ratings.edit.title") %></h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">
+              <%= @target_user.full_name %> • <%= @current_quarter.full_name %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main">
+      <% if @skill_ratings_data.present? %>
+        <%= form_with url: user_skill_ratings_path(@target_user), method: :patch, class: "space-y-6" do |form| %>
+          <div class="card">
+            <div class="card__body">
+              <div class="overflow-x-auto">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th class="table__header-cell"><%= t("skill_ratings.edit.technology") %></th>
+                      <th class="table__header-cell"><%= t("skill_ratings.edit.criticality") %></th>
+                      <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.edit.target_experts") %></th>
+                      <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.edit.rating") %></th>
+                      <th class="table__header-cell"><%= t("skill_ratings.edit.level") %></th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <% @skill_ratings_data.each do |data| %>
+                      <% team_tech = data[:team_technology] %>
+                      <% skill_rating = data[:skill_rating] %>
+                      <tr>
+                        <td class="table__cell table__cell--heading">
+                          <%= team_tech.technology.name %>
+                        </td>
+                        <td class="table__cell">
+                          <% case team_tech.criticality %>
+                          <% when "high" %>
+                            <span class="badge badge--danger">
+                              <%= t("activerecord.attributes.technology.criticality.high") %>
+                            </span>
+                          <% when "normal" %>
+                            <span class="badge badge--warning">
+                              <%= t("activerecord.attributes.technology.criticality.normal") %>
+                            </span>
+                          <% when "low" %>
+                            <span class="badge badge--secondary">
+                              <%= t("activerecord.attributes.technology.criticality.low") %>
+                            </span>
+                          <% end %>
+                        </td>
+                        <td class="table__cell table__cell--center">
+                          <%= team_tech.target_experts %>
+                        </td>
+                        <td class="table__cell table__cell--center">
+                          <div class="flex items-center justify-center gap-2">
+                            <% (0..3).each do |rating_value| %>
+                              <label class="cursor-pointer">
+                                <%= radio_button_tag "ratings[#{team_tech.technology.id}][rating]",
+                                    rating_value,
+                                    skill_rating.rating == rating_value,
+                                    class: "sr-only peer",
+                                    data: { rating: rating_value } %>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg border-2 font-semibold transition-colors
+                                  <%= case rating_value
+                                    when 0 then "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                                    when 1 then "border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                                    when 2 then "border-green-200 text-green-600 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/30"
+                                    when 3 then "border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-900/30"
+                                    end %>
+                                  peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-checked:text-white
+                                  peer-checked:dark:bg-blue-600 peer-checked:dark:border-blue-600">
+                                  <%= rating_value %>
+                                </span>
+                              </label>
+                            <% end %>
+                          </div>
+                        </td>
+                        <td class="table__cell text-gray-700 dark:text-gray-300">
+                          <%= skill_rating.level %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <%= link_to t("skill_ratings.edit.cancel"),
+                user_skill_ratings_path(@target_user),
+                class: "btn btn--secondary" %>
+
+            <%= form.submit t("skill_ratings.edit.save"),
+                class: "btn btn--primary" %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="alert alert--warning">
+          <div class="flex">
+            <div class="alert__icon-container">
+              <svg class="h-6 w-6 alert__icon--warning" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="alert__content">
+              <p class="alert__text alert__text--warning">
+                <%= t("skill_ratings.edit.no_technologies") %>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <%= link_to t("skill_ratings.edit.back_to_show"),
+              user_skill_ratings_path(@target_user),
+              class: "link" %>
+        </div>
+      <% end %>
+    </main>
+  </main>
+</div>

@@ -1,0 +1,141 @@
+<div class="flex flex-col min-h-screen">
+  <main class="flex-1 flex flex-col">
+    <div class="page-header">
+      <div class="page-header__container">
+        <div class="page-header__content">
+          <div>
+            <h1 class="page-title"><%= t("skill_ratings.show.title") %></h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">
+              <%= @target_user.full_name %> • <%= @current_quarter.full_name %>
+            </p>
+          </div>
+          <% if @skill_ratings_data.present? && @current_quarter&.evaluation_period? && policy(@skill_ratings_data.first[:skill_rating]).update? %>
+            <%= link_to t("skill_ratings.show.edit_button"),
+                edit_user_skill_ratings_path(@target_user),
+                class: "btn btn--primary" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main">
+      <% if @skill_ratings_data.present? %>
+        <div class="card">
+          <div class="card__body">
+            <div class="overflow-x-auto">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="table__header-cell"><%= t("skill_ratings.show.technology") %></th>
+                    <th class="table__header-cell"><%= t("skill_ratings.show.criticality") %></th>
+                    <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.target_experts") %></th>
+                    <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.rating") %></th>
+                    <th class="table__header-cell"><%= t("skill_ratings.show.level") %></th>
+                    <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.status") %></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                  <% @skill_ratings_data.each do |data| %>
+                    <% team_tech = data[:team_technology] %>
+                    <% skill_rating = data[:skill_rating] %>
+                    <tr>
+                      <td class="table__cell table__cell--heading">
+                        <%= team_tech.technology.name %>
+                      </td>
+                      <td class="table__cell">
+                        <% case team_tech.criticality %>
+                        <% when "high" %>
+                          <span class="badge badge--danger">
+                            <%= t("activerecord.attributes.technology.criticality.high") %>
+                          </span>
+                        <% when "normal" %>
+                          <span class="badge badge--warning">
+                            <%= t("activerecord.attributes.technology.criticality.normal") %>
+                          </span>
+                        <% when "low" %>
+                          <span class="badge badge--secondary">
+                            <%= t("activerecord.attributes.technology.criticality.low") %>
+                          </span>
+                        <% end %>
+                      </td>
+                      <td class="table__cell table__cell--center">
+                        <%= team_tech.target_experts %>
+                      </td>
+                      <td class="table__cell table__cell--center">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold
+                          <%= case skill_rating.rating
+                            when 0 then "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                            when 1 then "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                            when 2 then "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                            when 3 then "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                            end %>">
+                          <%= skill_rating.rating %>
+                        </span>
+                      </td>
+                      <td class="table__cell text-gray-700 dark:text-gray-300">
+                        <%= skill_rating.level %>
+                      </td>
+                      <td class="table__cell table__cell--center">
+                        <% case skill_rating.status %>
+                        <% when "draft" %>
+                          <span class="badge badge--secondary">
+                            <%= t("skill_ratings.status.draft") %>
+                          </span>
+                        <% when "submitted" %>
+                          <span class="badge badge--warning">
+                            <%= t("skill_ratings.status.submitted") %>
+                          </span>
+                        <% when "approved" %>
+                          <span class="badge badge--success">
+                            <%= t("skill_ratings.status.approved") %>
+                          </span>
+                        <% when "rejected" %>
+                          <span class="badge badge--danger">
+                            <%= t("skill_ratings.status.rejected") %>
+                          </span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-between">
+          <%= link_to t("skill_ratings.show.back_to_engineer"),
+              engineer_path(id: @target_user.id),
+              class: "link" %>
+
+        <% if @current_quarter&.evaluation_period? && policy(@skill_ratings_data.first[:skill_rating]).update? %>
+            <%= link_to t("skill_ratings.show.edit_button"),
+                edit_user_skill_ratings_path(@target_user),
+                class: "btn btn--primary" %>
+        <% end %>
+        </div>
+      <% else %>
+        <div class="alert alert--warning">
+          <div class="flex">
+            <div class="alert__icon-container">
+              <svg class="h-6 w-6 alert__icon--warning" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="alert__content">
+              <p class="alert__text alert__text--warning">
+                <%= t("skill_ratings.show.no_technologies") %>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <%= link_to t("skill_ratings.show.back_to_engineer"),
+              engineer_path(id: @target_user.id),
+              class: "link" %>
+        </div>
+      <% end %>
+    </main>
+  </main>
+</div>
