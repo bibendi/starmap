@@ -31,4 +31,9 @@ Rails.application.routes.draw do
 
   # Theme switching
   post "theme/:theme", to: "themes#switch", as: :switch_theme
+
+  # Admin namespace
+  namespace :admin do
+    resources :quarters
+  end
 end
