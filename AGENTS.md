@@ -1,174 +1,45 @@
-# Starmap
+# AI-DLC and Spec-Driven Development
 
-Описание продукта Starmap — корпоративного веб-приложения для управления техническими компетенциями, развития сотрудников и снижения bus-factor рисков.
+Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life Cycle)
 
-## Контекст продукта
+## Project Context
 
-Starmap автоматизирует сбор, валидацию и анализ компетенций инженерных команд. Система работает поквартально, поддерживает шкалу оценок 0–3, формирует метрики (Coverage Index, Maturity Index, Red Zones, Key Person Risk) и помогает выстраивать планы развития. Технологический стек: Ruby on Rails 8.1.1, Hotwire (Turbo + Stimulus), PostgreSQL, Solid Queue, Devise, Pundit.
+### Paths
+- Steering: `.kiro/steering/`
+- Specs: `.kiro/specs/`
 
-## Сводка ролей
+### Steering vs Specification
 
-| Роль            | Задачи в системе                         | Фокус развития                        | Ответственность за риски             |
-|-----------------|------------------------------------------|---------------------------------------|--------------------------------------|
-| Engineer        | Самооценка компетенций и планы роста     | Личный прогресс, мотивация            | Сигналит о рисках покрытия           |
-| Team Lead       | Утверждение оценок и наставничество      | Командное развитие, баланс навыков    | Снижение bus-factor в команде        |
-| Unit Lead       | Аналитика метрик юнита                   | Стратегическое развитие юнита         | Управление зоной риска по технологиям|
-| Admin / HR      | Поддержка справочников и циклов          | Процессное совершенствование          | Актуальность данных и доступов       |
+**Steering** (`.kiro/steering/`) - Guide AI with project-wide rules and context
+**Specs** (`.kiro/specs/`) - Formalize development process for individual features
 
-## Engineer (Разработчик)
+### Active Specifications
+- Check `.kiro/specs/` for active specifications
+- Use `/kiro-spec-status [feature-name]` to check progress
 
-- **Фокус:** самооценка компетенций в активных кварталах, визуализация прогресса, инициирование Action Plans.
-- **Инструменты:** персональный дашборд, формы самооценки, история оценок, планы развития.
-- **Вклад в метрики:** обеспечивает данные для Coverage Index и Key Person Risk, отражает потребность в обучении.
-- **Мотивация:** прозрачные аргументы для грейдов, адаптивные цели роста, обратная связь от тимлида.
+## Development Guidelines
+- Think in English, generate responses in Russian. All Markdown content written to project files (e.g., requirements.md, design.md, tasks.md, research.md, validation reports) MUST be written in the target language configured for this specification (see spec.json.language).
 
-## Team Lead (Тимлид)
+## Minimal Workflow
+- Phase 0 (optional): `/kiro-steering`, `/kiro-steering-custom`
+- Phase 1 (Specification):
+  - `/kiro-spec-init "description"`
+  - `/kiro-spec-requirements {feature}`
+  - `/kiro-validate-gap {feature}` (optional: for existing codebase)
+  - `/kiro-spec-design {feature} [-y]`
+  - `/kiro-validate-design {feature}` (optional: design review)
+  - `/kiro-spec-tasks {feature} [-y]`
+- Phase 2 (Implementation): `/kiro-spec-impl {feature} [tasks]`
+  - `/kiro-validate-impl {feature}` (optional: after implementation)
+- Progress check: `/kiro-spec-status {feature}` (use anytime)
 
-- **Фокус:** утверждение и корректировка оценок, планирование развития команды.
-- **Инструменты:** Team dashboard с матрицами навыков, интерфейс подтверждения оценок, конструктор Action Plans.
-- **Вклад в метрики:** снижает Key Person Risk, повышает Coverage/Maturity Index, формирует дорожные карты роста.
-- **Ответственность:** поддерживать объективность оценок, вовремя запускать планы развития, координировать обмен экспертизой.
+## Development Rules
+- 3-phase approval workflow: Requirements → Design → Tasks → Implementation
+- Human review required each phase; use `-y` only for intentional fast-track
+- Keep steering current and verify alignment with `/kiro-spec-status`
+- Follow the user's instructions precisely, and within that scope act autonomously: gather the necessary context and complete the requested work end-to-end in this run, asking questions only when essential information is missing or the instructions are critically ambiguous.
 
-## Unit Lead
-
-- **Фокус:** обзор метрик юнита, принятие решений о перераспределении экспертизы и инвестициях в обучение.
-- **Инструменты:** Overview dashboard, сводные отчеты по рискам, анализ динамики по кварталам.
-- **Вклад в метрики:** контролирует Coverage Index, сокращает Red Zones, управляет стратегическим развитием.
-- **Ответственность:** выравнивать критические технологии, поддерживать устойчивость юнита, обеспечивать мотивацию команд.
-
-## Admin / HR
-
-- **Фокус:** поддержка справочника технологий и критичности, управление пользовательскими ролями, контроль квартальных циклов.
-- **Инструменты:** административная панель, настройки Solid Queue, аудит через Audited.
-- **Вклад в метрики:** гарантирует целостность данных, обеспечивает своевременность квартальных и фоновых процессов.
-- **Ответственность:** конфигурация статусов кварталов (draft → active → closed → archived), мониторинг интеграций, поддержка безопасности и доступа.
-
-## Техническая архитектура
-
-### Системные слои
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Presentation Layer (Hotwire: Turbo + Stimulus + ViewComponent)│
-├─────────────────────────────────────────────────────────────┤
-│ Controllers (Rails MVC)                                     │
-├─────────────────────────────────────────────────────────────┤
-│ Models (ActiveRecord)                                       │
-├─────────────────────────────────────────────────────────────┤
-│ Background Jobs (Solid Queue)                               │
-├─────────────────────────────────────────────────────────────┤
-│ Data Layer (PostgreSQL)                                     │
-└─────────────────────────────────────────────────────────────┘
-```
-
-- **Frontend:** Hotwire обеспечивает мгновенные обновления без полного SPA, Stimulus контроллеры управляют интерактивностью. ViewComponent используется для создания переиспользуемых, тестируемых компонентов интерфейса.
-- **Controllers:** ApplicationController инкапсулирует Devise, Pundit, I18n..
-- **Background jobs:** Solid Queue обрабатывает пересчёт метрик, уведомления.
-- **Data layer:** PostgreSQL хранит оценки, планы развития и снимки кварталов.
-
-## Модель данных
-
-Основные сущности:
-
-- **User:** хранит учётные записи, роли (engineer, team_lead, unit_lead, admin), связь с командами.
-- **Team:** группирует пользователей, связывает их с управляющим тимлидом.
-- **Technology:** описывает технологию, её категорию и критичность, целевое количество экспертов.
-- **Quarter:** содержит информацию о квартальных циклах (статус, даты).
-- **SkillRating:** фиксирует оценки компетенций (0–3), статус утверждения, связь с кварталом.
-- **ActionPlan:** развёртывает планы развития, связывает цели с пользователями, технологиями и кварталами.
-
-## Ключевые сервисы и контроллеры
-
-- **DashboardsController:** формирует overview (метрики, риски), team (матрицы навыков, динамика), personal (прогресс сотрудника).
-- **SkillRatingsController:** управляет жизненным циклом оценок (создание, редактирование до утверждения).
-- **Admin-панель:** управляет справочниками, пользователями, кварталами; интегрирована с Devise и Pundit.
-
-## Бизнес-метрики и фоновые расчёты
-
-- **Coverage Index:** процент технологий с ≥2 экспертами (уровень 2–3). Использует join Technology ↔ SkillRating с агрегированием.
-- **Maturity Index:** средний уровень всех оценок за текущий квартал.
-- **Red Zones:** критические технологии с недостаточным покрытием (менее двух экспертов).
-- **Key Person Risk:** выявляет технологии, где эксперт единственный.
-- **Action Plan Progress:** отслеживает статус планов развития.
-
-Расчёты выполняются Solid Queue task-ами после изменений оценок или завершения квартала, результаты кэшируются через Solid Cache для быстрого отображения на дашбордах.
-
-## Безопасность и авторизация
-
-- **Аутентификация:** Devise обеспечивает SSO и регулярную синхронизацию пользователей.
-- **Авторизация:** Pundit реализует role-based и record-level политику.
-- **Защита данных:** CSRF, фильтрация чувствительных параметров, secure headers, аудит изменений через Audited.
-- **Исключения:** для агрегированных контроллеров (дашборды) допускается `skip_after_action :verify_policy_scoped` при символьной авторизации.
-
-## Технологический стек
-
-- **Ядро:** Ruby on Rails 8.1.1, PostgreSQL, Hotwire (Turbo + Stimulus), ViewComponent 4.2.0.
-- **Веб-сервер:** Puma.
-- **Очереди:** Solid Queue (native для Rails 8).
-- **Кеширование:** Solid Cache.
-  - **Тестирование:**
-    - **Ruby:** RSpec, FactoryBot, Shoulda Matchers, test-prof. ViewComponent компоненты тестируются с помощью `render_inline` и Capybara matchers.
-    - **JavaScript:** Vitest + JSDOM для тестирования Stimulus контроллеров. Подход минималистичный: создание DOM-структуры, регистрация контроллеров в Stimulus Application, проверка поведения через взаимодействие с DOM.
-- **Инструменты качества:** Brakeman, Annotate, Letter Opener (dev).
-- **Отладка:** debug gem, структурированное логирование.
-- **Контейнеризация:** Docker + Docker Compose с multi-stage build.
-- **Локализация:** I18n (en, ru), часовой пояс Europe/Moscow.
-  - **Команды разработчика:**
-    - Ты всегда находишься в текущей папке, тем необходимости выполнять смену текущей директории через `cd`.
-    - Разработка: `bin/dev` (запуск приложения в режиме разработки)
-    - База данных: `bin/rails db:migrate`, `bin/rails db:seed` (наполнение тестовыми данными), `bin/rails db:seed:replant` (полная пересадка данных)
-    - Тестирование:
-      - **Ruby:**
-        - Запуск тестов: `bundle exec rspec ...`
-        - Если падает какой-то тест и сходу ошибка не ясна, то используй `puts foo.inspect` для дебага и запускай этот конкретный тест.
-        - Если упало много тестов с однотипной ошибкой, то с начала почини один тест, только потом запускай остальные.
-        - Тестирование N+1 запросов:
-          - Используется gem `n_plus_one_control` для тестирования производительности запросов
-          - Тесты помечаются тегом `:n_plus_one` и используют `populate` блок для создания данных разного масштаба
-          - Пример теста: `bundle exec rspec spec/components/team_member_metrics_component_spec.rb:115 --tag n_plus_one`
-          - Для отладки SQL-запросов используй переменную окружения `LOG=all`: `LOG=all bundle exec rspec ...`
-      - **JavaScript:**
-        - Запуск всех тестов: `npm test` или `npm run test`
-        - Watch режим: `npm run test:watch`
-        - Coverage отчёт: `npm run test:coverage`
-        - Тесты расположены в `test/controllers/`
-        - Подход тестирования Stimulus: поведенческий через DOM, не через внутренние API
-        - Хелперы в `test/helpers/`:
-          - `stimulus.js` — `renderController()`, `waitForStimulus()` для инициализации контроллеров
-          - `testing-library.js` — `getByTestId()`, `userEvent()` для тестирования через data-testid
-          - `fetch.js` — `mockFetch()`, `createCSRFToken()` для HTTP и CSRF
-         - **Принципы:**
-           - Тестируем поведение, не реализацию
-           - Используем `data-testid` для поиска элементов (стабильный API)
-           - Проверяем видимость/состояние элементов, не внутренние детали
-
-      - **HTML:**
-        - При разработке шаблонов следуйте [STYLEGUIDE.md](./docs/STYLEGUIDE.md)
-        - Используйте компонентную CSS систему вместо inline Tailwind классов
-        - Все компоненты должны поддерживать dark mode
-
-## Взаимодействие ролей
-
-1. **Сбор данных:** Engineer обновляет самооценки → Team Lead валидирует и утверждает → данные попадают в метрики.
-2. **Квартальный цикл:** Admin и Unit Lead запускают новый квартал, копируются прошлые оценки, формируются уведомления.
-3. **Аналитика:** Unit Lead отслеживает Coverage/Maturity/Red Zones, Team Lead — компетенции и планы команды, Engineer — личный прогресс.
-4. **Управление рисками:** метрики Key Person Risk и bus-factor сигналят о пробелах; Team Lead и Unit Lead планируют обмен экспертизой.
-5. **Развитие:** Action Plans связывают цели развития с кварталом, технологиями и сотрудниками, обеспечивая контролируемый прогресс.
-
-## Ключевые принципы работы ролей
-
-- **Прозрачность:** каждая роль видит уровень детализации, соответствующий ответственности (Pundit).
-- **Устойчивость:** акцент на равномерном распределении экспертизы и снижении bus-factor.
-- **Осознанное развитие:** цели фиксируются в Action Plans, прогресс отслеживается поквартально.
-
-## Метрики для мониторинга эффективности
-
-- **Coverage Index:** доля технологий с ≥2 экспертами (Engineer + Team Lead).
-- **Maturity Index:** средний уровень компетенций (вклад всех ролей).
-- **Red Zones:** критические технологии с недостаточным покрытием (Unit Lead + Admin).
-- **Key Person Risk:** выявление единственных экспертов (Engineer + Team Lead).
-- **Action Plan Progress:** статус планов развития (Team Lead + Engineer).
-
-## Заключение
-
-Starmap обеспечивает управляемый процесс роста компетенций и снижение рисков благодаря четко определённым ролям и прозрачной технической архитектуре. Каждая роль несёт свою часть ответственности — от сбора данных до стратегического планирования — что формирует устойчивую культуру развития в инженерных командах и поддерживает высокое качество сервиса.
+## Steering Configuration
+- Load entire `.kiro/steering/` as project memory
+- Default files: `product.md`, `tech.md`, `structure.md`
+- Custom files are supported (managed via `/kiro-steering-custom`)
