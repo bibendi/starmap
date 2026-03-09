@@ -9,6 +9,14 @@ class Quarter < ApplicationRecord
   has_many :technologies, through: :skill_ratings
   has_many :action_plans, dependent: :destroy
 
+  # Enum
+  enum :status, {
+    draft: "draft",
+    active: "active",
+    closed: "closed",
+    archived: "archived"
+  }, default: "draft"
+
   # Validations
   validates :name, presence: true, uniqueness: {scope: [:year]}
   validates :year, presence: true, numericality: {only_integer: true, greater_than: 2000}

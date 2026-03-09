@@ -1,5 +1,12 @@
 <h1>Управление кварталами</h1>
 
+<%= form_tag admin_quarters_path, method: :get do %>
+  <%= label_tag :status, "Фильтр по статусу:" %>
+  <%= select_tag :status, 
+      options_for_select([["Все", ""]] + Quarter.statuses.keys.map { |s| [s.humanize, s] }, params[:status]),
+      onchange: "this.form.submit()" %>
+<% end %>
+
 <table>
   <thead>
     <tr>
@@ -24,3 +31,5 @@
 </table>
 
 <%= link_to "Создать квартал", new_admin_quarter_path %>
+
+<%= paginate @quarters %>

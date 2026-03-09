@@ -33,4 +33,10 @@ class Admin::BasePolicy < ApplicationPolicy
   def can_manage?
     admin? || unit_lead?
   end
+
+  class Scope < ApplicationPolicy::Scope
+    def can_manage?
+      user&.admin? || user&.unit_lead?
+    end
+  end
 end

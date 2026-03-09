@@ -12,9 +12,9 @@ class Admin::QuarterPolicy < Admin::BasePolicy
     can_manage?
   end
 
-  class Scope < ApplicationPolicy::Scope
+  class Scope < Admin::BasePolicy::Scope
     def resolve
-      return scope.none if !user&.active? && !(user.admin? || user.unit_lead?)
+      return scope.none unless can_manage?
       scope.all
     end
   end
