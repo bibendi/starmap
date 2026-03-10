@@ -35,7 +35,6 @@ class Quarter < ApplicationRecord
   before_validation :set_quarter_name, on: :create
   before_validation :calculate_evaluation_dates, on: :create
   after_create :set_as_current_if_first
-  before_update :unset_current_if_needed
   after_update :handle_status_change
 
   # Scopes
@@ -318,15 +317,6 @@ class Quarter < ApplicationRecord
 
   def set_as_current_if_first
     update!(is_current: true) if Quarter.count == 1
-  end
-
-  def unset_current_if_needed
-    return unless is_current_changed? && is_current == false
-
-    # If this was the current quarter and we're deactivating it,
-    # try to set the next quarter as current
-    next_q = next_quarter
-    next_q&.update!(is_current: true) if next_q&.active?
   end
 
   def handle_status_change

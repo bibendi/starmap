@@ -20,6 +20,22 @@ RSpec.describe QuarterStatusService, type: :service do
 
         expect(quarter.reload.is_current).to be true
       end
+
+      context "when there is a closed current quarter" do
+        let!(:closed_current_quarter) do
+          create(:quarter, status: :closed, is_current: true)
+        end
+        let(:new_draft_quarter) { create(:quarter, status: :draft) }
+
+        it "deactivates the closed current quarter" do
+          service = described_class.new(new_draft_quarter, admin)
+          result = service.activate
+
+          expect(result).to be true
+          expect(closed_current_quarter.reload.is_current).to be false
+          expect(new_draft_quarter.reload.is_current).to be true
+        end
+      end
     end
 
     context "when quarter is not in draft status" do
@@ -61,11 +77,11 @@ RSpec.describe QuarterStatusService, type: :service do
         expect(quarter.reload.status).to eq "closed"
       end
 
-      it "removes current flag" do
+      it "keeps current flag" do
         service = described_class.new(quarter, admin)
         service.close
 
-        expect(quarter.reload.is_current).to be false
+        expect(quarter.reload.is_current).to be true
       end
     end
 

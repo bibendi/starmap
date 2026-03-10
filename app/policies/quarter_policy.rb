@@ -46,6 +46,12 @@ class QuarterPolicy < ApplicationPolicy
     can_manage_quarters?
   end
 
+  def archive?
+    return false unless active_user?
+    return false unless record
+    can_manage_quarters?
+  end
+
   def copy_ratings?
     return false unless active_user?
     return false unless record

@@ -34,6 +34,12 @@ Rails.application.routes.draw do
 
   # Admin namespace
   namespace :admin do
-    resources :quarters
+    resources :quarters do
+      member do
+        post :activate
+        post :close
+        post :archive
+      end
+    end
   end
 end

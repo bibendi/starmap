@@ -13,7 +13,7 @@ class QuarterStatusService
     return false unless validate_can_activate
 
     Quarter.transaction do
-      deactivate_current_quarter if active_quarter_exists?
+      deactivate_current_quarter if current_quarter_exists?
       @quarter.update!(
         status: :active,
         is_current: true
@@ -31,10 +31,7 @@ class QuarterStatusService
     return false unless validate_can_close
 
     Quarter.transaction do
-      @quarter.update!(
-        status: :closed,
-        is_current: false
-      )
+      @quarter.update!(status: :closed)
     end
 
     true
@@ -65,7 +62,7 @@ class QuarterStatusService
       return false
     end
 
-    if active_quarter_exists?
+    if any_active_quarter_exists?
       @errors << I18n.t("admin.quarters.errors.active_exists")
       return false
     end
@@ -91,8 +88,12 @@ class QuarterStatusService
     true
   end
 
-  def active_quarter_exists?
-    Quarter.where(status: :active, is_current: true).where.not(id: @quarter.id).exists?
+  def any_active_quarter_exists?
+    Quarter.where(status: :active).where.not(id: @quarter.id).exists?
+  end
+
+  def current_quarter_exists?
+    Quarter.where(is_current: true).where.not(id: @quarter.id).exists?
   end
 
   def deactivate_current_quarter

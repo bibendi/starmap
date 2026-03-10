@@ -5,6 +5,7 @@ require "rails_helper"
 RSpec.describe TeamSkillMatrixComponent, type: :component do
   let_it_be(:current_quarter) { create(:quarter, status: :active, is_current: true) }
   let_it_be(:previous_quarter) { create(:quarter, :previous, :closed, relative_to: current_quarter) }
+
   let_it_be(:team) { create(:team) }
   let_it_be(:user1) { create(:user, team: team) }
   let_it_be(:user2) { create(:user, team: team) }

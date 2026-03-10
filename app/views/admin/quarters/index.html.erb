@@ -24,6 +24,18 @@
         <td><%= quarter.start_date %> - <%= quarter.end_date %></td>
         <td>
           <%= link_to "Просмотр", admin_quarter_path(quarter) %>
+          <% if quarter.draft? && policy([:admin, quarter]).activate? %>
+            <%= button_to "Активировать", activate_admin_quarter_path(quarter), method: :post %>
+          <% end %>
+          <% if quarter.active? && policy([:admin, quarter]).close? %>
+            <%= button_to "Закрыть", close_admin_quarter_path(quarter), method: :post %>
+          <% end %>
+          <% if quarter.closed? && policy([:admin, quarter]).archive? %>
+            <%= button_to "Архивировать", archive_admin_quarter_path(quarter), method: :post %>
+          <% end %>
+          <% if quarter.draft? && policy([:admin, quarter]).destroy? %>
+            <%= button_to "Удалить", admin_quarter_path(quarter), method: :delete, data: {confirm: "Удалить квартал?"} %>
+          <% end %>
         </td>
       </tr>
     <% end %>

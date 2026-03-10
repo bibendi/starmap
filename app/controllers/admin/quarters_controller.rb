@@ -10,6 +10,57 @@ module Admin
       @quarters = @quarters.page(params[:page]).per(PER_PAGE)
     end
 
+    def activate
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+
+      service = QuarterStatusService.new(@quarter, current_user)
+
+      if service.activate
+        redirect_to admin_quarters_path, notice: t("admin.quarters.activated")
+      else
+        redirect_to admin_quarters_path, alert: service.errors.join(", ")
+      end
+    end
+
+    def close
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+
+      service = QuarterStatusService.new(@quarter, current_user)
+
+      if service.close
+        redirect_to admin_quarters_path, notice: t("admin.quarters.closed")
+      else
+        redirect_to admin_quarters_path, alert: service.errors.join(", ")
+      end
+    end
+
+    def archive
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+
+      service = QuarterStatusService.new(@quarter, current_user)
+
+      if service.archive
+        redirect_to admin_quarters_path, notice: t("admin.quarters.archived")
+      else
+        redirect_to admin_quarters_path, alert: service.errors.join(", ")
+      end
+    end
+
+    def destroy
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+
+      if @quarter.draft?
+        @quarter.destroy
+        redirect_to admin_quarters_path, notice: t("admin.quarters.destroyed")
+      else
+        redirect_to admin_quarters_path, alert: t("admin.quarters.errors.cannot_delete_non_draft")
+      end
+    end
+
     private
 
     def filter_by_status(scope)

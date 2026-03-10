@@ -28,6 +28,19 @@
 #       enabled: "ON"
 
 en:
+  admin:
+    quarters:
+      activated: "Quarter activated"
+      closed: "Quarter closed"
+      archived: "Quarter archived"
+      destroyed: "Quarter deleted"
+      errors:
+        cannot_delete_non_draft: "Only draft quarters can be deleted"
+        not_draft: "Quarter must be in draft status"
+        active_exists: "Active quarter already exists"
+        not_active: "Quarter must be in active status"
+        not_closed: "Quarter must be in closed status"
+
   teams:
     index:
       title: "Available Teams"
@@ -177,6 +190,12 @@ en:
         high: "High"
         normal: "Norm"
         low: "Low"
+      legend:
+        expert: "Can teach others"
+        proficient: "Proficient"
+        basic: "Has basic understanding"
+        none: "No knowledge"
+      no_data: "No team skill data"
     unit_technology_treemap:
       title: "Technology Heatmap"
       description: "%{count} technologies with experts"
