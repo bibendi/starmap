@@ -17,6 +17,12 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 - Check `.kiro/specs/` for active specifications
 - Use `/kiro-spec-status [feature-name]` to check progress
 
+## Design System & UI Conventions
+
+See full style guide: `docs/STYLEGUIDE.md`
+
+When implementing views, follow the project's component-based CSS system. Check existing views in `app/views/` for reference before creating new ones.
+
 ## Development Guidelines
 - Think in English, generate responses in Russian. All Markdown content written to project files (e.g., requirements.md, design.md, tasks.md, research.md, validation reports) MUST be written in the target language configured for this specification (see spec.json.language).
 
