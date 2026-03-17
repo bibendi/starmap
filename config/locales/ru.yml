@@ -1,6 +1,13 @@
 ru:
   admin:
     quarters:
+      title: "Управление кварталами"
+      new: "Создать квартал"
+      create: "Создать"
+      created: "Квартал успешно создан"
+      edit: "Редактировать"
+      cancel: "Отмена"
+      back: "Назад"
       activated: "Квартал активирован"
       closed: "Квартал закрыт"
       archived: "Квартал архивирован"
@@ -234,6 +241,14 @@ ru:
 
   activerecord:
     attributes:
+      quarter:
+        year: "Год"
+        quarter_number: "Номер квартала"
+        start_date: "Дата начала"
+        end_date: "Дата окончания"
+        evaluation_start_date: "Начало периода оценки"
+        evaluation_end_date: "Окончание периода оценки"
+        description: "Описание"
       user:
         roles:
           engineer: "Инженер"
@@ -245,3 +260,20 @@ ru:
           high: "Высокая"
           normal: "Обычная"
           low: "Низкая"
+    errors:
+      models:
+        quarter:
+          attributes:
+            quarter_number:
+              taken: "уже существует для этого года"
+            year:
+              current_or_future_only: "может быть только текущим или будущим годом"
+            end_date:
+              after_start_date: "должна быть позже даты начала"
+            evaluation_start_date:
+              within_quarter: "должна быть в периоде квартала"
+            evaluation_end_date:
+              within_quarter: "должна быть в периоде квартала"
+              after_eval_start: "должна быть позже даты начала оценки"
+      messages:
+        too_long_evaluation_period: "период оценки не должен превышать 30 дней"

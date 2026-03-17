@@ -30,6 +30,13 @@
 en:
   admin:
     quarters:
+      title: "Quarter Management"
+      new: "Create Quarter"
+      create: "Create"
+      created: "Quarter created successfully"
+      edit: "Edit"
+      cancel: "Cancel"
+      back: "Back"
       activated: "Quarter activated"
       closed: "Quarter closed"
       archived: "Quarter archived"
@@ -251,6 +258,14 @@ en:
 
   activerecord:
     attributes:
+      quarter:
+        year: "Year"
+        quarter_number: "Quarter Number"
+        start_date: "Start Date"
+        end_date: "End Date"
+        evaluation_start_date: "Evaluation Start Date"
+        evaluation_end_date: "Evaluation End Date"
+        description: "Description"
       user:
         roles:
           engineer: "Engineer"
@@ -262,3 +277,20 @@ en:
           high: "High"
           normal: "Normal"
           low: "Low"
+    errors:
+      models:
+        quarter:
+          attributes:
+            quarter_number:
+              taken: "already exists for this year"
+            year:
+              current_or_future_only: "must be current or future year"
+            end_date:
+              after_start_date: "must be after start date"
+            evaluation_start_date:
+              within_quarter: "must be within quarter period"
+            evaluation_end_date:
+              within_quarter: "must be within quarter period"
+              after_eval_start: "must be after evaluation start date"
+      messages:
+        too_long_evaluation_period: "Evaluation period must not exceed 30 days"

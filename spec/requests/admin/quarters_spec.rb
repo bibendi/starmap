@@ -144,6 +144,132 @@ RSpec.describe "Admin::Quarters", type: :request do
     end
   end
 
+  describe "GET /admin/quarters/new" do
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        get new_admin_quarter_path
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response" do
+        get new_admin_quarter_path
+        expect(response).to be_successful
+      end
+
+      it "displays form fields" do
+        get new_admin_quarter_path
+        expect(response.body).to include("year")
+        expect(response.body).to include("quarter_number")
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          get new_admin_quarter_path
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "POST /admin/quarters" do
+    let(:valid_params) do
+      {
+        quarter: {
+          year: Date.current.year + 1,
+          quarter_number: 1,
+          start_date: "#{Date.current.year + 1}-01-01",
+          end_date: "#{Date.current.year + 1}-03-31"
+        }
+      }
+    end
+
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        post admin_quarters_path, params: valid_params
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "creates new quarter with valid params" do
+        expect {
+          post admin_quarters_path, params: valid_params
+        }.to change(Quarter, :count).by(1)
+      end
+
+      it "auto-generates quarter name" do
+        post admin_quarters_path, params: valid_params
+        quarter = Quarter.last
+        expect(quarter.name).to eq("#{valid_params[:quarter][:year]} Q#{valid_params[:quarter][:quarter_number]}")
+      end
+
+      it "sets status to draft by default" do
+        post admin_quarters_path, params: valid_params
+        expect(Quarter.last).to be_draft
+      end
+
+      it "redirects to index with notice" do
+        post admin_quarters_path, params: valid_params
+        expect(response).to redirect_to(admin_quarters_path)
+        expect(flash[:notice]).to be_present
+      end
+
+      it "auto-calculates evaluation dates" do
+        post admin_quarters_path, params: valid_params
+        quarter = Quarter.last
+        expect(quarter.evaluation_start_date).to be_present
+        expect(quarter.evaluation_end_date).to be_present
+      end
+
+      it "does not create quarter with duplicate year and quarter_number" do
+        create(:quarter, year: valid_params[:quarter][:year], quarter_number: valid_params[:quarter][:quarter_number])
+        expect {
+          post admin_quarters_path, params: valid_params
+        }.not_to change(Quarter, :count)
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "renders form with errors when quarter_number is invalid" do
+        invalid_params = {quarter: {year: valid_params[:quarter][:year], quarter_number: 5}}
+        post admin_quarters_path, params: invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("quarter_number")
+      end
+
+      it "requires year to be current or future" do
+        invalid_params = {
+          quarter: {
+            year: 2020,
+            quarter_number: 1,
+            start_date: "2020-01-01",
+            end_date: "2020-03-31"
+          }
+        }
+        post admin_quarters_path, params: invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          post admin_quarters_path, params: valid_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
   describe "DELETE /admin/quarters/:id" do
     context "when user is admin" do
       before { sign_in admin, scope: :user }

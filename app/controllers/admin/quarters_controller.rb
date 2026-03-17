@@ -10,6 +10,24 @@ module Admin
       @quarters = @quarters.page(params[:page]).per(PER_PAGE)
     end
 
+    def new
+      authorize [:admin, Quarter]
+      @quarter = Quarter.new
+      set_default_year_and_quarter
+    end
+
+    def create
+      authorize [:admin, Quarter]
+      @quarter = Quarter.new(quarter_params)
+      @quarter.created_by = current_user
+
+      if @quarter.save
+        redirect_to admin_quarters_path, notice: t("admin.quarters.created")
+      else
+        render :new, status: :unprocessable_content
+      end
+    end
+
     def activate
       @quarter = Quarter.find(params[:id])
       authorize [:admin, @quarter]
@@ -62,6 +80,24 @@ module Admin
     end
 
     private
+
+    def quarter_params
+      params.require(:quarter).permit(
+        :year, :quarter_number,
+        :start_date, :end_date,
+        :evaluation_start_date, :evaluation_end_date,
+        :description
+      )
+    end
+
+    def set_default_year_and_quarter
+      current_year = Date.current.year
+      existing_quarters = Quarter.where(year: current_year).pluck(:quarter_number)
+      available_quarter = (1..4).find { |q| !existing_quarters.include?(q) }
+
+      @quarter.year = current_year
+      @quarter.quarter_number = available_quarter || 1
+    end
 
     def filter_by_status(scope)
       return scope if params[:status].blank?

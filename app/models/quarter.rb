@@ -27,6 +27,12 @@ class Quarter < ApplicationRecord
   validates :evaluation_end_date, presence: true
   validates :status, presence: true, inclusion: {in: %w[draft active closed archived]}
 
+  # Validate year + quarter_number uniqueness
+  validates :quarter_number, uniqueness: {scope: :year}
+
+  # Validate year is current or future
+  validate :validate_year_is_current_or_future
+
   # Validate date consistency
   validate :validate_date_sequence
   validate :validate_evaluation_dates
@@ -285,20 +291,26 @@ class Quarter < ApplicationRecord
 
   private
 
+  def validate_year_is_current_or_future
+    return if year.blank?
+
+    errors.add(:year, :current_or_future_only) if year < Date.current.year
+  end
+
   def validate_date_sequence
     return unless start_date.present? && end_date.present?
 
-    errors.add(:end_date, "должна быть позже даты начала") if end_date <= start_date
-    errors.add(:evaluation_start_date, "должна быть в периоде квартала") if evaluation_start_date < start_date || evaluation_start_date > end_date
-    errors.add(:evaluation_end_date, "должна быть в периоде квартала") if evaluation_end_date < start_date || evaluation_end_date > end_date
-    errors.add(:evaluation_end_date, "должна быть позже даты начала оценки") if evaluation_end_date <= evaluation_start_date
+    errors.add(:end_date, :after_start_date) if end_date <= start_date
+    errors.add(:evaluation_start_date, :within_quarter) if evaluation_start_date < start_date || evaluation_start_date > end_date
+    errors.add(:evaluation_end_date, :within_quarter) if evaluation_end_date < start_date || evaluation_end_date > end_date
+    errors.add(:evaluation_end_date, :after_eval_start) if evaluation_end_date <= evaluation_start_date
   end
 
   def validate_evaluation_dates
     return unless evaluation_start_date.present? && evaluation_end_date.present?
 
     if evaluation_end_date - evaluation_start_date > 30.days
-      errors.add(:evaluation_end_date, "период оценки не должен превышать 30 дней")
+      errors.add(:evaluation_end_date, :too_long_evaluation_period)
     end
   end
 
@@ -308,6 +320,7 @@ class Quarter < ApplicationRecord
 
   def calculate_evaluation_dates
     return if evaluation_start_date.present? && evaluation_end_date.present?
+    return unless start_date.present? && end_date.present?
 
     # Default evaluation period: middle 2 weeks of quarter
     quarter_midpoint = start_date + ((end_date - start_date) / 2).days
