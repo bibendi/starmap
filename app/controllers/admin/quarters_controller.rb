@@ -73,6 +73,26 @@ module Admin
       load_quarter_metrics
     end
 
+    def edit
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+    end
+
+    def update
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+
+      if @quarter.draft?
+        if @quarter.update(quarter_params)
+          redirect_to admin_quarter_path(@quarter), notice: t("admin.quarters.updated")
+        else
+          render :edit, status: :unprocessable_content
+        end
+      else
+        redirect_to admin_quarter_path(@quarter), alert: t("admin.quarters.errors.cannot_edit_non_draft")
+      end
+    end
+
     def destroy
       @quarter = Quarter.find(params[:id])
       authorize [:admin, @quarter]

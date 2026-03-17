@@ -17,6 +17,7 @@ class QuarterPolicy < ApplicationPolicy
   def update?
     return false unless active_user?
     return false unless record
+    return false unless record.draft?
     can_manage_quarters?
   end
 

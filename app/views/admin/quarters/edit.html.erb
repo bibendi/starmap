@@ -1,0 +1,54 @@
+<h1><%= t("admin.quarters.edit") %></h1>
+
+<%= form_with model: [:admin, @quarter], local: true do |f| %>
+  <% if @quarter.errors.any? %>
+    <div class="errors">
+      <h2><%= t("activerecord.errors.template.header", count: @quarter.errors.count) %></h2>
+      <ul>
+        <% @quarter.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :year, "Год" %>
+    <%= f.number_field :year, min: Date.current.year, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :quarter_number, "Номер квартала" %>
+    <%= f.select :quarter_number, [["Q1", 1], ["Q2", 2], ["Q3", 3], ["Q4", 4]], required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :start_date, "Дата начала" %>
+    <%= f.date_field :start_date, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :end_date, "Дата окончания" %>
+    <%= f.date_field :end_date, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :evaluation_start_date, "Начало периода оценки" %>
+    <%= f.date_field :evaluation_start_date, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :evaluation_end_date, "Окончание периода оценки" %>
+    <%= f.date_field :evaluation_end_date, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :description, "Описание" %>
+    <%= f.text_area :description, rows: 3 %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit t("admin.quarters.update") %>
+    <%= link_to t("admin.quarters.back"), admin_quarter_path(@quarter) %>
+  </div>
+<% end %>

@@ -331,6 +331,162 @@ RSpec.describe "Admin::Quarters", type: :request do
     end
   end
 
+  describe "GET /admin/quarters/:id/edit" do
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        get edit_admin_quarter_path(draft_quarter)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response for draft quarter" do
+        get edit_admin_quarter_path(draft_quarter)
+        expect(response).to be_successful
+      end
+
+      it "displays edit form for draft quarter" do
+        get edit_admin_quarter_path(draft_quarter)
+        expect(response.body).to include("year")
+        expect(response.body).to include(draft_quarter.year.to_s)
+      end
+
+      it "blocks editing of active quarter" do
+        get edit_admin_quarter_path(active_quarter)
+        expect(response).to redirect_to(admin_quarter_path(active_quarter))
+        expect(flash[:alert]).to be_present
+      end
+
+      it "blocks editing of closed quarter" do
+        get edit_admin_quarter_path(closed_quarter)
+        expect(response).to redirect_to(admin_quarter_path(closed_quarter))
+        expect(flash[:alert]).to be_present
+      end
+
+      it "blocks editing of closed quarter" do
+        expect {
+          get edit_admin_quarter_path(closed_quarter)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+
+      it "returns 404 for non-existent quarter" do
+        non_existent_id = (Quarter.maximum(:id) || 0) + 999999
+        get edit_admin_quarter_path(non_existent_id)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          get edit_admin_quarter_path(draft_quarter)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "PUT /admin/quarters/:id" do
+    let(:valid_update_params) do
+      {
+        quarter: {
+          description: "Updated description",
+          start_date: draft_quarter.start_date,
+          end_date: draft_quarter.end_date,
+          evaluation_start_date: draft_quarter.evaluation_start_date,
+          evaluation_end_date: draft_quarter.evaluation_end_date
+        }
+      }
+    end
+
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        put admin_quarter_path(draft_quarter), params: valid_update_params
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "updates draft quarter with valid params" do
+        put admin_quarter_path(draft_quarter), params: valid_update_params
+        expect(draft_quarter.reload.description).to eq("Updated description")
+      end
+
+      it "redirects to show page with notice" do
+        put admin_quarter_path(draft_quarter), params: valid_update_params
+        expect(response).to redirect_to(admin_quarter_path(draft_quarter))
+        expect(flash[:notice]).to be_present
+      end
+
+      it "renders form with errors when invalid" do
+        invalid_params = {quarter: {end_date: draft_quarter.start_date - 1.day}}
+        put admin_quarter_path(draft_quarter), params: invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("error")
+      end
+
+      it "denies update for active quarter with authorization error" do
+        expect {
+          put admin_quarter_path(active_quarter), params: valid_update_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+
+      it "does not change active quarter data" do
+        original_description = active_quarter.description
+        begin
+          put admin_quarter_path(active_quarter), params: valid_update_params
+        rescue Pundit::NotAuthorizedError
+          # expected
+        end
+        expect(active_quarter.reload.description).to eq(original_description)
+      end
+
+      it "denies update for closed quarter with authorization error" do
+        expect {
+          put admin_quarter_path(closed_quarter), params: valid_update_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+
+      it "does not change closed quarter data" do
+        original_description = closed_quarter.description
+        begin
+          put admin_quarter_path(closed_quarter), params: valid_update_params
+        rescue Pundit::NotAuthorizedError
+          # expected
+        end
+        expect(closed_quarter.reload.description).to eq(original_description)
+      end
+
+      it "denies update for archived quarter with authorization error" do
+        archived_quarter = create(:quarter, status: :archived)
+        expect {
+          put admin_quarter_path(archived_quarter), params: valid_update_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+
+      it "returns 404 for non-existent quarter" do
+        non_existent_id = (Quarter.maximum(:id) || 0) + 999999
+        put admin_quarter_path(non_existent_id), params: valid_update_params
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          put admin_quarter_path(draft_quarter), params: valid_update_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
   describe "DELETE /admin/quarters/:id" do
     context "when user is admin" do
       before { sign_in admin, scope: :user }

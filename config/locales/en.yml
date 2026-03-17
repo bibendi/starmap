@@ -35,6 +35,8 @@ en:
       create: "Create"
       created: "Quarter created successfully"
       edit: "Edit"
+      update: "Update"
+      updated: "Quarter updated successfully"
       cancel: "Cancel"
       back: "Back"
       show:
@@ -61,6 +63,7 @@ en:
       destroyed: "Quarter deleted"
       errors:
         cannot_delete_non_draft: "Only draft quarters can be deleted"
+        cannot_edit_non_draft: "Only draft quarters can be edited"
         not_draft: "Quarter must be in draft status"
         active_exists: "Active quarter already exists"
         not_active: "Quarter must be in active status"
