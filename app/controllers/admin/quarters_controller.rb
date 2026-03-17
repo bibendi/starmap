@@ -67,6 +67,12 @@ module Admin
       end
     end
 
+    def show
+      @quarter = Quarter.find(params[:id])
+      authorize [:admin, @quarter]
+      load_quarter_metrics
+    end
+
     def destroy
       @quarter = Quarter.find(params[:id])
       authorize [:admin, @quarter]
@@ -97,6 +103,12 @@ module Admin
 
       @quarter.year = current_year
       @quarter.quarter_number = available_quarter || 1
+    end
+
+    def load_quarter_metrics
+      @skill_ratings_count = @quarter.skill_ratings.count
+      @action_plans_count = @quarter.action_plans.count
+      @users_with_ratings = @quarter.skill_ratings.distinct.count(:user_id)
     end
 
     def filter_by_status(scope)

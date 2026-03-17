@@ -1,0 +1,75 @@
+<h1><%= t("admin.quarters.show.title") %></h1>
+
+<div class="quarter-details">
+  <h2><%= t("admin.quarters.show.info") %></h2>
+  
+  <table>
+    <tr>
+      <th><%= t("activerecord.attributes.quarter.name") %></th>
+      <td><%= @quarter.name %></td>
+    </tr>
+    <tr>
+      <th><%= t("admin.quarters.show.status") %></th>
+      <td><%= @quarter.status %></td>
+    </tr>
+    <tr>
+      <th><%= t("admin.quarters.show.dates") %></th>
+      <td><%= @quarter.start_date %> - <%= @quarter.end_date %></td>
+    </tr>
+    <tr>
+      <th><%= t("admin.quarters.show.evaluation") %></th>
+      <td><%= @quarter.evaluation_start_date %> - <%= @quarter.evaluation_end_date %></td>
+    </tr>
+    <% if @quarter.description.present? %>
+      <tr>
+        <th><%= t("admin.quarters.show.description") %></th>
+        <td><%= @quarter.description %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="quarter-metrics">
+  <h2><%= t("admin.quarters.metrics.title") %></h2>
+  
+  <table>
+    <tr>
+      <th><%= t("admin.quarters.metrics.skill_ratings") %></th>
+      <td><%= @skill_ratings_count %></td>
+    </tr>
+    <tr>
+      <th><%= t("admin.quarters.metrics.action_plans") %></th>
+      <td><%= @action_plans_count %></td>
+    </tr>
+    <tr>
+      <th><%= t("admin.quarters.metrics.users_with_ratings") %></th>
+      <td><%= @users_with_ratings %></td>
+    </tr>
+  </table>
+</div>
+
+<div class="quarter-actions">
+  <h2><%= t("admin.quarters.actions.title", default: "Действия") %></h2>
+  
+  <% if @quarter.draft? && policy([:admin, @quarter]).activate? %>
+    <%= button_to t("admin.quarters.actions.activate"), activate_admin_quarter_path(@quarter), method: :post %>
+  <% end %>
+  
+  <% if @quarter.active? && policy([:admin, @quarter]).close? %>
+    <%= button_to t("admin.quarters.actions.close"), close_admin_quarter_path(@quarter), method: :post %>
+  <% end %>
+  
+  <% if @quarter.closed? && policy([:admin, @quarter]).archive? %>
+    <%= button_to t("admin.quarters.actions.archive"), archive_admin_quarter_path(@quarter), method: :post %>
+  <% end %>
+  
+  <% if @quarter.draft? && policy([:admin, @quarter]).edit? %>
+    <%= link_to t("admin.quarters.actions.edit"), edit_admin_quarter_path(@quarter) %>
+  <% end %>
+  
+  <% if @quarter.draft? && policy([:admin, @quarter]).destroy? %>
+    <%= button_to t("admin.quarters.actions.delete"), admin_quarter_path(@quarter), method: :delete, data: {confirm: "Удалить квартал?"} %>
+  <% end %>
+  
+  <%= link_to t("admin.quarters.back"), admin_quarters_path %>
+</div>

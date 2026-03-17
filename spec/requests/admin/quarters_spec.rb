@@ -270,6 +270,67 @@ RSpec.describe "Admin::Quarters", type: :request do
     end
   end
 
+  describe "GET /admin/quarters/:id" do
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        get admin_quarter_path(draft_quarter)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response" do
+        get admin_quarter_path(draft_quarter)
+        expect(response).to be_successful
+      end
+
+      it "displays quarter details" do
+        get admin_quarter_path(draft_quarter)
+        expect(response.body).to include(draft_quarter.name)
+        expect(response.body).to include(draft_quarter.status)
+        expect(response.body).to include(draft_quarter.start_date.to_s)
+      end
+
+      it "displays related metrics" do
+        get admin_quarter_path(active_quarter)
+        expect(response.body).to match(/skill_ratings|оценки|ratings/i)
+      end
+
+      it "displays status management buttons for draft quarter" do
+        get admin_quarter_path(draft_quarter)
+        expect(response.body).to match(/activate|активировать/i)
+      end
+
+      it "displays status management buttons for active quarter" do
+        get admin_quarter_path(active_quarter)
+        expect(response.body).to match(/close|закрыть/i)
+      end
+
+      it "displays status management buttons for closed quarter" do
+        get admin_quarter_path(closed_quarter)
+        expect(response.body).to match(/archive|архивировать/i)
+      end
+
+      it "returns 404 for non-existent quarter" do
+        non_existent_id = (Quarter.maximum(:id) || 0) + 999999
+        get admin_quarter_path(non_existent_id)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          get admin_quarter_path(draft_quarter)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
   describe "DELETE /admin/quarters/:id" do
     context "when user is admin" do
       before { sign_in admin, scope: :user }
