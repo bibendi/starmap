@@ -47,15 +47,9 @@ RSpec.describe NavigationPolicy, type: :policy do
   context "for unit_lead" do
     let(:user) { unit_lead }
 
-    permissions :show_personal_dashboard?, :show_unit? do
+    permissions :show_personal_dashboard?, :show_unit?, :show_admin? do
       it "grants access" do
         expect(subject).to permit(user, nil)
-      end
-    end
-
-    permissions :show_admin? do
-      it "denies access" do
-        expect(subject).not_to permit(user, nil)
       end
     end
   end

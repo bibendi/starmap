@@ -41,7 +41,7 @@
                   <% end %>
 
                 <% if policy(:navigation).show_admin? %>
-                    <%= link_to t('navigation.admin'), "#", class: "nav-link #{current_page?('/admin') ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <%= link_to t('navigation.admin'), admin_quarters_path, class: "nav-link #{current_page?(admin_quarters_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
                 <% end %>
               <% end %>
             </div>

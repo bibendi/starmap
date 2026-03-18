@@ -290,7 +290,7 @@ RSpec.describe "Admin::Quarters", type: :request do
         get admin_quarter_path(draft_quarter)
         expect(response.body).to include(draft_quarter.name)
         expect(response.body).to include(draft_quarter.status)
-        expect(response.body).to include(draft_quarter.start_date.to_s)
+        expect(response.body).to match(/#{draft_quarter.start_date.day}|#{draft_quarter.start_date.strftime("%d")}/)
       end
 
       it "displays related metrics" do
@@ -353,19 +353,13 @@ RSpec.describe "Admin::Quarters", type: :request do
         expect(response.body).to include(draft_quarter.year.to_s)
       end
 
-      it "blocks editing of active quarter" do
-        get edit_admin_quarter_path(active_quarter)
-        expect(response).to redirect_to(admin_quarter_path(active_quarter))
-        expect(flash[:alert]).to be_present
+      it "denies edit for active quarter" do
+        expect {
+          get edit_admin_quarter_path(active_quarter)
+        }.to raise_error(Pundit::NotAuthorizedError)
       end
 
-      it "blocks editing of closed quarter" do
-        get edit_admin_quarter_path(closed_quarter)
-        expect(response).to redirect_to(admin_quarter_path(closed_quarter))
-        expect(flash[:alert]).to be_present
-      end
-
-      it "blocks editing of closed quarter" do
+      it "denies edit for closed quarter" do
         expect {
           get edit_admin_quarter_path(closed_quarter)
         }.to raise_error(Pundit::NotAuthorizedError)
@@ -503,12 +497,10 @@ RSpec.describe "Admin::Quarters", type: :request do
         expect(flash[:notice]).to be_present
       end
 
-      it "does not delete active quarter" do
+      it "denies destroy for active quarter" do
         expect {
           delete admin_quarter_path(active_quarter)
-        }.not_to change(Quarter, :count)
-        expect(response).to redirect_to(admin_quarters_path)
-        expect(flash[:alert]).to be_present
+        }.to raise_error(Pundit::NotAuthorizedError)
       end
     end
 

@@ -1,54 +1,98 @@
-<h1><%= t("admin.quarters.title") %></h1>
-
-<%= form_with model: [:admin, @quarter], local: true do |f| %>
-  <% if @quarter.errors.any? %>
-    <div class="errors">
-      <h2><%= t("activerecord.errors.template.header", count: @quarter.errors.count) %></h2>
-      <ul>
-        <% @quarter.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.quarters.new") %></h1>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :year, "Год" %>
-    <%= f.number_field :year, min: Date.current.year, required: true %>
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :quarter_number, "Номер квартала" %>
-    <%= f.select :quarter_number, [["Q1", 1], ["Q2", 2], ["Q3", 3], ["Q4", 4]], required: true %>
-  </div>
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <%= form_with model: [:admin, @quarter], local: true, class: "form--vertical" do |f| %>
+        <% if @quarter.errors.any? %>
+          <div class="alert alert--error">
+            <div class="alert__icon-container">
+              <svg class="alert__icon alert__icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="alert__content">
+              <p class="alert__text alert__text--error">
+                <%= t("activerecord.errors.template.header", count: @quarter.errors.count) %>
+              </p>
+              <ul class="mt-2 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
+                <% @quarter.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
 
-  <div class="field">
-    <%= f.label :start_date, "Дата начала" %>
-    <%= f.date_field :start_date, required: true %>
-  </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :year, t("activerecord.attributes.quarter.year"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.number_field :year, min: Date.current.year, required: true, class: "form-input" %>
+            </div>
+          </div>
 
-  <div class="field">
-    <%= f.label :end_date, "Дата окончания" %>
-    <%= f.date_field :end_date, required: true %>
-  </div>
+          <div>
+            <%= f.label :quarter_number, t("activerecord.attributes.quarter.quarter_number"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.select :quarter_number, 
+                  [["Q1", 1], ["Q2", 2], ["Q3", 3], ["Q4", 4]], 
+                  {}, 
+                  { required: true, class: "form-input" } %>
+            </div>
+          </div>
+        </div>
 
-  <div class="field">
-    <%= f.label :evaluation_start_date, "Начало периода оценки" %>
-    <%= f.date_field :evaluation_start_date, required: true %>
-  </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :start_date, t("activerecord.attributes.quarter.start_date"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.date_field :start_date, required: true, class: "form-input" %>
+            </div>
+          </div>
 
-  <div class="field">
-    <%= f.label :evaluation_end_date, "Окончание периода оценки" %>
-    <%= f.date_field :evaluation_end_date, required: true %>
-  </div>
+          <div>
+            <%= f.label :end_date, t("activerecord.attributes.quarter.end_date"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.date_field :end_date, required: true, class: "form-input" %>
+            </div>
+          </div>
+        </div>
 
-  <div class="field">
-    <%= f.label :description, "Описание" %>
-    <%= f.text_area :description, rows: 3 %>
-  </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :evaluation_start_date, t("activerecord.attributes.quarter.evaluation_start_date"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.date_field :evaluation_start_date, required: true, class: "form-input" %>
+            </div>
+          </div>
 
-  <div class="actions">
-    <%= f.submit t("admin.quarters.create") %>
-    <%= link_to t("admin.quarters.back"), admin_quarters_path %>
+          <div>
+            <%= f.label :evaluation_end_date, t("activerecord.attributes.quarter.evaluation_end_date"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.date_field :evaluation_end_date, required: true, class: "form-input" %>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :description, t("activerecord.attributes.quarter.description"), class: "form-label" %>
+          <div class="form-field">
+            <%= f.text_area :description, rows: 3, class: "form-input" %>
+          </div>
+        </div>
+
+        <div class="form-submit flex gap-4">
+          <%= f.submit t("admin.quarters.create"), class: "btn btn--primary" %>
+          <%= link_to t("admin.quarters.cancel"), admin_quarters_path, class: "btn btn--secondary" %>
+        </div>
+      <% end %>
+    </div>
   </div>
-<% end %>
+</main>

@@ -1,75 +1,94 @@
-<h1><%= t("admin.quarters.show.title") %></h1>
-
-<div class="quarter-details">
-  <h2><%= t("admin.quarters.show.info") %></h2>
-  
-  <table>
-    <tr>
-      <th><%= t("activerecord.attributes.quarter.name") %></th>
-      <td><%= @quarter.name %></td>
-    </tr>
-    <tr>
-      <th><%= t("admin.quarters.show.status") %></th>
-      <td><%= @quarter.status %></td>
-    </tr>
-    <tr>
-      <th><%= t("admin.quarters.show.dates") %></th>
-      <td><%= @quarter.start_date %> - <%= @quarter.end_date %></td>
-    </tr>
-    <tr>
-      <th><%= t("admin.quarters.show.evaluation") %></th>
-      <td><%= @quarter.evaluation_start_date %> - <%= @quarter.evaluation_end_date %></td>
-    </tr>
-    <% if @quarter.description.present? %>
-      <tr>
-        <th><%= t("admin.quarters.show.description") %></th>
-        <td><%= @quarter.description %></td>
-      </tr>
-    <% end %>
-  </table>
+<div class="page-header mb-8">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.quarters.show.title") %></h1>
+      <div class="flex items-center gap-3">
+        <% if @quarter.draft? && policy([:admin, @quarter]).activate? %>
+          <%= button_to t("admin.quarters.actions.activate"), activate_admin_quarter_path(@quarter), method: :post, class: "btn btn--primary btn--small" %>
+        <% end %>
+        
+        <% if @quarter.active? && policy([:admin, @quarter]).close? %>
+          <%= button_to t("admin.quarters.actions.close"), close_admin_quarter_path(@quarter), method: :post, class: "btn btn--primary btn--small" %>
+        <% end %>
+        
+        <% if @quarter.closed? && policy([:admin, @quarter]).archive? %>
+          <%= button_to t("admin.quarters.actions.archive"), archive_admin_quarter_path(@quarter), method: :post, class: "btn btn--small" %>
+        <% end %>
+        
+        <% if @quarter.draft? && policy([:admin, @quarter]).edit? %>
+          <%= link_to t("admin.quarters.actions.edit"), edit_admin_quarter_path(@quarter), class: "btn btn--secondary btn--small" %>
+        <% end %>
+        
+        <% if @quarter.draft? && policy([:admin, @quarter]).destroy? %>
+          <%= button_to t("admin.quarters.actions.delete"), admin_quarter_path(@quarter), method: :delete, data: {confirm: t("admin.quarters.delete_confirm", default: "Удалить квартал?")}, class: "btn btn--danger btn--small" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="quarter-metrics">
-  <h2><%= t("admin.quarters.metrics.title") %></h2>
-  
-  <table>
-    <tr>
-      <th><%= t("admin.quarters.metrics.skill_ratings") %></th>
-      <td><%= @skill_ratings_count %></td>
-    </tr>
-    <tr>
-      <th><%= t("admin.quarters.metrics.action_plans") %></th>
-      <td><%= @action_plans_count %></td>
-    </tr>
-    <tr>
-      <th><%= t("admin.quarters.metrics.users_with_ratings") %></th>
-      <td><%= @users_with_ratings %></td>
-    </tr>
-  </table>
-</div>
+<main class="page-main">
+  <div class="flex flex-col gap-8">
+    <div class="card">
+      <div class="card__body">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100"><%= t("admin.quarters.show.info") %></h2>
+          <span class="badge badge--<%= @quarter.draft? ? 'secondary' : @quarter.active? ? 'success' : @quarter.closed? ? 'warning' : 'danger' %>">
+            <%= @quarter.status %>
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div class="label mb-1"><%= t("activerecord.attributes.quarter.name") %></div>
+            <div class="value--large text-gray-900 dark:text-gray-100"><%= @quarter.name %></div>
+          </div>
+          
+          <div>
+            <div class="label mb-1"><%= t("admin.quarters.show.dates") %></div>
+            <div class="value--medium text-gray-700 dark:text-gray-300">
+              <%= l @quarter.start_date, format: :short %> - <%= l @quarter.end_date, format: :short %>
+            </div>
+          </div>
+          
+          <div>
+            <div class="label mb-1"><%= t("admin.quarters.show.evaluation") %></div>
+            <div class="value--medium text-gray-700 dark:text-gray-300">
+              <%= l @quarter.evaluation_start_date, format: :short %> - <%= l @quarter.evaluation_end_date, format: :short %>
+            </div>
+          </div>
+          
+          <% if @quarter.description.present? %>
+            <div class="md:col-span-2">
+              <div class="label mb-1"><%= t("admin.quarters.show.description") %></div>
+              <div class="text-gray-700 dark:text-gray-300"><%= @quarter.description %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
 
-<div class="quarter-actions">
-  <h2><%= t("admin.quarters.actions.title", default: "Действия") %></h2>
-  
-  <% if @quarter.draft? && policy([:admin, @quarter]).activate? %>
-    <%= button_to t("admin.quarters.actions.activate"), activate_admin_quarter_path(@quarter), method: :post %>
-  <% end %>
-  
-  <% if @quarter.active? && policy([:admin, @quarter]).close? %>
-    <%= button_to t("admin.quarters.actions.close"), close_admin_quarter_path(@quarter), method: :post %>
-  <% end %>
-  
-  <% if @quarter.closed? && policy([:admin, @quarter]).archive? %>
-    <%= button_to t("admin.quarters.actions.archive"), archive_admin_quarter_path(@quarter), method: :post %>
-  <% end %>
-  
-  <% if @quarter.draft? && policy([:admin, @quarter]).edit? %>
-    <%= link_to t("admin.quarters.actions.edit"), edit_admin_quarter_path(@quarter) %>
-  <% end %>
-  
-  <% if @quarter.draft? && policy([:admin, @quarter]).destroy? %>
-    <%= button_to t("admin.quarters.actions.delete"), admin_quarter_path(@quarter), method: :delete, data: {confirm: "Удалить квартал?"} %>
-  <% end %>
-  
-  <%= link_to t("admin.quarters.back"), admin_quarters_path %>
-</div>
+    <div class="card">
+      <div class="card__body">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6"><%= t("admin.quarters.metrics.title") %></h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1"><%= @skill_ratings_count %></div>
+            <div class="text-sm text-gray-600 dark:text-gray-400"><%= t("admin.quarters.metrics.skill_ratings") %></div>
+          </div>
+          
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1"><%= @action_plans_count %></div>
+            <div class="text-sm text-gray-600 dark:text-gray-400"><%= t("admin.quarters.metrics.action_plans") %></div>
+          </div>
+          
+          <div class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1"><%= @users_with_ratings %></div>
+            <div class="text-sm text-gray-600 dark:text-gray-400"><%= t("admin.quarters.metrics.users_with_ratings") %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

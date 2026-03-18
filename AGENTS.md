@@ -45,6 +45,10 @@ When implementing views, follow the project's component-based CSS system. Check 
 - Keep steering current and verify alignment with `/kiro-spec-status`
 - Follow the user's instructions precisely, and within that scope act autonomously: gather the necessary context and complete the requested work end-to-end in this run, asking questions only when essential information is missing or the instructions are critically ambiguous.
 
+## File Operations
+- **ALWAYS use relative paths** when accessing project files (e.g., `app/models/user.rb`, not `/{absolute/path/to/project/app}/models/user.rb`)
+- This ensures portability and consistency across different environments
+
 ## Steering Configuration
 - Load entire `.kiro/steering/` as project memory
 - Default files: `product.md`, `tech.md`, `structure.md`
