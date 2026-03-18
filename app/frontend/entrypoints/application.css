@@ -828,4 +828,74 @@
     .member-card__position {
       @apply text-sm text-gray-500 dark:text-gray-400;
     }
-}
+
+    /* === Sidebar === */
+    .sidebar {
+      @apply fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-transform duration-300;
+    }
+
+    .sidebar--hidden {
+      @apply -translate-x-full;
+    }
+
+    @media (min-width: 1280px) {
+      .sidebar {
+        left: calc((100vw - 80rem) / 2 + 1rem);
+      }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      .sidebar {
+        left: calc((100vw - 64rem) / 2 + 1.5rem);
+      }
+    }
+
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .sidebar {
+        left: 1rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .sidebar {
+        @apply translate-x-0 static h-auto w-64 border-r border-gray-200 dark:border-gray-700;
+        left: 0 !important;
+      }
+      .sidebar--hidden {
+        @apply translate-x-0;
+      }
+    }
+
+    .sidebar__nav {
+      @apply flex flex-col h-full pt-0 pb-4 px-4 sm:px-6 lg:px-8;
+    }
+
+    .sidebar__section {
+      @apply py-2;
+    }
+
+    .sidebar__section-title {
+      @apply text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider;
+    }
+
+    .sidebar__link {
+      @apply flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-150;
+    }
+
+    .sidebar__link--active {
+      @apply bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-r-4 border-indigo-500;
+    }
+
+    .sidebar__link-icon {
+      @apply w-5 h-5;
+    }
+
+    /* === Hamburger === */
+    .hamburger {
+      @apply inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none;
+    }
+
+    .hamburger__icon {
+      @apply w-6 h-6;
+    }
+  }

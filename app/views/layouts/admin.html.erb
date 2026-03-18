@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title>Starmap</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-token" content="<%= form_authenticity_token %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= vite_client_tag %>
+
+    <%= vite_stylesheet_tag "application", "data-turbo-track": "reload" %>
+    <%= vite_javascript_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+  <body class="<%= theme_class %> bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" data-theme="<%= current_theme %>">
+    <div data-controller="sidebar" class="min-h-screen">
+      <nav class="nav">
+        <div class="nav__container">
+          <div class="nav__content">
+            <div class="nav__section">
+              <div class="flex-shrink-0 flex items-center space-x-4">
+                <button type="button"
+                        data-action="sidebar#toggle"
+                        class="hamburger lg:hidden"
+                        aria-label="Toggle sidebar">
+                  <svg class="hamburger__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                <%= link_to "Starmap", root_path, class: "brand-link" %>
+              </div>
+            </div>
+            <div class="nav__section space-x-4">
+              <div class="relative group flex items-center overflow-visible" data-controller="theme">
+                <button type="button"
+                        data-action="click->theme#toggle:prevent"
+                        data-theme-target="button"
+                        class="theme-toggle"
+                        aria-label="<%= t('theme.toggle') %>">
+                  <svg data-theme-target="iconLight" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <svg data-theme-target="iconDark" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <svg data-theme-target="iconSystem" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </button>
+                <div class="dropdown-menu" role="menu" tabindex="-1">
+                  <button data-action="click->theme#setLight:prevent" class="dropdown-item" role="menuitem" tabindex="-1">
+                    <%= t('theme.light') %>
+                  </button>
+                  <button data-action="click->theme#setDark:prevent" class="dropdown-item" role="menuitem" tabindex="-1">
+                    <%= t('theme.dark') %>
+                  </button>
+                  <button data-action="click->theme#setSystem:prevent" class="dropdown-item" role="menuitem" tabindex="-1">
+                    <%= t('theme.system') %>
+                  </button>
+                </div>
+              </div>
+
+              <div class="relative group flex items-center overflow-visible">
+                <button type="button" class="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none">
+                  <span><%= t("locale.names.#{I18n.locale}", default: I18n.locale.to_s) %></span>
+                  <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <div class="dropdown-menu" role="menu" tabindex="-1">
+                  <% I18n.available_locales.each do |locale| %>
+                    <%= button_to t("locale.names.#{locale}", default: locale.to_s), switch_locale_path(locale: locale), method: :post, class: "dropdown-item", role: "menuitem", tabindex: "-1" %>
+                  <% end %>
+                </div>
+              </div>
+
+              <% if user_signed_in? %>
+                <span class="text-sm text-gray-700 dark:text-gray-300 inline-flex items-center"><%= current_user.display_name %></span>
+                <%= button_to t('locale.sign_out'), destroy_user_session_path, method: :delete, class: "btn btn--secondary" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="flex pt-16">
+        <aside data-sidebar-target="sidebar" class="sidebar sidebar--hidden lg:translate-x-0">
+          <nav class="sidebar__nav">
+            <div class="sidebar__section">
+              <span class="sidebar__section-title"><%= t('admin.sidebar.sections.management') %></span>
+            </div>
+            <%= link_to admin_quarters_path,
+                class: "sidebar__link #{current_page?(admin_quarters_path) || request.path.start_with?('/admin/quarters') ? 'sidebar__link--active' : ''}" do %>
+              <svg class="sidebar__link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <%= t('admin.sidebar.quarters') %>
+            <% end %>
+            <%= link_to admin_technologies_path,
+                class: "sidebar__link #{current_page?(admin_technologies_path) || request.path.start_with?('/admin/technologies') ? 'sidebar__link--active' : ''}" do %>
+              <svg class="sidebar__link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <%= t('admin.sidebar.technologies') %>
+            <% end %>
+            <%= link_to admin_users_path,
+                class: "sidebar__link #{current_page?(admin_users_path) || request.path.start_with?('/admin/users') ? 'sidebar__link--active' : ''}" do %>
+              <svg class="sidebar__link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <%= t('admin.sidebar.users') %>
+            <% end %>
+          </nav>
+        </aside>
+
+        <main class="flex-1">
+          <div id="flash">
+            <%= render partial: "shared/flash" %>
+          </div>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

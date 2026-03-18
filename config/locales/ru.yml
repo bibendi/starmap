@@ -1,5 +1,13 @@
 ru:
   admin:
+    sidebar:
+      sections:
+        management: "Управление"
+      quarters: "Кварталы"
+      technologies: "Технологии"
+      users: "Пользователи"
+    placeholder:
+      coming_soon: "Раздел в разработке"
     quarters:
       title: "Управление кварталами"
       new: "Создать квартал"

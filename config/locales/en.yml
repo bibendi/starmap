@@ -29,6 +29,14 @@
 
 en:
   admin:
+    sidebar:
+      sections:
+        management: "Management"
+      quarters: "Quarters"
+      technologies: "Technologies"
+      users: "Users"
+    placeholder:
+      coming_soon: "Coming soon"
     quarters:
       title: "Quarter Management"
       new: "Create Quarter"

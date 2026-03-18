@@ -34,6 +34,9 @@ Rails.application.routes.draw do
 
   # Admin namespace
   namespace :admin do
+    root to: "dashboard#index"
+    resources :technologies, only: [:index]
+    resources :users, only: [:index]
     resources :quarters do
       member do
         post :activate
