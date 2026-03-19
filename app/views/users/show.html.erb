@@ -36,7 +36,7 @@
                   <dt class="label"><%= t('users.show.team') %></dt>
                   <dd class="value--large">
                     <%= link_to @user.team.name,
-                        team_path(name: @user.team.name),
+                        team_path(@user.team),
                         class: "link" %>
                   </dd>
                 </div>

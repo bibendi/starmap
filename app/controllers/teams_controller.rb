@@ -21,8 +21,8 @@ class TeamsController < ApplicationController
 
   # Callbacks to set up team context
   def set_team
-    @team = if params[:name].present?
-      Team.find_by!(name: params[:name])
+    @team = if params[:id].present?
+      Team.find(params[:id])
     elsif current_user.team.present?
       current_user.team
     else

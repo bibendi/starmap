@@ -11,8 +11,7 @@ Rails.application.routes.draw do
   root "teams#show"
 
   # Teams routes
-  get "/teams", to: "teams#index", as: :teams
-  get "/team", to: "teams#show", as: :team
+  resources :teams, only: [:index, :show]
 
   # Unit routes
   resources :units, only: [:index, :show]

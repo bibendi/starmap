@@ -33,7 +33,7 @@
                     <div class="flex-shrink-0">
                       <div class="inline-flex flex-wrap gap-2">
                         <% @teams.each do |team| %>
-                          <%= link_to team_path(name: team.name), class: "team-link" do %>
+                          <%= link_to team_path(team), class: "team-link" do %>
                             <span class="truncate max-w-[150px]"><%= team.name %></span>
                           <% end %>
                         <% end %>
