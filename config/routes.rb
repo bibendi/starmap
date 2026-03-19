@@ -18,11 +18,8 @@ Rails.application.routes.draw do
   get "/units", to: "units#index", as: :units
   get "/unit", to: "units#show", as: :unit
 
-  # Engineer routes
-  get "/engineer", to: "engineers#show", as: :engineer
-
-  # Skill ratings routes - nested under users for proper REST
-  resources :users do
+  # User routes
+  resources :users, only: [:show] do
     resource :skill_ratings, only: [:show, :edit, :update]
   end
 

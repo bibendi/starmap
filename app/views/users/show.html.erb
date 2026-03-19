@@ -9,7 +9,7 @@
           </div>
           <% unless @user.active? %>
             <span class="badge badge--secondary">
-              <%= t('engineers.show.status.inactive') %>
+              <%= t('users.show.status.inactive') %>
             </span>
           <% end %>
         </div>
@@ -22,18 +22,18 @@
           <div class="flex items-center justify-between">
              <div class="flex items-center gap-8">
                <div>
-                 <dt class="label"><%= t('engineers.show.position') %></dt>
+                 <dt class="label"><%= t('users.show.position') %></dt>
                  <dd class="value--medium"><%= @user.position || '-' %></dd>
                </div>
                <div>
-                 <dt class="label"><%= t('engineers.show.role') %></dt>
+                 <dt class="label"><%= t('users.show.role') %></dt>
                  <dd class="value--medium"><%= t("activerecord.attributes.user.roles.#{@user.role}") %></dd>
                </div>
              </div>
             <% if @user.team.present? %>
               <div class="flex items-center gap-8">
                 <div>
-                  <dt class="label"><%= t('engineers.show.team') %></dt>
+                  <dt class="label"><%= t('users.show.team') %></dt>
                   <dd class="value--large">
                     <%= link_to @user.team.name,
                         team_path(name: @user.team.name),
@@ -42,7 +42,7 @@
                 </div>
                 <% if @user.team.unit.present? %>
                   <div>
-                    <dt class="label"><%= t('engineers.show.unit') %></dt>
+                    <dt class="label"><%= t('users.show.unit') %></dt>
                     <dd class="value--medium"><%= @user.team.unit.name %></dd>
                   </div>
                 <% end %>
@@ -59,18 +59,18 @@
             <div class="flex items-center justify-between">
               <div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  <%= t('engineers.show.skill_ratings.title') %>
+                  <%= t('users.show.skill_ratings.title') %>
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">
                   <%= @current_quarter.full_name %>
                   <% if @current_quarter.evaluation_period? %>
                     <span class="badge badge--warning ml-2">
-                      <%= t('engineers.show.skill_ratings.evaluation_open') %>
+                      <%= t('users.show.skill_ratings.evaluation_open') %>
                     </span>
                   <% end %>
                 </p>
               </div>
-              <%= link_to t('engineers.show.skill_ratings.view_button'),
+              <%= link_to t('users.show.skill_ratings.view_button'),
                   user_skill_ratings_path(@user),
                   class: "btn btn--primary" %>
             </div>

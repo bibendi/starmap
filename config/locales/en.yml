@@ -112,9 +112,9 @@ en:
       no_active_quarter:
         title: "No active quarter"
         message: "Please create a quarter in the admin panel."
-  engineers:
+  users:
     show:
-      title: "Engineer Dashboard"
+      title: "User Dashboard"
       email: "Email"
       position: "Position"
       role: "Role"
@@ -137,7 +137,7 @@ en:
       level: "Skill Level"
       status: "Status"
       edit_button: "Edit"
-      back_to_engineer: "Back to Profile"
+      back_to_user: "Back to Profile"
       no_technologies: "Team has no assigned technologies"
     edit:
       title: "Edit Ratings"
@@ -269,7 +269,7 @@ en:
 
   navigation:
     overview: "Overview"
-    engineer: "Engineer"
+    profile: "Profile"
     team: "Team"
     unit: "Unit"
     ratings: "Ratings"

@@ -37,7 +37,7 @@ RSpec.describe "Navigation menu", type: :request do
     context "when user is engineer" do
       before do
         sign_in engineer, scope: :user
-        get engineer_path
+        get user_path(engineer)
       end
 
       it "does not display admin sidebar" do

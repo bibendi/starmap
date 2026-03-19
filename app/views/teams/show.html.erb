@@ -75,8 +75,8 @@
                   <% if lead_member %>
                     <% is_lead = true %>
                     <% member = lead_member %>
-                    <% if EngineerPolicy.new(current_user, member).show? %>
-                      <%= link_to engineer_path(id: member.id), class: "member-card member-card--lead" do %>
+                    <% if policy(member).show? %>
+                      <%= link_to user_path(member), class: "member-card member-card--lead" do %>
                         <div class="member-card__content">
                           <div class="member-card__name">
                             <%= member.full_name %>
@@ -98,8 +98,8 @@
                     <% end %>
                   <% end %>
                   <% other_members[0..2].each do |member| %>
-                    <% if EngineerPolicy.new(current_user, member).show? %>
-                      <%= link_to engineer_path(id: member.id), class: "member-card" do %>
+                    <% if policy(member).show? %>
+                      <%= link_to user_path(member), class: "member-card" do %>
                         <div class="member-card__content">
                           <div class="member-card__name"><%= member.full_name %></div>
                           <div class="member-card__position"><%= member.position || '-' %></div>
@@ -120,8 +120,8 @@
                   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-3">
                     <div class="hidden lg:block" aria-hidden="true"></div>
                     <% other_members[3..-1].each do |member| %>
-                      <% if EngineerPolicy.new(current_user, member).show? %>
-                        <%= link_to engineer_path(id: member.id), class: "member-card" do %>
+                      <% if policy(member).show? %>
+                        <%= link_to user_path(member), class: "member-card" do %>
                           <div class="member-card__content">
                             <div class="member-card__name"><%= member.full_name %></div>
                             <div class="member-card__position"><%= member.position || '-' %></div>

@@ -43,7 +43,7 @@ RSpec.describe "SkillRatings", type: :request do
 
       it "redirects when user has no team" do
         get user_skill_ratings_path(engineer_without_team)
-        expect(response).to redirect_to(engineer_path(params: {id: engineer_without_team.id}))
+        expect(response).to redirect_to(user_path(engineer_without_team))
         expect(flash[:alert]).to eq(I18n.t("skill_ratings.errors.no_team"))
       end
     end
@@ -146,7 +146,7 @@ RSpec.describe "SkillRatings", type: :request do
 
       it "redirects with alert" do
         get edit_user_skill_ratings_path(engineer)
-        expect(response).to redirect_to(engineer_path(params: {id: engineer.id}))
+        expect(response).to redirect_to(user_path(engineer))
         expect(flash[:alert]).to eq(I18n.t("skill_ratings.errors.not_evaluation_period"))
       end
     end
@@ -159,7 +159,7 @@ RSpec.describe "SkillRatings", type: :request do
 
       it "redirects with alert" do
         get edit_user_skill_ratings_path(engineer_without_team)
-        expect(response).to redirect_to(engineer_path(params: {id: engineer_without_team.id}))
+        expect(response).to redirect_to(user_path(engineer_without_team))
         expect(flash[:alert]).to eq(I18n.t("skill_ratings.errors.no_team"))
       end
     end
@@ -273,7 +273,7 @@ RSpec.describe "SkillRatings", type: :request do
           patch user_skill_ratings_path(engineer), params: valid_params
         }.not_to change(SkillRating, :count)
 
-        expect(response).to redirect_to(engineer_path(params: {id: engineer.id}))
+        expect(response).to redirect_to(user_path(engineer))
         expect(flash[:alert]).to eq(I18n.t("skill_ratings.errors.not_evaluation_period"))
       end
     end
@@ -289,7 +289,7 @@ RSpec.describe "SkillRatings", type: :request do
           patch user_skill_ratings_path(engineer_without_team), params: valid_params
         }.not_to change(SkillRating, :count)
 
-        expect(response).to redirect_to(engineer_path(params: {id: engineer_without_team.id}))
+        expect(response).to redirect_to(user_path(engineer_without_team))
         expect(flash[:alert]).to eq(I18n.t("skill_ratings.errors.no_team"))
       end
     end

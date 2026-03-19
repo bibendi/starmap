@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Engineers", type: :request do
+RSpec.describe "Users", type: :request do
   let_it_be(:unit) { create(:unit) }
   let_it_be(:team) { create(:team, unit: unit) }
   let_it_be(:engineer) { create(:engineer, team: team) }
@@ -14,56 +14,51 @@ RSpec.describe "Engineers", type: :request do
     unit.update(unit_lead: unit_lead)
   end
 
-  describe "GET /engineer" do
+  describe "GET /users/:id" do
     context "when user is not authenticated" do
       it "redirects to sign in" do
-        get engineer_path
+        get user_path(engineer)
         expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     context "when user is authenticated" do
-      context "without id parameter (own profile)" do
+      context "viewing own profile" do
         before { sign_in engineer, scope: :user }
 
         it "returns successful response" do
-          get engineer_path
+          get user_path(engineer)
           expect(response).to be_successful
         end
 
-        it "displays engineer's name" do
-          get engineer_path
+        it "displays user's name" do
+          get user_path(engineer)
           expect(response.body).to include(engineer.full_name)
         end
 
         it "displays team name" do
-          get engineer_path
+          get user_path(engineer)
           expect(response.body).to include(team.name)
         end
 
         it "displays unit name" do
-          get engineer_path
+          get user_path(engineer)
           expect(response.body).to include(unit.name)
-        end
-
-        it "displays link to team" do
-          get engineer_path
-          expect(response.body).to include(team_path(name: team.name))
         end
       end
 
-      context "with id parameter (viewing other engineer)" do
+      context "viewing other user's profile" do
         context "as engineer" do
           before { sign_in engineer, scope: :user }
 
           it "denies access to other engineer's profile" do
             expect {
-              get engineer_path, params: {id: other_engineer.id}
+              get user_path(other_engineer)
             }.to raise_error(Pundit::NotAuthorizedError)
           end
 
-          it "allows access to own profile with id param" do
-            get engineer_path, params: {id: engineer.id}
+          it "allows access to own profile" do
+            get user_path(engineer)
             expect(response).to be_successful
           end
         end
@@ -72,13 +67,13 @@ RSpec.describe "Engineers", type: :request do
           before { sign_in team_lead, scope: :user }
 
           it "allows access to team member's profile" do
-            get engineer_path, params: {id: engineer.id}
+            get user_path(engineer)
             expect(response).to be_successful
           end
 
           it "denies access to other team's engineer" do
             expect {
-              get engineer_path, params: {id: other_engineer.id}
+              get user_path(other_engineer)
             }.to raise_error(Pundit::NotAuthorizedError)
           end
         end
@@ -86,23 +81,22 @@ RSpec.describe "Engineers", type: :request do
         context "as unit lead" do
           before { sign_in unit_lead, scope: :user }
 
-          it "allows access to unit member's profile" do
-            get engineer_path, params: {id: engineer.id}
+          it "allows access to any user's profile" do
+            get user_path(engineer)
             expect(response).to be_successful
           end
 
-          it "denies access to other unit's engineer" do
-            expect {
-              get engineer_path, params: {id: other_engineer.id}
-            }.to raise_error(Pundit::NotAuthorizedError)
+          it "allows access to other unit's engineer" do
+            get user_path(other_engineer)
+            expect(response).to be_successful
           end
         end
 
         context "as admin" do
           before { sign_in admin, scope: :user }
 
-          it "allows access to any engineer's profile" do
-            get engineer_path, params: {id: other_engineer.id}
+          it "allows access to any user's profile" do
+            get user_path(other_engineer)
             expect(response).to be_successful
           end
         end
@@ -115,28 +109,28 @@ RSpec.describe "Engineers", type: :request do
 
         it "denies access" do
           expect {
-            get engineer_path
+            get user_path(inactive_engineer)
           }.to raise_error(Pundit::NotAuthorizedError)
         end
       end
 
-      context "when engineer has no team" do
-        let(:engineer_without_team) { create(:engineer, team: nil) }
+      context "when user has no team" do
+        let(:user_without_team) { create(:engineer, team: nil) }
 
-        before { sign_in engineer_without_team, scope: :user }
+        before { sign_in user_without_team, scope: :user }
 
         it "returns successful response" do
-          get engineer_path
+          get user_path(user_without_team)
           expect(response).to be_successful
         end
 
-        it "displays engineer's name" do
-          get engineer_path
-          expect(response.body).to include(engineer_without_team.full_name)
+        it "displays user's name" do
+          get user_path(user_without_team)
+          expect(response.body).to include(user_without_team.full_name)
         end
 
         it "does not display team or unit info" do
-          get engineer_path
+          get user_path(user_without_team)
           expect(response.body).not_to include(team.name)
         end
       end

@@ -104,8 +104,8 @@
         </div>
 
         <div class="mt-6 flex items-center justify-between">
-          <%= link_to t("skill_ratings.show.back_to_engineer"),
-              engineer_path(id: @target_user.id),
+          <%= link_to t("skill_ratings.show.back_to_user"),
+              user_path(@target_user),
               class: "link" %>
 
         <% if @current_quarter&.evaluation_period? && policy(@skill_ratings_data.first[:skill_rating]).update? %>
@@ -131,8 +131,8 @@
         </div>
 
         <div class="mt-6">
-          <%= link_to t("skill_ratings.show.back_to_engineer"),
-              engineer_path(id: @target_user.id),
+          <%= link_to t("skill_ratings.show.back_to_user"),
+              user_path(@target_user),
               class: "link" %>
         </div>
       <% end %>

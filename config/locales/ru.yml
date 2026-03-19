@@ -91,9 +91,9 @@ ru:
       no_active_quarter:
         title: "Нет активного квартала"
         message: "Пожалуйста, создайте квартал в админке."
-  engineers:
+  users:
     show:
-      title: "Дашборд инженера"
+      title: "Профиль пользователя"
       email: "Email"
       position: "Должность"
       role: "Роль"
@@ -116,7 +116,7 @@ ru:
       level: "Уровень владения"
       status: "Статус"
       edit_button: "Редактировать"
-      back_to_engineer: "Вернуться к профилю"
+      back_to_user: "Вернуться к профилю"
       no_technologies: "У команды нет назначенных технологий"
     edit:
       title: "Редактирование оценок"
@@ -252,7 +252,7 @@ ru:
 
   navigation:
     overview: "Обзор"
-    engineer: "Инженер"
+    profile: "Профиль"
     team: "Команда"
     unit: "Юнит"
     ratings: "Оценки"

@@ -37,7 +37,7 @@
                   <% end %>
 
                   <% if policy(:navigation).show_personal_dashboard? %>
-                    <%= link_to t('navigation.engineer'), engineer_path, class: "nav-link #{current_page?(engineer_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <%= link_to t('navigation.profile'), user_path(current_user), class: "nav-link #{current_page?(user_path(current_user)) ? 'nav-link--active' : 'nav-link--inactive'}" %>
                   <% end %>
 
                 <% if policy(:navigation).show_admin? %>

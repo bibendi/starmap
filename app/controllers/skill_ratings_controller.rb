@@ -51,14 +51,14 @@ class SkillRatingsController < ApplicationController
   def ensure_evaluation_period
     return if @current_quarter&.evaluation_period?
 
-    redirect_to engineer_path(id: @target_user.id),
+    redirect_to user_path(@target_user),
       alert: t("skill_ratings.errors.not_evaluation_period")
   end
 
   def ensure_team_assignment
     return if @target_user.team.present?
 
-    redirect_to engineer_path(id: @target_user.id),
+    redirect_to user_path(@target_user),
       alert: t("skill_ratings.errors.no_team")
   end
 
