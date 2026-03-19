@@ -29,7 +29,11 @@
              <div class="hidden sm:ml-6 sm:flex sm:space-x-4 items-center">
               <% if user_signed_in? %>
                   <% if policy(:navigation).show_unit? %>
-                    <%= link_to t('navigation.unit'), unit_path, class: "nav-link #{current_page?(unit_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <% if current_user.unit.present? %>
+                      <%= link_to t('navigation.unit'), unit_path(current_user.unit), class: "nav-link #{current_page?(unit_path(current_user.unit)) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <% else %>
+                      <%= link_to t('navigation.unit'), units_path, class: "nav-link #{current_page?(units_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <% end %>
                   <% end %>
 
                   <% if policy(:navigation).show_team? %>

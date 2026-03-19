@@ -15,8 +15,8 @@ class UnitsController < ApplicationController
   private
 
   def set_unit
-    @unit = if params[:name].present?
-      Unit.find_by!(name: params[:name])
+    @unit = if params[:id].present?
+      Unit.find(params[:id])
     elsif current_user.unit.present?
       current_user.unit
     else
