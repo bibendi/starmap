@@ -13,12 +13,59 @@ module Admin
       @users = @users.page(params[:page]).per(PER_PAGE)
     end
 
+    def new
+      authorize [:admin, User]
+      @user = User.new
+    end
+
+    def create
+      authorize [:admin, User]
+      @user = User.new(user_params)
+      @user.confirmed_at = Time.current
+
+      if @user.save
+        redirect_to admin_users_path, notice: t("admin.users.created")
+      else
+        render :new, status: :unprocessable_content
+      end
+    end
+
     def show
       @user = User.find(params[:id])
       authorize [:admin, @user]
     end
 
+    def edit
+      @user = User.find(params[:id])
+      authorize [:admin, @user]
+    end
+
+    def update
+      @user = User.find(params[:id])
+      authorize [:admin, @user]
+
+      if @user.update(user_params)
+        redirect_to admin_user_path(@user), notice: t("admin.users.updated")
+      else
+        render :edit, status: :unprocessable_content
+      end
+    end
+
     private
+
+    def user_params
+      params.require(:user).permit(
+        :email,
+        :first_name,
+        :last_name,
+        :position,
+        :role,
+        :team_id,
+        :active,
+        :password,
+        :password_confirmation
+      )
+    end
 
     def filter_by_role(scope)
       return scope if params[:role].blank?

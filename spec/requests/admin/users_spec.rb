@@ -223,4 +223,177 @@ RSpec.describe "Admin::Users", type: :request do
       end
     end
   end
+
+  describe "GET /admin/users/new" do
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        get new_admin_user_path
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response" do
+        get new_admin_user_path
+        expect(response).to be_successful
+      end
+
+      it "displays form fields" do
+        get new_admin_user_path
+        expect(response.body).to include("first_name")
+        expect(response.body).to include("last_name")
+        expect(response.body).to include("email")
+        expect(response.body).to include("password")
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access with 403" do
+        expect {
+          get new_admin_user_path
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "POST /admin/users" do
+    let(:valid_params) do
+      {
+        user: {
+          first_name: "New",
+          last_name: "User",
+          email: "newuser@example.com",
+          password: "Password123!",
+          password_confirmation: "Password123!",
+          role: "engineer",
+          team_id: team.id,
+          active: true
+        }
+      }
+    end
+
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        post admin_users_path, params: valid_params
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "creates new user with valid params" do
+        expect {
+          post admin_users_path, params: valid_params
+        }.to change(User, :count).by(1)
+      end
+
+      it "redirects to users list with notice" do
+        post admin_users_path, params: valid_params
+        expect(response).to redirect_to(admin_users_path)
+        expect(flash[:notice]).to be_present
+      end
+
+      it "does not create user with duplicate email" do
+        create(:user, email: valid_params[:user][:email])
+        expect {
+          post admin_users_path, params: valid_params
+        }.not_to change(User, :count)
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "requires password" do
+        invalid_params = {user: valid_params[:user].merge(password: "", password_confirmation: "")}
+        post admin_users_path, params: invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          post admin_users_path, params: valid_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "GET /admin/users/:id/edit" do
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response" do
+        get edit_admin_user_path(active_user)
+        expect(response).to be_successful
+      end
+
+      it "displays form fields with user data" do
+        get edit_admin_user_path(active_user)
+        expect(response.body).to include(active_user.first_name)
+        expect(response.body).to include(active_user.last_name)
+        expect(response.body).to include(active_user.email)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access with 403" do
+        expect {
+          get edit_admin_user_path(active_user)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "PATCH /admin/users/:id" do
+    let(:valid_update_params) do
+      {
+        user: {
+          first_name: "Updated",
+          last_name: "Name",
+          position: "Senior Developer"
+        }
+      }
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "updates user with valid params" do
+        patch admin_user_path(active_user), params: valid_update_params
+        active_user.reload
+        expect(active_user.first_name).to eq("Updated")
+        expect(active_user.last_name).to eq("Name")
+        expect(active_user.position).to eq("Senior Developer")
+      end
+
+      it "redirects to user page with notice" do
+        patch admin_user_path(active_user), params: valid_update_params
+        expect(response).to redirect_to(admin_user_path(active_user))
+        expect(flash[:notice]).to be_present
+      end
+
+      it "renders form with errors when invalid" do
+        patch admin_user_path(active_user), params: {user: {email: ""}}
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          patch admin_user_path(active_user), params: valid_update_params
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
 end

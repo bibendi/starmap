@@ -1,0 +1,101 @@
+<%= form_with model: [:admin, @user], local: true, class: "form--vertical" do |form| %>
+  <% if @user.errors.any? %>
+    <div class="alert alert--error">
+      <div class="alert__icon-container">
+        <svg class="alert__icon alert__icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="alert__content">
+        <p class="alert__text alert__text--error">
+          <%= t("activerecord.errors.template.header", count: @user.errors.count) %>
+        </p>
+        <ul class="mt-2 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :first_name, class: "form-label" %>
+      <div class="form-field">
+        <%= form.text_field :first_name, class: "form-input", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :last_name, class: "form-label" %>
+      <div class="form-field">
+        <%= form.text_field :last_name, class: "form-input", required: true %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :email, class: "form-label" %>
+      <div class="form-field">
+        <%= form.email_field :email, class: "form-input", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :position, class: "form-label" %>
+      <div class="form-field">
+        <%= form.text_field :position, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :role, class: "form-label" %>
+      <div class="form-field">
+        <%= form.select :role, options_for_select(%w[engineer team_lead unit_lead admin].map { |r| [t("activerecord.attributes.user.roles.#{r}", default: r.humanize), r] }, @user.role), {}, class: "form-input" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :team_id, class: "form-label" %>
+      <div class="form-field">
+        <%= form.collection_select :team_id, Team.ordered, :id, :name, {include_blank: true}, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :active, class: "form-label" %>
+      <div class="form-field">
+        <%= form.select :active, options_for_select([[t("admin.users.active"), true], [t("admin.users.inactive"), false]], @user.active), {}, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <% if @user.new_record? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= form.label :password, class: "form-label" %>
+        <div class="form-field">
+          <%= form.password_field :password, class: "form-input", required: true, minlength: 8 %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, class: "form-label" %>
+        <div class="form-field">
+          <%= form.password_field :password_confirmation, class: "form-input", required: true, minlength: 8 %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-submit flex gap-4">
+    <%= form.submit class: "btn btn--primary" %>
+    <%= link_to t("admin.users.cancel"), admin_users_path, class: "btn btn--secondary" %>
+  </div>
+<% end %>

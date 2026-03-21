@@ -43,13 +43,13 @@
   - _Requirements: 2.1, 2.2, 2.3_
 
 - [ ] 4. Implement user creation functionality
-- [ ] 4.1 (P) Create new and create actions in AdminUsersController
+- [x] 4.1 (P) Create new and create actions in AdminUsersController
   - new action: build empty User, authorize, render form
   - create action: build User with params, authorize, save or render with errors
   - Redirect to index with success message on save
   - _Requirements: 4.1, 4.2, 4.3_
 
-- [ ] 4.2 (P) Create shared _form.html.erb partial
+- [x] 4.2 (P) Create shared _form.html.erb partial
   - Fields: first_name, last_name, email, position, role, team_id, active
   - Password fields (only on new user form)
   - Role validation: team required for team_lead
@@ -59,20 +59,20 @@
   - Submit button and Cancel link
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 4.3 (P) Create new.html.erb view
+- [x] 4.3 (P) Create new.html.erb view
   - Render page header
   - Render _form partial with url: admin_users_path, method: POST
   - _Requirements: 4.1, 4.2, 4.3_
 
 - [ ] 5. Implement user edit functionality
-- [ ] 5.1 (P) Create edit and update actions in AdminUsersController
+- [x] 5.1 (P) Create edit and update actions in AdminUsersController
   - edit action: find user, authorize, render form
   - update action: find user, authorize, update attributes, redirect or render errors
   - Redirect to show with success message on update
   - Handle deactivation (active = false)
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 5.2 (P) Create edit.html.erb view
+- [x] 5.2 (P) Create edit.html.erb view
   - Render page header
   - Render _form partial with url: admin_user_path(@user), method: PATCH
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
