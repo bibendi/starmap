@@ -78,19 +78,19 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
 - [ ] 6. Add integration and unit tests
-- [ ] 6.1 (P) Write Admin::UserPolicy unit tests
+- [x] 6.1 (P) Write Admin::UserPolicy unit tests
   - Test admin user can access all actions
   - Test non-admin user receives 403 Forbidden
   - _Requirements: 7.1, 7.2, 7.3_
 
-- [ ] 6.2 (P) Write AdminUsersController request specs
+- [x] 6.2 (P) Write AdminUsersController request specs
   - Test all CRUD actions with authentication
   - Test filtering, sorting, search in index
   - Test validation errors display
   - Test deactivation and reactivation
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3_
 
-- [ ] 6.3 (P) Write system specs for user management flow
+- [ ] 6.3 (P) Write system specs for user management flow (N/A - system tests not planned)
   - Test create user → view → edit → deactivate flow
   - Test admin-only access for non-admin users
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 7.1, 7.2, 7.3_

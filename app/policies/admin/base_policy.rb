@@ -31,12 +31,18 @@ class Admin::BasePolicy < ApplicationPolicy
   private
 
   def can_manage?
-    admin? || unit_lead?
+    admin?
   end
 
   class Scope < ApplicationPolicy::Scope
+    def resolve
+      can_manage? ? scope.all : scope.none
+    end
+
+    private
+
     def can_manage?
-      user&.admin? || user&.unit_lead?
+      user&.admin?
     end
   end
 end
