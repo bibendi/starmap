@@ -6,7 +6,7 @@ RSpec.describe "Admin::Users", type: :request do
   let_it_be(:team_lead) { create(:team_lead) }
   let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:team) { create(:team) }
-  let_it_be(:active_user) { create(:user, first_name: "Active", last_name: "User", active: true, team: team) }
+  let_it_be(:active_user) { create(:user, first_name: "Active", last_name: "User", active: true, team: team, position: "Developer") }
   let_it_be(:inactive_user) { create(:user, first_name: "Inactive", last_name: "User", active: false, team: team) }
 
   describe "GET /admin/users" do
@@ -131,6 +131,94 @@ RSpec.describe "Admin::Users", type: :request do
       it "denies access with 403" do
         expect {
           get admin_users_path
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "GET /admin/users/:id" do
+    context "when user is not authenticated" do
+      it "redirects to sign in" do
+        get admin_user_path(active_user)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response" do
+        get admin_user_path(active_user)
+        expect(response).to be_successful
+      end
+
+      it "displays user name" do
+        get admin_user_path(active_user)
+        expect(response.body).to include(active_user.full_name)
+      end
+
+      it "displays user email" do
+        get admin_user_path(active_user)
+        expect(response.body).to include(active_user.email)
+      end
+
+      it "displays user position" do
+        get admin_user_path(active_user)
+        expect(response.body).to include(active_user.position)
+      end
+
+      it "displays user role" do
+        get admin_user_path(active_user)
+        expect(response.body).to include(active_user.role.humanize)
+      end
+
+      it "displays user team" do
+        get admin_user_path(active_user)
+        expect(response.body).to include(active_user.team.name)
+      end
+
+      it "displays user status" do
+        get admin_user_path(active_user)
+        expect(response.body).to include("Active")
+      end
+
+      it "displays created_at" do
+        get admin_user_path(active_user)
+        expect(response.body).to include(I18n.l(active_user.created_at, format: :short))
+      end
+
+      it "displays edit button" do
+        get admin_user_path(active_user)
+        expect(response.body).to include("btn--primary")
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access with 403" do
+        expect {
+          get admin_user_path(active_user)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+
+    context "when user is authenticated as team_lead" do
+      before { sign_in team_lead, scope: :user }
+
+      it "denies access with 403" do
+        expect {
+          get admin_user_path(active_user)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+
+    context "when user is authenticated as unit_lead" do
+      before { sign_in unit_lead, scope: :user }
+
+      it "denies access with 403" do
+        expect {
+          get admin_user_path(active_user)
         }.to raise_error(Pundit::NotAuthorizedError)
       end
     end

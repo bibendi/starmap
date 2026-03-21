@@ -29,13 +29,13 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
 - [ ] 3. Implement user details functionality
-- [ ] 3.1 (P) Create show action in AdminUsersController
+- [x] 3.1 (P) Create show action in AdminUsersController
   - Find user by id
   - Authorize with Admin::UserPolicy
   - Render show view
   - _Requirements: 2.1, 2.2, 2.3_
 
-- [ ] 3.2 (P) Create show.html.erb view
+- [x] 3.2 (P) Create show.html.erb view
   - Page header with title and Edit button
   - User attributes card (name, email, position, role, team, status)
   - Sign-in info (current_sign_in_at)

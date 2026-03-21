@@ -1,0 +1,66 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.users.show.title") %></h1>
+      <%= link_to t("admin.users.edit"), edit_admin_user_path(@user), class: "btn btn--primary" %>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <dl class="grid grid-cols-2 gap-4">
+        <div class="field">
+          <dt class="label"><%= t("activerecord.attributes.user.name") %></dt>
+          <dd class="value"><%= @user.full_name %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.email") %></dt>
+          <dd class="value"><%= @user.email %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.position") %></dt>
+          <dd class="value"><%= @user.position || "-" %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.role") %></dt>
+          <dd class="value">
+            <span class="badge badge--secondary">
+              <%= t("activerecord.attributes.user.roles.#{@user.role}", default: @user.role.humanize) %>
+            </span>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.team") %></dt>
+          <dd class="value"><%= @user.team&.name || "-" %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.status") %></dt>
+          <dd class="value">
+            <% if @user.active? %>
+              <span class="badge badge--success"><%= t("admin.users.active") %></span>
+            <% else %>
+              <span class="badge badge--danger"><%= t("admin.users.inactive") %></span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.current_sign_in_at") %></dt>
+          <dd class="value"><%= @user.current_sign_in_at ? I18n.l(@user.current_sign_in_at, format: :short) : "-" %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.users.show.created_at") %></dt>
+          <dd class="value"><%= I18n.l(@user.created_at, format: :short) %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</main>

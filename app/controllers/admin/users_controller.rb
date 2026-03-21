@@ -13,6 +13,11 @@ module Admin
       @users = @users.page(params[:page]).per(PER_PAGE)
     end
 
+    def show
+      @user = User.find(params[:id])
+      authorize [:admin, @user]
+    end
+
     private
 
     def filter_by_role(scope)
