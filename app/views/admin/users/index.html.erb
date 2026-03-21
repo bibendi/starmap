@@ -1,7 +1,8 @@
 <div class="page-header">
   <div class="page-header__container">
     <div class="page-header__content">
-      <h1 class="page-title"><%= I18n.t('admin.sidebar.users', default: 'Пользователи') %></h1>
+      <h1 class="page-title"><%= t("admin.users.title") %></h1>
+      <%= link_to t("admin.users.new"), new_admin_user_path, class: "btn btn--primary" %>
     </div>
   </div>
 </div>
@@ -9,16 +10,110 @@
 <main class="page-main">
   <div class="card">
     <div class="card__body">
-      <div class="alert alert--info">
-        <div class="flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-          </svg>
-          <span class="alert__text alert__text--info">
-            <%= I18n.t('admin.placeholder.coming_soon', default: 'Раздел в разработке. Скоро здесь появится управление пользователями.') %>
-          </span>
+      <%= form_tag admin_users_path, method: :get, class: "mb-6" do %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="field field--inline">
+            <%= label_tag :role, t("admin.users.filter_by_role"), class: "label" %>
+            <%= select_tag :role,
+                options_for_select([[t("admin.users.all_roles"), ""]] + %w[engineer team_lead unit_lead admin].map { |r| [t("activerecord.attributes.user.roles.#{r}", default: r.humanize), r] }, params[:role]),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline">
+            <%= label_tag :status, t("admin.users.filter_by_status"), class: "label" %>
+            <%= select_tag :status,
+                options_for_select([
+                  [t("admin.users.active"), "active"],
+                  [t("admin.users.inactive"), "inactive"]
+                ], params[:status] || "active"),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline">
+            <%= label_tag :team_id, t("admin.users.filter_by_team"), class: "label" %>
+            <%= select_tag :team_id,
+                options_for_select([[t("admin.users.all_teams"), ""]] + Team.ordered.pluck(:name, :id), params[:team_id]),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline flex-1">
+            <%= label_tag :search, t("admin.users.search"), class: "label" %>
+            <%= text_field_tag :search, params[:search], class: "input", placeholder: t("admin.users.search_placeholder") %>
+          </div>
+
+          <%= submit_tag t("admin.users.search"), class: "btn btn--secondary" %>
+          <%= link_to t("admin.users.clear"), admin_users_path, class: "btn btn--ghost" if params[:search].present? || params[:role].present? || params[:team_id].present? %>
         </div>
+      <% end %>
+
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="table__header-cell">
+                <%= link_to admin_users_path(sort: "name", direction: (params[:sort] == "name" && params[:direction] == "asc") ? "desc" : "asc", role: params[:role], status: params[:status], team_id: params[:team_id], search: params[:search]) do %>
+                  <%= t("activerecord.attributes.user.name") %>
+                  <% if params[:sort] == "name" || params[:sort].nil? %>
+                    <span class="text-amber-500"><%= (params[:sort] == "name" ? params[:direction] : "asc") == "asc" ? "↓" : "↑" %></span>
+                  <% end %>
+                <% end %>
+              </th>
+              <th class="table__header-cell">
+                <%= link_to admin_users_path(sort: "email", direction: (params[:sort] == "email" && params[:direction] == "asc") ? "desc" : "asc", role: params[:role], status: params[:status], team_id: params[:team_id], search: params[:search]) do %>
+                  <%= t("activerecord.attributes.user.email") %>
+                  <% if params[:sort] == "email" %>
+                    <span class="text-amber-500"><%= params[:direction] == "asc" ? "↓" : "↑" %></span>
+                  <% end %>
+                <% end %>
+              </th>
+              <th class="table__header-cell"><%= t("admin.users.show.position") %></th>
+              <th class="table__header-cell">
+                <%= link_to admin_users_path(sort: "role", direction: (params[:sort] == "role" && params[:direction] == "asc") ? "desc" : "asc", role: params[:role], status: params[:status], team_id: params[:team_id], search: params[:search]) do %>
+                  <%= t("admin.users.show.role") %>
+                  <% if params[:sort] == "role" %>
+                    <span class="text-amber-500"><%= params[:direction] == "asc" ? "↓" : "↑" %></span>
+                  <% end %>
+                <% end %>
+              </th>
+              <th class="table__header-cell"><%= t("admin.users.show.team") %></th>
+              <th class="table__header-cell"><%= t("admin.users.show.status") %></th>
+              <th class="table__header-cell"><%= t("admin.users.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <tr>
+                <td class="table__cell">
+                  <%= link_to user.full_name, admin_user_path(user), class: "link" %>
+                </td>
+                <td class="table__cell"><%= user.email %></td>
+                <td class="table__cell"><%= user.position || "-" %></td>
+                <td class="table__cell">
+                  <span class="badge badge--secondary">
+                    <%= t("activerecord.attributes.user.roles.#{user.role}", default: user.role.humanize) %>
+                  </span>
+                </td>
+                <td class="table__cell"><%= user.team&.name || "-" %></td>
+                <td class="table__cell">
+                  <% if user.active? %>
+                    <span class="badge badge--success"><%= t("admin.users.active") %></span>
+                  <% else %>
+                    <span class="badge badge--danger"><%= t("admin.users.inactive") %></span>
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <%= link_to t("admin.users.edit"), edit_admin_user_path(user), class: "btn btn--small btn--secondary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
+
+      <%= paginate @users %>
     </div>
   </div>
 </main>
