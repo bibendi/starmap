@@ -396,4 +396,61 @@ RSpec.describe "Admin::Users", type: :request do
       end
     end
   end
+
+  describe "team_lead uniqueness per team" do
+    let(:team) { create(:team) }
+
+    context "when creating a new team_lead" do
+      before { sign_in admin, scope: :user }
+
+      it "prevents creating second team_lead for same team" do
+        create(:team_lead, team: team)
+        new_lead_params = {
+          user: {
+            first_name: "New",
+            last_name: "Lead",
+            email: "newlead@example.com",
+            password: "Password123!",
+            password_confirmation: "Password123!",
+            role: "team_lead",
+            team_id: team.id,
+            active: true
+          }
+        }
+        post admin_users_path, params: new_lead_params
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include(I18n.t("activerecord.errors.messages.team_already_has_lead"))
+      end
+    end
+
+    context "when updating user to team_lead" do
+      before { sign_in admin, scope: :user }
+
+      it "prevents when team already has team_lead" do
+        existing_lead = create(:team_lead, team: team)
+        engineer = create(:engineer, team: team)
+
+        patch admin_user_path(engineer), params: {user: {role: "team_lead"}}
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include(I18n.t("activerecord.errors.messages.team_already_has_lead"))
+        expect(existing_lead.reload.team_lead?).to be true
+      end
+    end
+
+    context "when changing team_lead to different team" do
+      before { sign_in admin, scope: :user }
+
+      it "allows reassigning team_lead to empty team" do
+        lead = create(:team_lead, team: team)
+        other_team = create(:team)
+
+        patch admin_user_path(lead), params: {user: {team_id: other_team.id}}
+
+        lead.reload
+        expect(lead.team_id).to eq(other_team.id)
+        expect(response).not_to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
 end

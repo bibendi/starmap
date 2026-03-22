@@ -20,6 +20,7 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validates :role, presence: true, inclusion: {in: %w[engineer team_lead unit_lead admin]}
   validates :email, presence: true, uniqueness: true
+  validate :only_one_team_lead_per_team, if: :team_lead_role_changed?
 
   # Callbacks
   before_validation :set_default_role, on: :create
@@ -114,5 +115,18 @@ class User < ApplicationRecord
 
   def set_default_role
     self.role ||= "engineer"
+  end
+
+  def team_lead_role_changed?
+    team_lead? && (role_changed? || team_id_changed?)
+  end
+
+  def only_one_team_lead_per_team
+    return if team_id.blank?
+
+    existing_lead = User.team_leads.where(team_id: team_id).where.not(id: id).exists?
+    return unless existing_lead
+
+    errors.add(:base, :team_already_has_lead)
   end
 end

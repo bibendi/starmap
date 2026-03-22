@@ -359,3 +359,4 @@ en:
               after_eval_start: "must be after evaluation start date"
       messages:
         too_long_evaluation_period: "Evaluation period must not exceed 30 days"
+        team_already_has_lead: "Team already has a team lead"
