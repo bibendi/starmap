@@ -51,6 +51,10 @@ class User < ApplicationRecord
     role == "admin" || admin == true
   end
 
+  def active_for_authentication?
+    super && active?
+  end
+
   # Team leadership check
   def team_lead_of?(team)
     team_lead? && team_id == team.id

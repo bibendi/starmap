@@ -102,18 +102,6 @@ RSpec.describe "Users", type: :request do
         end
       end
 
-      context "with inactive user" do
-        let(:inactive_engineer) { create(:engineer, active: false, team: team) }
-
-        before { sign_in inactive_engineer, scope: :user }
-
-        it "denies access" do
-          expect {
-            get user_path(inactive_engineer)
-          }.to raise_error(Pundit::NotAuthorizedError)
-        end
-      end
-
       context "when user has no team" do
         let(:user_without_team) { create(:engineer, team: nil) }
 
@@ -133,6 +121,20 @@ RSpec.describe "Users", type: :request do
           get user_path(user_without_team)
           expect(response.body).not_to include(team.name)
         end
+      end
+    end
+  end
+
+  describe "POST /users/sign_in" do
+    context "with inactive user" do
+      let(:inactive_engineer) { create(:engineer, active: false, team: team) }
+
+      it "prevents sign in and redirects back to sign in page with error" do
+        post user_session_path, params: {
+          user: {email: inactive_engineer.email, password: "password123"}
+        }
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to match(/not activated/i)
       end
     end
   end
