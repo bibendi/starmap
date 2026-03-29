@@ -1,0 +1,88 @@
+<%= form_with model: [:admin, @technology], local: true, class: "form--vertical" do |form| %>
+  <% if @technology.errors.any? %>
+    <div class="alert alert--error">
+      <div class="alert__icon-container">
+        <svg class="alert__icon alert__icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="alert__content">
+        <p class="alert__text alert__text--error">
+          <%= t("activerecord.errors.template.header", count: @technology.errors.count) %>
+        </p>
+        <ul class="mt-2 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
+          <% @technology.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :name, t("admin.technologies.attributes.name"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.text_field :name, class: "form-input", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :category, t("admin.technologies.attributes.category"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.collection_select :category_id, Category.ordered, :id, :name, {include_blank: true}, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :description, t("admin.technologies.attributes.description"), class: "form-label" %>
+    <div class="form-field">
+      <%= form.text_area :description, class: "form-input", rows: 3 %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div>
+      <%= form.label :criticality, t("admin.technologies.attributes.criticality"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.select :criticality, options_for_select([
+          [t("admin.technologies.badges.high"), "high"],
+          [t("admin.technologies.badges.normal"), "normal"],
+          [t("admin.technologies.badges.low"), "low"]
+        ], @technology.criticality), {}, class: "form-input" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :target_experts, t("admin.technologies.attributes.target_experts"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.number_field :target_experts, class: "form-input", min: 1 %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :sort_order, t("admin.technologies.attributes.sort_order"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.number_field :sort_order, class: "form-input", min: 0 %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div>
+      <%= form.label :active, t("admin.technologies.attributes.active"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.select :active, options_for_select([
+          [t("admin.technologies.active"), true],
+          [t("admin.technologies.inactive"), false]
+        ], @technology.active), {}, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-submit flex gap-4">
+    <%= form.submit class: "btn btn--primary" %>
+    <%= link_to t("admin.technologies.cancel"), admin_technologies_path, class: "btn btn--secondary" %>
+  </div>
+<% end %>

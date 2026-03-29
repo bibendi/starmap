@@ -1,0 +1,85 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.technologies.show") %></h1>
+      <div class="flex gap-2">
+        <%= link_to t("admin.technologies.edit"), edit_admin_technology_path(@technology), class: "btn btn--primary" %>
+        <%= button_to t("admin.technologies.destroy"), admin_technology_path(@technology), method: :delete, class: "btn btn--danger", data: {turbo_confirm: true} %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <dl class="grid grid-cols-2 gap-4">
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.name") %></dt>
+          <dd class="value"><%= @technology.name %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.category") %></dt>
+          <dd class="value">
+            <% if @technology.category.present? %>
+              <span class="badge badge--secondary"><%= @technology.category.name %></span>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.criticality") %></dt>
+          <dd class="value">
+            <% case @technology.criticality %>
+            <% when "high" %>
+              <span class="badge badge--danger"><%= t("admin.technologies.badges.high") %></span>
+            <% when "low" %>
+              <span class="badge badge--warning"><%= t("admin.technologies.badges.low") %></span>
+            <% else %>
+              <span class="badge badge--secondary"><%= t("admin.technologies.badges.normal") %></span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.active") %></dt>
+          <dd class="value">
+            <% if @technology.active? %>
+              <span class="badge badge--success"><%= t("admin.technologies.active") %></span>
+            <% else %>
+              <span class="badge badge--danger"><%= t("admin.technologies.inactive") %></span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.target_experts") %></dt>
+          <dd class="value"><%= @technology.target_experts %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.sort_order") %></dt>
+          <dd class="value"><%= @technology.sort_order %></dd>
+        </div>
+
+        <div class="field col-span-2">
+          <dt class="label"><%= t("admin.technologies.attributes.description") %></dt>
+          <dd class="value"><%= @technology.description.presence || "-" %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.created_at") %></dt>
+          <dd class="value"><%= I18n.l(@technology.created_at, format: :short) %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.technologies.attributes.updated_at") %></dt>
+          <dd class="value"><%= I18n.l(@technology.updated_at, format: :short) %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</main>

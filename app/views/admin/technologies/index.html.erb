@@ -1,7 +1,8 @@
 <div class="page-header">
   <div class="page-header__container">
     <div class="page-header__content">
-      <h1 class="page-title"><%= I18n.t('admin.sidebar.technologies', default: 'Технологии') %></h1>
+      <h1 class="page-title"><%= t("admin.technologies.index_title") %></h1>
+      <%= link_to t("admin.technologies.new"), new_admin_technology_path, class: "btn btn--primary" %>
     </div>
   </div>
 </div>
@@ -9,16 +10,98 @@
 <main class="page-main">
   <div class="card">
     <div class="card__body">
-      <div class="alert alert--info">
-        <div class="flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-          </svg>
-          <span class="alert__text alert__text--info">
-            <%= I18n.t('admin.placeholder.coming_soon', default: 'Раздел в разработке. Скоро здесь появится управление технологиями.') %>
-          </span>
+      <%= form_tag admin_technologies_path, method: :get, class: "mb-6" do %>
+        <%= hidden_field_tag :page, params[:page] if params[:page].present? %>
+
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="field field--inline">
+            <%= label_tag :active, t("admin.technologies.filter_by_status"), class: "label" %>
+            <%= select_tag :active,
+                options_for_select([
+                  [t("admin.technologies.all_statuses"), ""],
+                  [t("admin.technologies.active"), "true"],
+                  [t("admin.technologies.inactive"), "false"]
+                ], params[:active]),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline">
+            <%= label_tag :category_id, t("admin.technologies.filter_by_category"), class: "label" %>
+            <%= select_tag :category_id,
+                options_for_select([[t("admin.technologies.all_statuses"), ""]] + Category.ordered.pluck(:name, :id), params[:category_id]),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline flex-1">
+            <%= label_tag :name, t("admin.technologies.filter_by_name"), class: "label" %>
+            <%= text_field_tag :name, params[:name], class: "input", placeholder: t("admin.technologies.search_placeholder") %>
+          </div>
+
+          <%= submit_tag t("admin.technologies.search"), class: "btn btn--secondary" %>
+          <%= link_to t("admin.technologies.clear"), admin_technologies_path, class: "btn btn--ghost" if params[:active].present? || params[:name].present? || params[:category_id].present? %>
         </div>
+      <% end %>
+
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="table__header-cell"><%= t("admin.technologies.attributes.name") %></th>
+              <th class="table__header-cell"><%= t("admin.technologies.attributes.category") %></th>
+              <th class="table__header-cell"><%= t("admin.technologies.attributes.criticality") %></th>
+              <th class="table__header-cell"><%= t("admin.technologies.attributes.active") %></th>
+              <th class="table__header-cell"><%= t("admin.technologies.attributes.target_experts") %></th>
+              <th class="table__header-cell"><%= t("admin.technologies.attributes.sort_order") %></th>
+              <th class="table__header-cell"><%= t("admin.technologies.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @technologies.each do |technology| %>
+              <tr>
+                <td class="table__cell">
+                  <%= link_to technology.name, admin_technology_path(technology), class: "link" %>
+                </td>
+                <td class="table__cell">
+                  <% if technology.category.present? %>
+                    <span class="badge badge--secondary"><%= technology.category.name %></span>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <% case technology.criticality %>
+                  <% when "high" %>
+                    <span class="badge badge--danger"><%= t("admin.technologies.badges.high") %></span>
+                  <% when "low" %>
+                    <span class="badge badge--warning"><%= t("admin.technologies.badges.low") %></span>
+                  <% else %>
+                    <span class="badge badge--secondary"><%= t("admin.technologies.badges.normal") %></span>
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <% if technology.active? %>
+                    <span class="badge badge--success"><%= t("admin.technologies.active") %></span>
+                  <% else %>
+                    <span class="badge badge--danger"><%= t("admin.technologies.inactive") %></span>
+                  <% end %>
+                </td>
+                <td class="table__cell"><%= technology.target_experts %></td>
+                <td class="table__cell"><%= technology.sort_order %></td>
+                <td class="table__cell">
+                  <div class="flex gap-2">
+                    <%= link_to t("admin.technologies.edit"), edit_admin_technology_path(technology), class: "btn btn--small btn--secondary" %>
+                    <%= button_to t("admin.technologies.destroy"), admin_technology_path(technology), method: :delete, class: "btn btn--small btn--danger", data: {turbo_confirm: true} %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
+
+      <%= paginate @technologies %>
     </div>
   </div>
 </main>

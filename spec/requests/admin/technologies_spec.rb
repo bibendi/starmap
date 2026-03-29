@@ -99,9 +99,8 @@ RSpec.describe "Admin::Technologies", type: :request do
       end
 
       it "returns 404 for non-existent technology" do
-        expect {
-          get admin_technology_path(999_999)
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        get admin_technology_path(999_999)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -286,9 +285,8 @@ RSpec.describe "Admin::Technologies", type: :request do
       end
 
       it "returns 404 for non-existent technology" do
-        expect {
-          delete admin_technology_path(999_999)
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        delete admin_technology_path(999_999)
+        expect(response).to have_http_status(:not_found)
       end
     end
 

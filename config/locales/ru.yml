@@ -64,6 +64,7 @@ ru:
       filter_by_name: "Название"
       filter_by_category: "Категория"
       all_statuses: "Все"
+      search: "Поиск"
       search_placeholder: "Поиск по названию..."
       clear: "Очистить"
       attributes:

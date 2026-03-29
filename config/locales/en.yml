@@ -93,6 +93,7 @@ en:
       filter_by_name: "Name"
       filter_by_category: "Category"
       all_statuses: "All"
+      search: "Search"
       search_placeholder: "Search by name..."
       clear: "Clear"
       attributes:
