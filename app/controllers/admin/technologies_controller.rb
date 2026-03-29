@@ -51,8 +51,11 @@ module Admin
 
     def destroy
       authorize [:admin, @technology]
-      @technology.destroy
-      redirect_to admin_technologies_path, notice: t("admin.technologies.destroyed")
+      if @technology.destroy
+        redirect_to admin_technologies_path, notice: t("admin.technologies.destroyed")
+      else
+        redirect_to admin_technologies_path, alert: t("admin.technologies.cannot_delete_with_dependencies")
+      end
     end
 
     def reorder

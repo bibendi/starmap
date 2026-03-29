@@ -84,6 +84,7 @@ en:
       updated: "Technology updated successfully"
       destroy: "Delete"
       destroyed: "Technology deleted successfully"
+      cannot_delete_with_dependencies: "Cannot delete technology with associated skill ratings, action plans, or teams"
       cancel: "Cancel"
       back: "Back"
       actions: "Actions"

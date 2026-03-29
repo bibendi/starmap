@@ -284,6 +284,18 @@ RSpec.describe "Admin::Technologies", type: :request do
         expect(flash[:notice]).to be_present
       end
 
+      it "does not delete technology with skill ratings" do
+        tech = create(:technology, name: "Linked Tech")
+        create(:skill_rating, technology: tech)
+
+        expect {
+          delete admin_technology_path(tech)
+        }.not_to change(Technology, :count)
+
+        expect(response).to redirect_to(admin_technologies_path)
+        expect(flash[:alert]).to be_present
+      end
+
       it "returns 404 for non-existent technology" do
         delete admin_technology_path(999_999)
         expect(response).to have_http_status(:not_found)

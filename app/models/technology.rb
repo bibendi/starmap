@@ -5,10 +5,10 @@ class Technology < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :created_by, class_name: "User", optional: true
   belongs_to :updated_by, class_name: "User", optional: true
-  has_many :skill_ratings, dependent: :destroy
+  has_many :skill_ratings, dependent: :restrict_with_error
   has_many :users, through: :skill_ratings
-  has_many :action_plans, dependent: :destroy
-  has_many :team_technologies, dependent: :destroy
+  has_many :action_plans, dependent: :restrict_with_error
+  has_many :team_technologies, dependent: :restrict_with_error
   has_many :teams, through: :team_technologies
 
   # Validations
