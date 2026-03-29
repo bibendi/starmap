@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   # Admin namespace
   namespace :admin do
     root to: "dashboard#index"
-    resources :technologies, only: [:index]
+    resources :technologies
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
     resources :quarters do
       member do

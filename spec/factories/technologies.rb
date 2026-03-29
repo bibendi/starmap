@@ -5,7 +5,6 @@ FactoryBot.define do
   factory :technology do
     name { generate(:technology_name) }
     description { "Description for #{name}" }
-    category { "Backend" }
     criticality { "normal" }
     target_experts { 2 }
     active { true }

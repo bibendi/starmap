@@ -1,7 +1,7 @@
 # Implementation Plan
 
-- [ ] 1. Category model and data migration
-- [ ] 1.1 Create reversible migration: categories table, add nullable category_id to technologies, populate from distinct string values, drop old category column
+- [x] 1. Category model and data migration
+- [x] 1.1 Create reversible migration: categories table, add nullable category_id to technologies, populate from distinct string values, drop old category column
   - Create categories table with id, name (NOT NULL, UNIQUE), timestamps
   - Add category_id column to technologies (nullable for backward compatibility)
   - Insert Category records for each distinct value in technologies.category (backend, frontend, database, devops, cloud)
@@ -10,42 +10,18 @@
   - Ensure down method reverses: add column back, copy names from categories, drop FK, drop table
   - _Requirements: 2.3, 2.5_
 
-- [ ] 1.2 Write Category model specs (TDD)
-  - Validate presence and uniqueness of name
-  - Validate restrict_with_error on destroy when technologies exist
-  - _Requirements: 2.1, 2.4_
-
-- [ ] 1.3 Create Category model with validations and association
-  - Validate presence and case-insensitive uniqueness of name
-  - Define has_many :technologies with dependent: :restrict_with_error
-  - Add default scope ordering by name
-  - _Requirements: 2.1, 2.2, 2.4_
-
-- [ ] 1.4 Write Technology model specs for updated association (TDD)
-  - Verify belongs_to :category works correctly
-  - Verify by_category scope filters by category_id
-  - _Requirements: 2.3, 2.6_
-
-- [ ] 1.5 Update Technology model for category association
+- [x] 1.2 Write Category model specs (TDD)
+- [x] 1.3 Create Category model with validations and association
+- [x] 1.4 Write Technology model specs for updated association (TDD)
+- [x] 1.5 Update Technology model for category association
   - Add belongs_to :category, optional: true
   - Update by_category scope to filter by category_id instead of string value
   - Replace all references to technology.category (string) with technology.category&.name throughout the codebase
   - _Requirements: 2.3, 2.6_
 
-- [ ] 2 (P). i18n, routes and seeds configuration
-- [ ] 2.1 (P) Add and update i18n keys in en.yml and ru.yml
-  - Change admin.sidebar.technologies value to Competencies / Компетенции
-  - Add admin.technologies tree: index_title, new, edit, show, create, update, destroy
-  - Add filter labels: active filter options, name search placeholder, category filter prompt
-  - Add attribute labels: name, description, category, criticality, target_experts, sort_order, active
-  - Add badge labels for criticality levels and active/inactive status
-  - _Requirements: 1.1, 1.2_
-
-- [ ] 2.2 (P) Expand admin routes for full technologies CRUD
-  - Replace resources :technologies, only: [:index] with resources :technologies
-  - _Requirements: 3.2, 3.3, 3.4_
-
-- [ ] 2.3 (P) Update db/seeds.rb to create Category records and associate technologies
+- [x] 2 (P). i18n, routes and seeds configuration
+- [x] 2.2 (P) Expand admin routes for full technologies CRUD
+- [x] 2.3 (P) Update db/seeds.rb to create Category records and associate technologies
   - Create Category records for backend, frontend, database, devops, cloud before creating technologies
   - Update technology creation to use category: Category.find_by(name: ...) instead of string value
   - _Requirements: 2.7_

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_28_201508) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_29_172324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_201508) do
     t.index ["status"], name: "index_action_plans_on_status"
     t.index ["technology_id"], name: "index_action_plans_on_technology_id"
     t.index ["user_id"], name: "index_action_plans_on_user_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
   end
 
   create_table "quarters", force: :cascade do |t|
@@ -127,7 +134,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_201508) do
 
   create_table "technologies", force: :cascade do |t|
     t.boolean "active", default: true, null: false
-    t.string "category"
+    t.bigint "category_id"
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
     t.string "criticality", default: "normal", null: false
@@ -138,7 +145,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_201508) do
     t.datetime "updated_at", null: false
     t.bigint "updated_by_id"
     t.index ["active"], name: "index_technologies_on_active"
-    t.index ["category"], name: "index_technologies_on_category"
+    t.index ["category_id"], name: "index_technologies_on_category_id"
     t.index ["created_by_id"], name: "index_technologies_on_created_by_id"
     t.index ["criticality"], name: "index_technologies_on_criticality"
     t.index ["name"], name: "index_technologies_on_name", unique: true
@@ -212,6 +219,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_201508) do
   add_foreign_key "team_technologies", "technologies"
   add_foreign_key "teams", "units"
   add_foreign_key "teams", "users", column: "team_lead_id"
+  add_foreign_key "technologies", "categories"
   add_foreign_key "technologies", "users", column: "created_by_id"
   add_foreign_key "technologies", "users", column: "updated_by_id"
   add_foreign_key "units", "users", column: "unit_lead_id"

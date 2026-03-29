@@ -31,7 +31,7 @@
                <div data-vertical-pagination-target="item" class="card-item">
                  <div class="content-card">
                    <span class="text-heading"><%= risk[:technology]&.name %></span>
-                   <span class="text-subtle"><%= risk[:technology]&.category %></span>
+                    <span class="text-subtle"><%= risk[:technology]&.category&.name %></span>
                  </div>
                  <div class="content-row mt-2">
                    <span class="badge badge--orange">

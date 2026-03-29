@@ -2,6 +2,7 @@
 # Represents technologies with criticality levels and target expert counts
 class Technology < ApplicationRecord
   # Associations
+  belongs_to :category, optional: true
   belongs_to :created_by, class_name: "User", optional: true
   belongs_to :updated_by, class_name: "User", optional: true
   has_many :skill_ratings, dependent: :destroy
@@ -22,7 +23,7 @@ class Technology < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(active: true) }
-  scope :by_category, ->(category) { where(category: category) }
+  scope :by_category, ->(category_id) { where(category_id: category_id) }
   scope :by_criticality, ->(criticality) { where(criticality: criticality) }
   scope :high_criticality, -> { where(criticality: "high") }
   scope :ordered, -> { order(:sort_order, :name) }

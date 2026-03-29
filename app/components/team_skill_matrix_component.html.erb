@@ -24,7 +24,7 @@
                  <div class="content-card">
                     <span class="text-heading"><%= tech&.name %></span>
                    <div class="content-row content-row--gap mt-0.5">
-                      <span class="text-subtle"><%= tech&.category %></span>
+                       <span class="text-subtle"><%= tech&.category&.name %></span>
                     <% criticality = bus_factor_data&.dig(:criticality) || tech&.criticality %>
                     <% if criticality == 'high' %>
                        <span class="criticality-badge criticality-badge--high">

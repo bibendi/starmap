@@ -31,7 +31,7 @@
               <div data-vertical-pagination-target="item" class="card-item">
                 <div class="content-card">
                   <span class="text-heading"><%= slide[:technology]&.name %></span>
-                  <span class="text-subtle"><%= slide[:technology]&.category %></span>
+                  <span class="text-subtle"><%= slide[:technology]&.category&.name %></span>
                 </div>
                 <% if multiple_teams? %>
                     <div class="mt-2">

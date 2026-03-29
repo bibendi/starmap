@@ -34,77 +34,85 @@ teams = {
 
 Rails.logger.debug "Creating technologies..."
 
+Rails.logger.debug "Creating categories..."
+
+categories = %w[backend frontend database devops cloud].map do |name|
+  Category.find_or_create_by!(name: name)
+end
+
+category_map = categories.index_by(&:name)
+
 # Create technologies with different criticality levels
 technologies = {
   ruby_on_rails: Technology.find_or_create_by!(name: "Ruby on Rails") do |tech|
     tech.description = "Web application framework"
     tech.criticality = "high"
-    tech.category = "backend"
+    tech.category = category_map["backend"]
   end,
   postgresql: Technology.find_or_create_by!(name: "PostgreSQL") do |tech|
     tech.description = "Relational database"
     tech.criticality = "high"
-    tech.category = "database"
+    tech.category = category_map["database"]
   end,
   react: Technology.find_or_create_by!(name: "React") do |tech|
     tech.description = "JavaScript library for building user interfaces"
     tech.criticality = "high"
-    tech.category = "frontend"
+    tech.category = category_map["frontend"]
   end,
   docker: Technology.find_or_create_by!(name: "Docker") do |tech|
     tech.description = "Containerization platform"
     tech.criticality = "high"
-    tech.category = "devops"
+    tech.category = category_map["devops"]
   end,
   kubernetes: Technology.find_or_create_by!(name: "Kubernetes") do |tech|
     tech.description = "Container orchestration platform"
     tech.criticality = "high"
-    tech.category = "devops"
+    tech.category = category_map["devops"]
   end,
   aws: Technology.find_or_create_by!(name: "AWS") do |tech|
     tech.description = "Amazon Web Services cloud platform"
     tech.criticality = "high"
-    tech.category = "cloud"
+    tech.category = category_map["cloud"]
   end,
   javascript: Technology.find_or_create_by!(name: "JavaScript") do |tech|
     tech.description = "Programming language for web development"
     tech.criticality = "high"
-    tech.category = "frontend"
+    tech.category = category_map["frontend"]
   end,
   typescript: Technology.find_or_create_by!(name: "TypeScript") do |tech|
     tech.description = "Typed superset of JavaScript"
     tech.criticality = "normal"
-    tech.category = "frontend"
+    tech.category = category_map["frontend"]
   end,
   nodejs: Technology.find_or_create_by!(name: "Node.js") do |tech|
     tech.description = "JavaScript runtime environment"
     tech.criticality = "normal"
-    tech.category = "backend"
+    tech.category = category_map["backend"]
   end,
   redis: Technology.find_or_create_by!(name: "Redis") do |tech|
     tech.description = "In-memory data structure store"
     tech.criticality = "normal"
-    tech.category = "database"
+    tech.category = category_map["database"]
   end,
   graphql: Technology.find_or_create_by!(name: "GraphQL") do |tech|
     tech.description = "Query language for APIs"
     tech.criticality = "normal"
-    tech.category = "backend"
+    tech.category = category_map["backend"]
   end,
   terraform: Technology.find_or_create_by!(name: "Terraform") do |tech|
     tech.description = "Infrastructure as code tool"
     tech.criticality = "normal"
-    tech.category = "devops"
+    tech.category = category_map["devops"]
   end,
   vuejs: Technology.find_or_create_by!(name: "Vue.js") do |tech|
     tech.description = "Progressive JavaScript framework"
     tech.criticality = "low"
-    tech.category = "frontend"
+    tech.category = category_map["frontend"]
   end,
   angular: Technology.find_or_create_by!(name: "Angular") do |tech|
     tech.description = "TypeScript-based web application framework"
     tech.criticality = "low"
-    tech.category = "frontend"
+    tech.category = category_map["frontend"]
   end
 }
 

@@ -37,7 +37,7 @@ class UnitTechnologyTreemapComponent < ViewComponent::Base
     technologies_data.map do |tech|
       {
         name: tech[:technology]&.name,
-        category: tech[:technology]&.category,
+        category: tech[:technology]&.category&.name,
         value: tech[:expert_count],
         allTeamsInTarget: tech[:all_teams_in_target],
         intensity: intensity_for_experts(tech[:expert_count]),
