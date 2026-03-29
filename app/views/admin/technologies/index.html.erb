@@ -55,7 +55,6 @@
               <th class="table__header-cell"><%= t("admin.technologies.attributes.category") %></th>
               <th class="table__header-cell"><%= t("admin.technologies.attributes.criticality") %></th>
               <th class="table__header-cell"><%= t("admin.technologies.attributes.active") %></th>
-              <th class="table__header-cell"><%= t("admin.technologies.attributes.target_experts") %></th>
               <th class="table__header-cell"><%= t("admin.technologies.actions") %></th>
             </tr>
           </thead>
@@ -89,12 +88,8 @@
                     <span class="badge badge--danger"><%= t("admin.technologies.inactive") %></span>
                   <% end %>
                 </td>
-                <td class="table__cell"><%= technology.target_experts %></td>
                 <td class="table__cell">
-                  <div class="flex gap-2">
-                    <%= link_to t("admin.technologies.edit"), edit_admin_technology_path(technology), class: "btn btn--small btn--secondary" %>
-                    <%= button_to t("admin.technologies.destroy"), admin_technology_path(technology), method: :delete, class: "btn btn--small btn--danger", data: {turbo_confirm: true} %>
-                  </div>
+                  <%= link_to t("admin.technologies.edit"), edit_admin_technology_path(technology), class: "btn btn--small btn--secondary" %>
                 </td>
               </tr>
             <% end %>

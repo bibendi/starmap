@@ -85,6 +85,7 @@ en:
       destroy: "Delete"
       destroyed: "Technology deleted successfully"
       cannot_delete_with_dependencies: "Cannot delete technology with associated skill ratings, action plans, or teams"
+      confirm_destroy: "Are you sure you want to delete this technology?"
       cancel: "Cancel"
       back: "Back"
       actions: "Actions"

@@ -4,7 +4,7 @@
       <h1 class="page-title"><%= t("admin.technologies.show") %></h1>
       <div class="flex gap-2">
         <%= link_to t("admin.technologies.edit"), edit_admin_technology_path(@technology), class: "btn btn--primary" %>
-        <%= button_to t("admin.technologies.destroy"), admin_technology_path(@technology), method: :delete, class: "btn btn--danger", data: {turbo_confirm: true} %>
+        <%= button_to t("admin.technologies.destroy"), admin_technology_path(@technology), method: :delete, class: "btn btn--danger", data: {turbo_confirm: t("admin.technologies.confirm_destroy")} %>
       </div>
     </div>
   </div>
