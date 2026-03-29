@@ -67,6 +67,13 @@ ru:
       search: "Поиск"
       search_placeholder: "Поиск по названию..."
       clear: "Очистить"
+      reorder: "Изменить порядок"
+      reorder_title: "Порядок технологий"
+      reorder_description: "Перетаскивайте для изменения порядка отображения"
+      save_order: "Сохранить порядок"
+      saved: "сохранено"
+      saved_order: "Порядок успешно сохранён"
+      error: "ошибка"
       attributes:
         name: "Название"
         description: "Описание"

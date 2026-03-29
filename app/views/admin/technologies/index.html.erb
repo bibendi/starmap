@@ -2,7 +2,10 @@
   <div class="page-header__container">
     <div class="page-header__content">
       <h1 class="page-title"><%= t("admin.technologies.index_title") %></h1>
-      <%= link_to t("admin.technologies.new"), new_admin_technology_path, class: "btn btn--primary" %>
+      <div class="flex gap-2">
+        <%= link_to t("admin.technologies.new"), new_admin_technology_path, class: "btn btn--primary" %>
+        <%= link_to t("admin.technologies.reorder"), reorder_admin_technologies_path, class: "btn btn--secondary" %>
+      </div>
     </div>
   </div>
 </div>
@@ -53,7 +56,6 @@
               <th class="table__header-cell"><%= t("admin.technologies.attributes.criticality") %></th>
               <th class="table__header-cell"><%= t("admin.technologies.attributes.active") %></th>
               <th class="table__header-cell"><%= t("admin.technologies.attributes.target_experts") %></th>
-              <th class="table__header-cell"><%= t("admin.technologies.attributes.sort_order") %></th>
               <th class="table__header-cell"><%= t("admin.technologies.actions") %></th>
             </tr>
           </thead>
@@ -88,7 +90,6 @@
                   <% end %>
                 </td>
                 <td class="table__cell"><%= technology.target_experts %></td>
-                <td class="table__cell"><%= technology.sort_order %></td>
                 <td class="table__cell">
                   <div class="flex gap-2">
                     <%= link_to t("admin.technologies.edit"), edit_admin_technology_path(technology), class: "btn btn--small btn--secondary" %>

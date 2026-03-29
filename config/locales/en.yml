@@ -96,6 +96,13 @@ en:
       search: "Search"
       search_placeholder: "Search by name..."
       clear: "Clear"
+      reorder: "Reorder"
+      reorder_title: "Reorder Technologies"
+      reorder_description: "Drag and drop to change the display order"
+      save_order: "Save Order"
+      saved: "saved"
+      saved_order: "Order saved successfully"
+      error: "error"
       attributes:
         name: "Name"
         description: "Description"

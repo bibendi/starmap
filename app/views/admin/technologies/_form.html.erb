@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
       <%= form.label :criticality, t("admin.technologies.attributes.criticality"), class: "form-label" %>
       <div class="form-field">
@@ -58,13 +58,6 @@
       <%= form.label :target_experts, t("admin.technologies.attributes.target_experts"), class: "form-label" %>
       <div class="form-field">
         <%= form.number_field :target_experts, class: "form-input", min: 1 %>
-      </div>
-    </div>
-
-    <div>
-      <%= form.label :sort_order, t("admin.technologies.attributes.sort_order"), class: "form-label" %>
-      <div class="form-field">
-        <%= form.number_field :sort_order, class: "form-input", min: 0 %>
       </div>
     </div>
   </div>

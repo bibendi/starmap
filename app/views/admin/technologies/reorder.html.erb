@@ -1,0 +1,53 @@
+<div data-controller="sortable">
+  <%= form_with url: reorder_admin_technologies_path, method: :patch, local: true do |form| %>
+    <div class="page-header">
+      <div class="page-header__container">
+        <div class="page-header__content">
+          <h1 class="page-title"><%= t("admin.technologies.reorder_title") %></h1>
+          <div class="flex gap-2">
+            <button type="submit" data-action="click->sortable#submit" class="btn btn--primary">
+              <%= t("admin.technologies.save_order") %>
+            </button>
+            <%= link_to t("admin.technologies.back"), admin_technologies_path, class: "btn btn--secondary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main">
+      <div class="card">
+        <div class="card__body">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-6"><%= t("admin.technologies.reorder_description") %></p>
+
+          <div data-sortable-target="list" class="space-y-2">
+            <% @technologies.each do |technology| %>
+              <div data-sortable-target="item"
+                   data-id="<%= technology.id %>"
+                   class="flex items-center gap-4 p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 cursor-grab active:cursor-grabbing hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                <div class="sortable-handle text-gray-400 dark:text-gray-500 flex-shrink-0">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z"/>
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <span class="font-medium truncate"><%= technology.name %></span>
+                  <% if technology.category.present? %>
+                    <span class="badge badge--secondary ml-2"><%= technology.category.name %></span>
+                  <% end %>
+                </div>
+                <% case technology.criticality %>
+                <% when "high" %>
+                  <span class="badge badge--danger flex-shrink-0"><%= t("admin.technologies.badges.high") %></span>
+                <% when "low" %>
+                  <span class="badge badge--warning flex-shrink-0"><%= t("admin.technologies.badges.low") %></span>
+                <% else %>
+                  <span class="badge badge--secondary flex-shrink-0"><%= t("admin.technologies.badges.normal") %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </main>
+  <% end %>
+</div>

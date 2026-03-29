@@ -55,6 +55,28 @@ module Admin
       redirect_to admin_technologies_path, notice: t("admin.technologies.destroyed")
     end
 
+    def reorder
+      authorize [:admin, Technology], :index?
+
+      if request.patch?
+        ids = params[:ids]
+
+        if ids.blank?
+          return head :unprocessable_content
+        end
+
+        Technology.transaction do
+          ids.each_with_index do |id, index|
+            Technology.where(id: id).update_all(sort_order: index)
+          end
+        end
+
+        redirect_to admin_technologies_path, notice: t("admin.technologies.saved_order")
+      else
+        @technologies = Technology.ordered.includes(:category)
+      end
+    end
+
     private
 
     def set_technology
@@ -68,7 +90,6 @@ module Admin
         :category_id,
         :criticality,
         :target_experts,
-        :sort_order,
         :active
       )
     end

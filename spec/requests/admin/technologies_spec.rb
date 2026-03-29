@@ -301,4 +301,75 @@ RSpec.describe "Admin::Technologies", type: :request do
       end
     end
   end
+
+  describe "GET /admin/technologies/reorder" do
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "returns successful response" do
+        get reorder_admin_technologies_path
+        expect(response).to be_successful
+      end
+
+      it "displays technologies list" do
+        get reorder_admin_technologies_path
+        expect(response.body).to include("Ruby on Rails")
+        expect(response.body).to include("Legacy Tech")
+      end
+
+      it "does not paginate" do
+        create_list(:technology, 30)
+        get reorder_admin_technologies_path
+        expect(response.body).not_to include("paginate")
+        expect(response.body).not_to include("nav-pagination")
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          get reorder_admin_technologies_path
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "PATCH /admin/technologies/reorder" do
+    context "when user is authenticated as admin" do
+      before { sign_in admin, scope: :user }
+
+      it "updates sort_order for given ids and redirects" do
+        tech1 = create(:technology, name: "A", sort_order: 1)
+        tech2 = create(:technology, name: "B", sort_order: 2)
+        tech3 = create(:technology, name: "C", sort_order: 3)
+
+        patch reorder_admin_technologies_path, params: {ids: [tech3.id, tech1.id, tech2.id]}
+        expect(response).to redirect_to(admin_technologies_path)
+
+        tech3.reload
+        tech1.reload
+        tech2.reload
+        expect(tech3.sort_order).to eq(0)
+        expect(tech1.sort_order).to eq(1)
+        expect(tech2.sort_order).to eq(2)
+      end
+
+      it "returns unprocessable when ids missing" do
+        patch reorder_admin_technologies_path, params: {}
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when user is authenticated as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          patch reorder_admin_technologies_path, params: {ids: [1, 2]}
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
 end
