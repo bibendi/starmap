@@ -1,0 +1,68 @@
+<%= form_with model: [:admin, @team], local: true, class: "form--vertical" do |form| %>
+  <% if @team.errors.any? %>
+    <div class="alert alert--error">
+      <div class="alert__icon-container">
+        <svg class="alert__icon alert__icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="alert__content">
+        <p class="alert__text alert__text--error">
+          <%= t("activerecord.errors.template.header", count: @team.errors.count) %>
+        </p>
+        <ul class="mt-2 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
+          <% @team.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :name, t("admin.teams.attributes.name"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.text_field :name, class: "form-input", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :unit_id, t("admin.teams.attributes.unit"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.collection_select :unit_id, Unit.order(:name), :id, :name, {}, class: "form-input", required: true %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :description, t("admin.teams.attributes.description"), class: "form-label" %>
+    <div class="form-field">
+      <%= form.text_area :description, class: "form-input", rows: 3 %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :team_lead_id, t("admin.teams.attributes.team_lead"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.collection_select :team_lead_id, User.order(:first_name, :last_name), :id, :display_name_or_full_name, {include_blank: true}, class: "form-input" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :active, t("admin.teams.attributes.active"), class: "form-label" %>
+      <div class="form-field">
+        <%= form.select :active, options_for_select([
+          [t("admin.teams.active"), true],
+          [t("admin.teams.inactive"), false]
+        ], @team.active), {}, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-submit flex gap-4">
+    <%= form.submit class: "btn btn--primary" %>
+    <%= link_to t("admin.teams.cancel"), admin_teams_path, class: "btn btn--secondary" %>
+  </div>
+<% end %>

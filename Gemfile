@@ -53,8 +53,6 @@ group :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "shoulda-matchers"
-  gem "capybara"
-  gem "selenium-webdriver"
   gem "database_cleaner-active_record"
 
   # Testing optimization

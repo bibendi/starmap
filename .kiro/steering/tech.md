@@ -60,7 +60,6 @@
 - **Shoulda Matchers**: Rails-specific matchers
 - **test-prof**: Test profiling and optimization
 - **n_plus_one_control**: N+1 query testing with tagged tests
-- **Capybara + Cuprite**: System/integration testing
 
 ### Infrastructure
 - **Docker + Docker Compose**: Multi-stage container builds
@@ -76,12 +75,12 @@
 
 ### Core Entities
 
-**User**: Accounts with roles (engineer, team_lead, unit_lead, admin), team associations  
-**Team**: User groups with Team Lead management  
-**Technology**: Technologies with category, criticality level, target expert count  
-**Quarter**: Quarterly cycles with status (draft → active → closed → archived)  
-**SkillRating**: Competency ratings (0-3), approval status, quarter linkage  
-**ActionPlan**: Development plans linking users, technologies, and target quarters  
+**User**: Accounts with roles (engineer, team_lead, unit_lead, admin), team associations
+**Team**: User groups with Team Lead management
+**Technology**: Technologies with category, criticality level, target expert count
+**Quarter**: Quarterly cycles with status (draft → active → closed → archived)
+**SkillRating**: Competency ratings (0-3), approval status, quarter linkage
+**ActionPlan**: Development plans linking users, technologies, and target quarters
 
 ### Business Logic Patterns
 
@@ -106,8 +105,6 @@
 
 **Ruby (RSpec)**:
 - Factory-based test data (not fixtures)
-- ViewComponent testing: `render_inline` + Capybara matchers for reusable components
-- System specs with Capybara + Cuprite
 - N+1 testing with `n_plus_one_control` gem:
   - Tag tests with `:n_plus_one`
   - Use `populate` blocks to create data at different scales
@@ -116,6 +113,7 @@
   - Single failure: Use `puts foo.inspect` then run specific test
   - Multiple similar failures: Fix one test first, then run others
   - SQL debugging: `LOG=all bundle exec rspec ...`
+  - Slow tests or large output: redirect output to temporary file and navigate along it
 
 **JavaScript (Vitest + JSDOM)**:
 - Minimalist approach: create DOM structure, register controllers, test behavior via DOM interaction

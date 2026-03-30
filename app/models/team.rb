@@ -4,7 +4,7 @@ class Team < ApplicationRecord
   # Associations
   belongs_to :team_lead, class_name: "User", optional: true
   belongs_to :unit, optional: false
-  has_many :users, dependent: :nullify
+  has_many :users, dependent: :restrict_with_error
   has_many :skill_ratings, through: :users
   has_many :action_plans, through: :users
   has_many :team_technologies, dependent: :destroy
@@ -12,15 +12,11 @@ class Team < ApplicationRecord
 
   # Validations
   validates :name, presence: true, uniqueness: true
-  validates :sort_order, numericality: {only_integer: true, greater_than_or_equal_to: 0}
-
-  # Callbacks
-  before_validation :set_default_sort_order, on: :create
 
   # Scopes
   scope :active, -> { where(active: true) }
   scope :by_unit, ->(unit) { where(unit: unit) }
-  scope :ordered, -> { order(:sort_order, :name) }
+  scope :ordered, -> { order(:name) }
 
   # Delegation
   delegate :name, to: :unit, prefix: true, allow_nil: false
@@ -128,8 +124,4 @@ class Team < ApplicationRecord
   end
 
   private
-
-  def set_default_sort_order
-    self.sort_order ||= Team.maximum(:sort_order).to_i + 1
-  end
 end

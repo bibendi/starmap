@@ -1,0 +1,100 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.teams.index_title") %></h1>
+      <div class="flex gap-2">
+        <%= link_to t("admin.teams.new"), new_admin_team_path, class: "btn btn--primary" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <%= form_tag admin_teams_path, method: :get, class: "mb-6" do %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="field field--inline">
+            <%= label_tag :active, t("admin.teams.filter_by_status"), class: "label" %>
+            <%= select_tag :active,
+                options_for_select([
+                  [t("admin.teams.all_statuses"), ""],
+                  [t("admin.teams.active"), "true"],
+                  [t("admin.teams.inactive"), "false"]
+                ], params[:active]),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline">
+            <%= label_tag :unit_id, t("admin.teams.filter_by_unit"), class: "label" %>
+            <%= select_tag :unit_id,
+                options_for_select(
+                  [[t("admin.teams.all_units"), ""]] + Unit.order(:name).map { |u| [u.name, u.id] },
+                  params[:unit_id]
+                ),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline flex-1">
+            <%= label_tag :name, t("admin.teams.filter_by_name"), class: "label" %>
+            <%= text_field_tag :name, params[:name], class: "input", placeholder: t("admin.teams.search_placeholder") %>
+          </div>
+
+          <%= submit_tag t("admin.teams.search"), class: "btn btn--secondary" %>
+          <%= link_to t("admin.teams.clear"), admin_teams_path, class: "btn btn--ghost" if params[:active].present? || params[:name].present? || params[:unit_id].present? %>
+        </div>
+      <% end %>
+
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="table__header-cell"><%= t("admin.teams.attributes.name") %></th>
+              <th class="table__header-cell"><%= t("admin.teams.attributes.unit") %></th>
+              <th class="table__header-cell"><%= t("admin.teams.attributes.team_lead") %></th>
+              <th class="table__header-cell"><%= t("admin.teams.attributes.members") %></th>
+              <th class="table__header-cell"><%= t("admin.teams.attributes.active") %></th>
+              <th class="table__header-cell"><%= t("admin.teams.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @teams.each do |team| %>
+              <tr>
+                <td class="table__cell">
+                  <%= link_to team.name, admin_team_path(team), class: "link" %>
+                </td>
+                <td class="table__cell">
+                  <%= team.unit_name %>
+                </td>
+                <td class="table__cell">
+                  <% if team.team_lead.present? %>
+                    <span class="badge badge--secondary"><%= team.team_lead.display_name_or_full_name %></span>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <%= team.member_count %>
+                </td>
+                <td class="table__cell">
+                  <% if team.active? %>
+                    <span class="badge badge--success"><%= t("admin.teams.active") %></span>
+                  <% else %>
+                    <span class="badge badge--danger"><%= t("admin.teams.inactive") %></span>
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <%= link_to t("admin.teams.edit"), edit_admin_team_path(team), class: "btn btn--small btn--secondary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= paginate @teams %>
+    </div>
+  </div>
+</main>

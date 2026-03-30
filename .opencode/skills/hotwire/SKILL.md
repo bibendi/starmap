@@ -12,7 +12,7 @@ Expert patterns for JavaScript and Hotwire integration with Ruby on Rails.
 1. Use latest versions based on Gemfile
 2. Follow Rails conventions and best practices
 3. Use Context7 MCP or hotwire.dev for documentation
-4. Test JavaScript with RSpec system specs (Capybara + Cuprite)
+4. Test JavaScript with Vitest (./test/controllers)
 5. Review existing Stimulus controllers before creating new ones
 
 ## Stimulus Controllers
@@ -109,25 +109,3 @@ pin "lodash", to: "https://ga.jspm.io/npm:lodash@4.17.21/lodash.js"
 ```
 
 If import maps aren't used, follow whatever asset pipeline the application uses.
-
-## Testing
-
-Test Hotwire features with RSpec system specs:
-
-```ruby
-RSpec.describe "Posts", type: :system do
-  before { driven_by(:cuprite) }
-
-  it "updates post inline with Turbo" do
-    post = posts(:published)
-    visit post_path(post)
-
-    click_link "Edit"
-    fill_in "Title", with: "Updated Title"
-    click_button "Save"
-
-    expect(page).to have_content("Updated Title")
-    expect(page).to have_current_path(post_path(post)) # No redirect
-  end
-end
-```

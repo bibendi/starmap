@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       end
     end
     resources :units
+    resources :teams
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
     resources :quarters do
       member do

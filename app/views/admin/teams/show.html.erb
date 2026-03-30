@@ -1,0 +1,71 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.teams.show") %></h1>
+      <div class="flex gap-2">
+        <%= link_to t("admin.teams.edit"), edit_admin_team_path(@team), class: "btn btn--primary" %>
+        <%= button_to t("admin.teams.destroy"), admin_team_path(@team), method: :delete, class: "btn btn--danger", data: {turbo_confirm: t("admin.teams.confirm_destroy")} %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <dl class="grid grid-cols-2 gap-4">
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.name") %></dt>
+          <dd class="value"><%= @team.name %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.unit") %></dt>
+          <dd class="value"><%= @team.unit_name %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.team_lead") %></dt>
+          <dd class="value">
+            <% if @team.team_lead.present? %>
+              <span class="badge badge--secondary"><%= @team.team_lead.display_name_or_full_name %></span>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.active") %></dt>
+          <dd class="value">
+            <% if @team.active? %>
+              <span class="badge badge--success"><%= t("admin.teams.active") %></span>
+            <% else %>
+              <span class="badge badge--danger"><%= t("admin.teams.inactive") %></span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.members") %></dt>
+          <dd class="value"><%= @team.member_count %></dd>
+        </div>
+
+        <div class="field col-span-2">
+          <dt class="label"><%= t("admin.teams.attributes.description") %></dt>
+          <dd class="value"><%= @team.description.presence || "-" %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.created_at") %></dt>
+          <dd class="value"><%= I18n.l(@team.created_at, format: :short) %></dd>
+        </div>
+
+        <div class="field">
+          <dt class="label"><%= t("admin.teams.attributes.updated_at") %></dt>
+          <dd class="value"><%= I18n.l(@team.updated_at, format: :short) %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</main>
