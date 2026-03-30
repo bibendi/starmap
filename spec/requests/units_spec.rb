@@ -44,10 +44,9 @@ RSpec.describe "Units", type: :request do
 
         before { sign_in inactive_unit_lead, scope: :user }
 
-        it "denies access" do
-          expect {
-            get unit_path(unit)
-          }.to raise_error(Pundit::NotAuthorizedError)
+        it "redirects to sign in" do
+          get unit_path(unit)
+          expect(response).to redirect_to(new_user_session_path)
         end
       end
 

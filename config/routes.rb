@@ -36,6 +36,7 @@ Rails.application.routes.draw do
         patch :reorder
       end
     end
+    resources :units
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
     resources :quarters do
       member do

@@ -6,6 +6,5 @@ FactoryBot.define do
     name { generate(:unit_name) }
     description { "Test unit description" }
     active { true }
-    sort_order { 0 }
   end
 end

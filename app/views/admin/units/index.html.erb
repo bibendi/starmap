@@ -1,0 +1,85 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.units.index_title") %></h1>
+      <div class="flex gap-2">
+        <%= link_to t("admin.units.new"), new_admin_unit_path, class: "btn btn--primary" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <%= form_tag admin_units_path, method: :get, class: "mb-6" do %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="field field--inline">
+            <%= label_tag :active, t("admin.units.filter_by_status"), class: "label" %>
+            <%= select_tag :active,
+                options_for_select([
+                  [t("admin.units.all_statuses"), ""],
+                  [t("admin.units.active"), "true"],
+                  [t("admin.units.inactive"), "false"]
+                ], params[:active]),
+                class: "input",
+                onchange: "this.form.submit()" %>
+          </div>
+
+          <div class="field field--inline flex-1">
+            <%= label_tag :name, t("admin.units.filter_by_name"), class: "label" %>
+            <%= text_field_tag :name, params[:name], class: "input", placeholder: t("admin.units.search_placeholder") %>
+          </div>
+
+          <%= submit_tag t("admin.units.search"), class: "btn btn--secondary" %>
+          <%= link_to t("admin.units.clear"), admin_units_path, class: "btn btn--ghost" if params[:active].present? || params[:name].present? %>
+        </div>
+      <% end %>
+
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="table__header-cell"><%= t("admin.units.attributes.name") %></th>
+              <th class="table__header-cell"><%= t("admin.units.attributes.description") %></th>
+              <th class="table__header-cell"><%= t("admin.units.attributes.unit_lead") %></th>
+              <th class="table__header-cell"><%= t("admin.units.attributes.active") %></th>
+              <th class="table__header-cell"><%= t("admin.units.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @units.each do |unit| %>
+              <tr>
+                <td class="table__cell">
+                  <%= link_to unit.name, admin_unit_path(unit), class: "link" %>
+                </td>
+                <td class="table__cell">
+                  <%= truncate(unit.description, length: 50) if unit.description.present? %>
+                </td>
+                <td class="table__cell">
+                  <% if unit.unit_lead.present? %>
+                    <span class="badge badge--secondary"><%= unit.unit_lead.display_name_or_full_name %></span>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <% if unit.active? %>
+                    <span class="badge badge--success"><%= t("admin.units.active") %></span>
+                  <% else %>
+                    <span class="badge badge--danger"><%= t("admin.units.inactive") %></span>
+                  <% end %>
+                </td>
+                <td class="table__cell">
+                  <%= link_to t("admin.units.edit"), edit_admin_unit_path(unit), class: "btn btn--small btn--secondary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= paginate @units %>
+    </div>
+  </div>
+</main>

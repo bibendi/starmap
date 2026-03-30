@@ -24,13 +24,14 @@ RSpec.describe "Navigation menu", type: :request do
     context "when user is unit_lead" do
       before do
         sign_in unit_lead, scope: :user
-        get admin_quarters_path
+        get root_path
       end
 
-      it "displays sidebar with admin navigation" do
-        expect(response.body).to include("sidebar")
-        expect(response.body).to include(I18n.t("admin.sidebar.sections.management"))
-        expect(response.body).to include(admin_quarters_path)
+      it "does not display admin sidebar" do
+        expect(response.body).not_to include(admin_quarters_path)
+        expect(response.body).not_to include(admin_technologies_path)
+        expect(response.body).not_to include(admin_units_path)
+        expect(response.body).not_to include(admin_users_path)
       end
     end
 
@@ -41,16 +42,20 @@ RSpec.describe "Navigation menu", type: :request do
       end
 
       it "does not display admin sidebar" do
-        expect(response.body).not_to include("sidebar__section-title")
         expect(response.body).not_to include(admin_quarters_path)
+        expect(response.body).not_to include(admin_technologies_path)
+        expect(response.body).not_to include(admin_units_path)
+        expect(response.body).not_to include(admin_users_path)
       end
     end
 
     context "when user is not signed in" do
       it "does not display admin sidebar" do
         get new_user_session_path
-        expect(response.body).not_to include("sidebar__section-title")
         expect(response.body).not_to include(admin_quarters_path)
+        expect(response.body).not_to include(admin_technologies_path)
+        expect(response.body).not_to include(admin_units_path)
+        expect(response.body).not_to include(admin_users_path)
       end
     end
   end
