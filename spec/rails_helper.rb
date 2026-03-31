@@ -79,6 +79,7 @@ RSpec.configure do |config|
 
   # ViewComponent test configuration
   config.include ViewComponent::TestHelpers, type: :component
+  config.include Capybara::RSpecMatchers, type: :component
 
   # Devise test helpers
   config.include Devise::Test::ControllerHelpers, type: :controller

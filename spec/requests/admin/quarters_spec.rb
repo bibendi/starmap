@@ -235,13 +235,13 @@ RSpec.describe "Admin::Quarters", type: :request do
         expect {
           post admin_quarters_path, params: valid_params
         }.not_to change(Quarter, :count)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "renders form with errors when quarter_number is invalid" do
         invalid_params = {quarter: {year: valid_params[:quarter][:year], quarter_number: 5}}
         post admin_quarters_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("quarter_number")
       end
 
@@ -255,7 +255,7 @@ RSpec.describe "Admin::Quarters", type: :request do
           }
         }
         post admin_quarters_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -420,7 +420,7 @@ RSpec.describe "Admin::Quarters", type: :request do
       it "renders form with errors when invalid" do
         invalid_params = {quarter: {end_date: draft_quarter.start_date - 1.day}}
         put admin_quarter_path(draft_quarter), params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("error")
       end
 

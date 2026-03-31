@@ -10,6 +10,16 @@ FactoryBot.define do
     active { true }
     sort_order { 1 }
 
+    transient do
+      category_name { nil }
+    end
+
+    after(:build) do |technology, evaluator|
+      if evaluator.category_name
+        technology.category = Category.find_or_create_by!(name: evaluator.category_name)
+      end
+    end
+
     trait :high_criticality do
       criticality { "high" }
       target_experts { 3 }

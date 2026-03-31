@@ -303,13 +303,13 @@ RSpec.describe "Admin::Users", type: :request do
         expect {
           post admin_users_path, params: valid_params
         }.not_to change(User, :count)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "requires password" do
         invalid_params = {user: valid_params[:user].merge(password: "", password_confirmation: "")}
         post admin_users_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -418,7 +418,7 @@ RSpec.describe "Admin::Users", type: :request do
           }
         }
         post admin_users_path, params: new_lead_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include(I18n.t("activerecord.errors.messages.team_already_has_lead"))
       end
     end
@@ -432,7 +432,7 @@ RSpec.describe "Admin::Users", type: :request do
 
         patch admin_user_path(engineer), params: {user: {role: "team_lead"}}
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include(I18n.t("activerecord.errors.messages.team_already_has_lead"))
         expect(existing_lead.reload.team_lead?).to be true
       end
@@ -449,7 +449,7 @@ RSpec.describe "Admin::Users", type: :request do
 
         lead.reload
         expect(lead.team_id).to eq(other_team.id)
-        expect(response).not_to have_http_status(:unprocessable_entity)
+        expect(response).not_to have_http_status(:unprocessable_content)
       end
     end
   end

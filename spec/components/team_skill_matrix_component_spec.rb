@@ -9,9 +9,9 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
   let_it_be(:team) { create(:team) }
   let_it_be(:user1) { create(:user, team: team) }
   let_it_be(:user2) { create(:user, team: team) }
-  let_it_be(:technology1) { create(:technology, name: "Ruby", category: "Backend") }
-  let_it_be(:technology2) { create(:technology, name: "React", category: "Frontend") }
-  let_it_be(:technology3) { create(:technology, name: "PostgreSQL", category: "Database") }
+  let_it_be(:technology1) { create(:technology, name: "Ruby", category_name: "Backend") }
+  let_it_be(:technology2) { create(:technology, name: "React", category_name: "Frontend") }
+  let_it_be(:technology3) { create(:technology, name: "PostgreSQL", category_name: "Database") }
 
   before do
     create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: :high)

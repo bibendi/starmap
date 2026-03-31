@@ -182,7 +182,7 @@ RSpec.describe "Admin::Technologies", type: :request do
         expect {
           post admin_technologies_path, params: valid_params
         }.not_to change(Technology, :count)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -370,7 +370,7 @@ RSpec.describe "Admin::Technologies", type: :request do
 
       it "returns unprocessable when ids missing" do
         patch reorder_admin_technologies_path, params: {}
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
