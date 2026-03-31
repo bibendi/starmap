@@ -20,11 +20,13 @@ module Admin
     def new
       authorize [:admin, Team]
       @team = Team.new
+      @team.unit = current_user.unit if current_user.unit_lead?
     end
 
     def create
       authorize [:admin, Team]
-      @team = Team.new(team_params)
+      @team = Team.new(permitted_attributes([:admin, Team]))
+      @team.unit = current_user.unit if current_user.unit_lead?
 
       if @team.save
         redirect_to admin_team_path(@team), notice: t("admin.teams.created")
@@ -40,7 +42,7 @@ module Admin
     def update
       authorize [:admin, @team]
 
-      if @team.update(team_params)
+      if @team.update(permitted_attributes([:admin, @team]))
         redirect_to admin_team_path(@team), notice: t("admin.teams.updated")
       else
         render :edit, status: :unprocessable_content
@@ -61,10 +63,6 @@ module Admin
 
     def set_team
       @team = Team.find(params[:id])
-    end
-
-    def team_params
-      params.require(:team).permit(:name, :description, :active, :unit_id, :team_lead_id)
     end
 
     def filter_by_active(scope)

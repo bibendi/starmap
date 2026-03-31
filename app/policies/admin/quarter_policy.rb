@@ -1,11 +1,11 @@
 # Policy for admin quarters management
 class Admin::QuarterPolicy < Admin::BasePolicy
   def index?
-    can_manage?
+    can_manage? || unit_lead?
   end
 
   def show?
-    can_manage?
+    can_manage? || unit_lead?
   end
 
   def new?
@@ -42,8 +42,12 @@ class Admin::QuarterPolicy < Admin::BasePolicy
 
   class Scope < Admin::BasePolicy::Scope
     def resolve
-      return scope.none unless can_manage?
+      return scope.none unless can_manage? || unit_lead?
       scope.all
+    end
+
+    def unit_lead?
+      user&.unit_lead?
     end
   end
 end

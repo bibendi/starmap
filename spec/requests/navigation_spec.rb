@@ -27,8 +27,8 @@ RSpec.describe "Navigation menu", type: :request do
         get root_path
       end
 
-      it "does not display admin sidebar" do
-        expect(response.body).not_to include(admin_quarters_path)
+      it "displays admin link in navigation" do
+        expect(response.body).to include(admin_quarters_path)
         expect(response.body).not_to include(admin_technologies_path)
         expect(response.body).not_to include(admin_units_path)
         expect(response.body).not_to include(admin_users_path)

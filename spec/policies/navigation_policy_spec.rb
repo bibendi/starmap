@@ -54,8 +54,8 @@ RSpec.describe NavigationPolicy, type: :policy do
     end
 
     permissions :show_admin? do
-      it "denies access" do
-        expect(subject).not_to permit(user, nil)
+      it "grants access" do
+        expect(subject).to permit(user, nil)
       end
     end
   end

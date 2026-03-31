@@ -28,9 +28,10 @@
 
           <div class="field field--inline">
             <%= label_tag :unit_id, t("admin.teams.filter_by_unit"), class: "label" %>
+            <% unit_filter_collection = current_user.unit_lead? ? [current_user.unit] : Unit.order(:name) %>
             <%= select_tag :unit_id,
                 options_for_select(
-                  [[t("admin.teams.all_units"), ""]] + Unit.order(:name).map { |u| [u.name, u.id] },
+                  [[t("admin.teams.all_units"), ""]] + unit_filter_collection.map { |u| [u.name, u.id] },
                   params[:unit_id]
                 ),
                 class: "input",

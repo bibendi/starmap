@@ -5,7 +5,7 @@ class NavigationPolicy < ApplicationPolicy
   end
 
   def show_admin?
-    active_user? && admin?
+    active_user? && (admin? || unit_lead?)
   end
 
   def show_personal_dashboard?

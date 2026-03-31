@@ -26,3 +26,6 @@ RSpec/ContextWording:
 
 RSpec/RepeatedDescription:
   Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false

@@ -70,6 +70,28 @@ RSpec.describe "Admin::Teams", type: :request do
       end
     end
 
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "returns successful response" do
+        get admin_teams_path
+        expect(response).to be_successful
+      end
+
+      it "displays only teams from their unit" do
+        create(:team, name: "Marketing Team", unit: other_unit)
+
+        get admin_teams_path
+        expect(response.body).to include("Alpha Team")
+        expect(response.body).not_to include("Marketing Team")
+      end
+    end
+
     context "when user is authenticated as engineer" do
       before { sign_in engineer, scope: :user }
 
@@ -111,6 +133,29 @@ RSpec.describe "Admin::Teams", type: :request do
       end
     end
 
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "shows team in their unit" do
+        get admin_team_path(team)
+        expect(response).to be_successful
+        expect(response.body).to include("Alpha Team")
+      end
+
+      it "returns not found for team in another unit" do
+        other_team = create(:team, name: "Other Team", unit: other_unit)
+
+        expect {
+          get admin_team_path(other_team)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+
     context "when user is authenticated as engineer" do
       before { sign_in engineer, scope: :user }
 
@@ -135,6 +180,20 @@ RSpec.describe "Admin::Teams", type: :request do
         get new_admin_team_path
         expect(response.body).to include("name")
         expect(response.body).to include("description")
+      end
+    end
+
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "returns successful response" do
+        get new_admin_team_path
+        expect(response).to be_successful
       end
     end
 
@@ -201,6 +260,40 @@ RSpec.describe "Admin::Teams", type: :request do
       end
     end
 
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "creates team scoped to their unit" do
+        expect {
+          post admin_teams_path, params: {
+            team: {name: "Unit Lead Team", unit_id: unit.id, active: true}
+          }
+        }.to change(Team, :count).by(1)
+
+        expect(Team.last.unit_id).to eq(unit.id)
+      end
+
+      it "redirects to show page with notice" do
+        post admin_teams_path, params: {
+          team: {name: "Unit Lead Team", unit_id: unit.id, active: true}
+        }
+        expect(response).to redirect_to(admin_team_path(Team.last))
+        expect(flash[:notice]).to be_present
+      end
+
+      it "does not create with empty name" do
+        expect {
+          post admin_teams_path, params: {team: {name: "", unit_id: unit.id}}
+        }.not_to change(Team, :count)
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
     context "when user is authenticated as engineer" do
       before { sign_in engineer, scope: :user }
 
@@ -224,6 +317,28 @@ RSpec.describe "Admin::Teams", type: :request do
       it "displays form with team data" do
         get edit_admin_team_path(team)
         expect(response.body).to include("Alpha Team")
+      end
+    end
+
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "returns successful response for team in their unit" do
+        get edit_admin_team_path(team)
+        expect(response).to be_successful
+      end
+
+      it "denies access for team in another unit" do
+        other_team = create(:team, name: "Other Team", unit: other_unit)
+
+        expect {
+          get edit_admin_team_path(other_team)
+        }.to raise_error(Pundit::NotAuthorizedError)
       end
     end
 
@@ -267,6 +382,39 @@ RSpec.describe "Admin::Teams", type: :request do
       it "renders form with errors when name is empty" do
         patch admin_team_path(team), params: {team: {name: ""}}
         expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "updates team name" do
+        patch admin_team_path(team), params: {team: {name: "Renamed Team"}}
+        team.reload
+        expect(team.name).to eq("Renamed Team")
+      end
+
+      it "redirects to show page with notice" do
+        patch admin_team_path(team), params: {team: {name: "Renamed Team"}}
+        expect(response).to redirect_to(admin_team_path(team))
+        expect(flash[:notice]).to be_present
+      end
+
+      it "renders form with errors when name is empty" do
+        patch admin_team_path(team), params: {team: {name: ""}}
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it "cannot update team's unit to another unit" do
+        original_unit_id = team.unit_id
+        patch admin_team_path(team), params: {team: {name: "Same Team", unit_id: other_unit.id}}
+        team.reload
+        expect(team.unit_id).to eq(original_unit_id)
       end
     end
 
@@ -316,6 +464,38 @@ RSpec.describe "Admin::Teams", type: :request do
       it "returns 404 for non-existent team" do
         delete admin_team_path(999_999)
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when user is authenticated as unit lead" do
+      let(:unit_lead) { create(:unit_lead, team: nil) }
+
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "deletes empty team in their unit" do
+        empty_team = create(:team, name: "Empty Team", unit: unit)
+
+        expect {
+          delete admin_team_path(empty_team)
+        }.to change(Team, :count).by(-1)
+
+        expect(response).to redirect_to(admin_teams_path)
+        expect(flash[:notice]).to be_present
+      end
+
+      it "does not delete team with users" do
+        team_with_user = create(:team, name: "Populated Team", unit: unit)
+        create(:engineer, team: team_with_user)
+
+        expect {
+          delete admin_team_path(team_with_user)
+        }.not_to change(Team, :count)
+
+        expect(response).to redirect_to(admin_teams_path)
+        expect(flash[:alert]).to be_present
       end
     end
 

@@ -30,7 +30,11 @@
     <div>
       <%= form.label :unit_id, t("admin.teams.attributes.unit"), class: "form-label" %>
       <div class="form-field">
-        <%= form.collection_select :unit_id, Unit.order(:name), :id, :name, {}, class: "form-input", required: true %>
+        <% if current_user.unit_lead? %>
+          <%= form.collection_select :unit_id, [current_user.unit], :id, :name, {}, class: "form-input", required: true, disabled: true %>
+        <% else %>
+          <%= form.collection_select :unit_id, Unit.order(:name), :id, :name, {}, class: "form-input", required: true %>
+        <% end %>
       </div>
     </div>
   </div>
@@ -46,7 +50,12 @@
     <div>
       <%= form.label :team_lead_id, t("admin.teams.attributes.team_lead"), class: "form-label" %>
       <div class="form-field">
-        <%= form.collection_select :team_lead_id, User.order(:first_name, :last_name), :id, :display_name_or_full_name, {include_blank: true}, class: "form-input" %>
+        <% team_lead_collection = if current_user.unit_lead?
+          User.joins(:team).where(teams: { unit_id: current_user.unit.id }).order(:first_name, :last_name)
+        else
+          User.order(:first_name, :last_name)
+        end %>
+        <%= form.collection_select :team_lead_id, team_lead_collection, :id, :display_name_or_full_name, {include_blank: true}, class: "form-input" %>
       </div>
     </div>
 

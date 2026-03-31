@@ -2,7 +2,9 @@
   <div class="page-header__container">
     <div class="page-header__content">
       <h1 class="page-title"><%= t("admin.quarters.title") %></h1>
-      <%= link_to t("admin.quarters.new"), new_admin_quarter_path, class: "btn btn--primary" %>
+      <% if policy([:admin, Quarter]).new? %>
+        <%= link_to t("admin.quarters.new"), new_admin_quarter_path, class: "btn btn--primary" %>
+      <% end %>
     </div>
   </div>
 </div>

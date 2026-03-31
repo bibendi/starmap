@@ -365,3 +365,9 @@ import { get, post } from "@rails/request.js"
 - Component tests verify rendered output
 - Stimulus tests verify DOM interactions, not internal APIs
 - Factory-based test data, not fixtures
+
+## Active Technologies
+- Ruby 3.2+ + Rails 8.1.1, Pundit (authorization), ViewComponent (UI) (001-unit-lead-create-teams)
+
+## Recent Changes
+- 001-unit-lead-create-teams: Added Ruby 3.2+ + Rails 8.1.1, Pundit (authorization), ViewComponent (UI)
