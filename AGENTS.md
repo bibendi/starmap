@@ -1,55 +1,367 @@
-# AI-DLC and Spec-Driven Development
+# Starmap Product Overview
 
-Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life Cycle)
+Starmap is a corporate web application for managing technical team competencies, employee development, and reducing bus-factor risks. The system automates collection, validation, and analysis of engineering team competencies through quarterly cycles.
 
-## Project Context
+## Core Value Proposition
 
-### Paths
-- Steering: `.kiro/steering/`
-- Specs: `.kiro/specs/`
+- **Proactive Risk Management**: Identify knowledge silos and single points of failure before they become critical
+- **Objective Assessment**: Standardized 0-3 competency scale eliminates subjective evaluations
+- **Transparent Development**: Clear growth paths with measurable progress by quarters
+- **Strategic Planning**: Data-driven decisions on hiring, training, and team composition
 
-### Steering vs Specification
+## User Roles & Responsibilities
 
-**Steering** (`.kiro/steering/`) - Guide AI with project-wide rules and context
-**Specs** (`.kiro/specs/`) - Formalize development process for individual features
+### Engineer
+- **Tasks**: Self-assessment of competencies in active quarters, initiating Action Plans
+- **Tools**: Personal dashboard, self-assessment forms, rating history, development plans
+- **Contributions**: Provides data for Coverage Index and Key Person Risk metrics
+- **Focus**: Personal progress, career navigation, motivation
 
-### Active Specifications
-- Check `.kiro/specs/` for active specifications
-- Use `/kiro-spec-status [feature-name]` to check progress
+### Team Lead
+- **Tasks**: Approve and adjust ratings, team development planning, mentorship
+- **Tools**: Team dashboard with skill matrices, approval interface, Action Plan builder
+- **Contributions**: Reduces Key Person Risk, improves Coverage/Maturity Index
+- **Focus**: Team development, skill balance, bus-factor reduction
 
-## Design System & UI Conventions
+### Unit Lead
+- **Tasks**: Unit metrics overview, redistribution expertise decisions, training investments
+- **Tools**: Overview dashboard, risk reports, quarterly dynamics analysis
+- **Contributions**: Controls Coverage Index, reduces Red Zones, strategic development
+- **Focus**: Unit-level strategy, critical technology alignment
 
-See full style guide: `docs/STYLEGUIDE.md`
+### Admin / HR
+- **Tasks**: Maintain technology catalog and criticality, user role management, quarter cycle control
+- **Tools**: Admin panel, Solid Queue settings, audit via Audited gem
+- **Contributions**: Data integrity, timely quarter/background processes
+- **Focus**: Process improvement, security and access management
 
-When implementing views, follow the project's component-based CSS system. Check existing views in `app/views/` for reference before creating new ones.
+## Core Capabilities
 
-## Development Guidelines
-- Think in English, generate responses in Russian. All Markdown content written to project files (e.g., requirements.md, design.md, tasks.md, research.md, validation reports) MUST be written in the target language configured for this specification (see spec.json.language).
+**Competency Management System**
+- 0-3 rating scale with clear level descriptions
+- Self-assessment → Team Lead approval workflow
+- Historical tracking of competency development by quarters
+- Role-based validation and Quarter state constraints
 
-## Minimal Workflow
-- Phase 0 (optional): `/kiro-steering`, `/kiro-steering-custom`
-- Phase 1 (Specification):
-  - `/kiro-spec-init "description"`
-  - `/kiro-spec-requirements {feature}`
-  - `/kiro-validate-gap {feature}` (optional: for existing codebase)
-  - `/kiro-spec-design {feature} [-y]`
-  - `/kiro-validate-design {feature}` (optional: design review)
-  - `/kiro-spec-tasks {feature} [-y]`
-- Phase 2 (Implementation): `/kiro-spec-impl {feature} [tasks]`
-  - `/kiro-validate-impl {feature}` (optional: after implementation)
-- Progress check: `/kiro-spec-status {feature}` (use anytime)
+**Quarterly Cycles**
+- Automated creation of new cycles with copying of previous ratings
+- Status workflow: draft → active → closed → archived
+- Editing restrictions based on quarter state ensure data integrity
 
-## Development Rules
-- 3-phase approval workflow: Requirements → Design → Tasks → Implementation
-- Human review required each phase; use `-y` only for intentional fast-track
-- Keep steering current and verify alignment with `/kiro-spec-status`
-- Follow the user's instructions precisely, and within that scope act autonomously: gather the necessary context and complete the requested work end-to-end in this run, asking questions only when essential information is missing or the instructions are critically ambiguous.
+**Analytics Dashboards**
+- **Overview Dashboard**: Unit-level metrics and risks for leadership
+- **Team Dashboard**: Detailed competency matrices and dynamics
+- **Personal Dashboard**: Individual progress and development tracking
 
-## File Operations
-- **ALWAYS use relative paths** when accessing project files (e.g., `app/models/user.rb`, not `/{absolute/path/to/project/app}/models/user.rb`)
-- This ensures portability and consistency across different environments
+**Development Planning (Action Plans)**
+- Created based on identified competency gaps
+- Progress tracking: active → completed/paused
+- Linked to target quarters, technologies, and users
 
-## Steering Configuration
-- Load entire `.kiro/steering/` as project memory
-- Default files: `product.md`, `tech.md`, `structure.md`
-- Custom files are supported (managed via `/kiro-steering-custom`)
+## Business Metrics
+
+### Coverage Index
+Percentage of technologies with ≥2 experts (rating 2-3). Goal: >80% for stable team.
+
+### Maturity Index
+Average competency level across all technologies (0.0 - 3.0). Goal: >2.0 for mature team.
+
+### Red Zones
+Critical technologies (high criticality) with insufficient coverage (<2 experts).
+
+### Key Person Risk
+Technologies where a single employee is the only expert.
+
+### Action Plan Progress
+Status tracking of development plans linked to quarters and technologies.
+
+## Role Interactions
+
+1. **Data Collection**: Engineer updates self-ratings → Team Lead validates and approves → data flows to metrics
+2. **Quarterly Cycle**: Admin/Unit Lead launches new quarter, copies past ratings, notifications sent
+3. **Analytics**: Unit Lead tracks Coverage/Maturity/Red Zones, Team Lead monitors team competencies, Engineer tracks personal progress
+4. **Risk Management**: Metrics signal gaps; Team Lead and Unit Lead plan expertise exchange
+5. **Development**: Action Plans link development goals to quarters, technologies, and employees
+
+## Key Principles
+
+- **Transparency**: Each role sees detail level matching their responsibility (Pundit authorization)
+- **Stability**: Focus on even expertise distribution and bus-factor reduction
+- **Intentional Development**: Goals captured in Action Plans, progress tracked quarterly
+
+---
+
+# Technology Stack
+
+## Architecture Overview
+
+**Monolithic Rails Application** with domain-driven organization. Five-layer architecture:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Presentation (Hotwire: Turbo + Stimulus + ViewComponent)    │
+├─────────────────────────────────────────────────────────────┤
+│ Controllers (Rails MVC)                                     │
+├─────────────────────────────────────────────────────────────┤
+│ Models (ActiveRecord with business logic)                   │
+├─────────────────────────────────────────────────────────────┤
+│ Background Jobs (Solid Queue)                               │
+├─────────────────────────────────────────────────────────────┤
+│ Data Layer (PostgreSQL)                                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Core Stack
+
+- **Language**: Ruby 3.2+
+- **Framework**: Ruby on Rails 8.1.1
+- **Web Server**: Puma
+- **Frontend**: Hotwire (Turbo + Stimulus) - server-rendered HTML, minimal JavaScript
+- **Database**: PostgreSQL 15+
+- **Localization**: I18n (en, ru), Europe/Moscow timezone
+- **Logging**: Structured logging for debugging and monitoring
+
+## Key Libraries
+
+### Authentication & Authorization
+- **Devise**: Authentication with database strategy, devise-i18n for localization
+- **Pundit**: Role-based and record-level authorization (Engineer, Team Lead, Unit Lead, Admin)
+
+### Data & Background Processing
+- **Solid Queue**: Native Rails 8 background job processing (no Redis required)
+- **Solid Cache**: Native Rails 8 caching
+- **Audited**: Change tracking for audit trails
+
+### UI & Components
+- **ViewComponent 4.2.0**: Reusable, testable UI components
+- **Vite Rails**: Asset management
+- **Kaminari**: Pagination
+- **Component CSS System**: Custom CSS instead of inline Tailwind classes
+- **Dark Mode**: All components must support dark mode
+- **Style Guide**: Follow docs/STYLEGUIDE.md for template development
+
+### Development & Quality
+- **Brakeman**: Security analysis
+- **Annotate**: Model documentation
+- **RuboCop**: Ruby codestyle enforcement
+- **Letter Opener**: Development email viewing
+- **debug gem**: Structured debugging
+
+### Testing
+- **RSpec**: BDD testing framework
+- **FactoryBot**: Test data factories (not fixtures)
+- **Shoulda Matchers**: Rails-specific matchers
+- **test-prof**: Test profiling and optimization
+- **n_plus_one_control**: N+1 query testing with tagged tests
+
+### Infrastructure
+- **Docker + Docker Compose**: Multi-stage container builds
+- **Puma**: Web server
+- **PostgreSQL 15+**: Database
+
+### JavaScript Testing
+- **Vitest + JSDOM**: Stimulus controller testing
+- **@rails/request.js**: AJAX requests
+- **@hotwired/stimulus**: Controller framework
+
+## Data Model
+
+### Core Entities
+
+**User**: Accounts with roles (engineer, team_lead, unit_lead, admin), team associations
+**Team**: User groups with Team Lead management
+**Technology**: Technologies with category, criticality level, target expert count
+**Quarter**: Quarterly cycles with status (draft → active → closed → archived)
+**SkillRating**: Competency ratings (0-3), approval status, quarter linkage
+**ActionPlan**: Development plans linking users, technologies, and target quarters
+
+### Business Logic Patterns
+
+**Quarter State Machine**: All ratings tied to Quarter status. Editing restricted by state.
+
+**Authorization Pattern**: Pundit policies enforce role-based access. Controllers check policies before actions.
+
+**Background Processing**: Metric recalculation (Coverage Index, Maturity Index, Red Zones, Key Person Risk) via Solid Queue jobs after rating changes.
+
+**Caching**: Metric results cached in Solid Cache for dashboard performance.
+
+## Development Standards
+
+### Ruby Conventions
+- Standard Ruby codestyle with RuboCop
+- POODR (Practical Object Oriented Design in Ruby) principles
+- Small methods (< 5 lines ideal), meaningful names
+- Single responsibility per class/method
+- Dependency injection over hard-coded dependencies
+
+### Testing Philosophy
+
+**Ruby (RSpec)**:
+- Factory-based test data (not fixtures)
+- N+1 testing with `n_plus_one_control` gem:
+  - Tag tests with `:n_plus_one`
+  - Use `populate` blocks to create data at different scales
+  - Example: `bundle exec rspec spec/components/team_member_metrics_component_spec.rb:115 --tag n_plus_one`
+- Debugging workflow:
+  - Single failure: Use `puts foo.inspect` then run specific test
+  - Multiple similar failures: Fix one test first, then run others
+  - SQL debugging: `LOG=all bundle exec rspec ...`
+  - Slow tests or large output: redirect output to temporary file and navigate along it
+
+**JavaScript (Vitest + JSDOM)**:
+- Minimalist approach: create DOM structure, register controllers, test behavior via DOM interaction
+- Test location: `test/controllers/` directory
+- Testing helpers in `test/helpers/`:
+  - `stimulus.js`: `renderController()`, `waitForStimulus()` for controller initialization
+  - `testing-library.js`: `getByTestId()`, `userEvent()` for data-testid based testing
+  - `fetch.js`: `mockFetch()`, `createCSRFToken()` for HTTP mocking and CSRF
+- Testing principles:
+  - Test behavior, not implementation
+  - Use `data-testid` for stable element selection (stable API)
+  - Verify visibility/state of elements, not internal details
+
+### Debugging
+
+**Ruby**:
+- **debug gem**: Structured debugging with breakpoints
+- **Structured logging**: For production monitoring and development traceability
+- **Letter Opener**: View development emails in browser
+- **SQL logging**: Set `LOG=all` environment variable for query analysis
+
+**Testing**:
+- Fix one failing test before addressing batch failures with similar errors
+- Use `puts foo.inspect` for quick variable inspection in specs
+
+### Security
+- CSRF protection, XSS prevention, SQL injection protection
+- Secure headers, sensitive data filtering in logs
+- Pundit authorization on all controller actions
+- Audit trail via Audited gem
+
+## Common Commands
+
+```bash
+# Development
+bin/dev
+
+# Database
+bin/rails db:migrate
+bin/rails db:seed
+bin/rails db:seed:replant
+
+# Testing Ruby
+bundle exec rspec
+LOG=all bundle exec rspec  # with SQL logging
+bundle exec rspec --tag n_plus_one
+
+# Testing JavaScript
+npm test
+npm run test:watch
+npm run test:coverage
+
+# Security
+bundle exec brakeman
+```
+
+## Key Technical Decisions
+
+**Hotwire over SPA**: Server-rendered HTML with Turbo Frames/Streams reduces JavaScript complexity while providing modern UX.
+
+**ViewComponent Pattern**: Reusable UI components for dashboard cards, metrics, forms. Testable with render_inline.
+
+**Solid Queue/Caching**: Native Rails 8 solutions eliminate external Redis dependency.
+
+**Role-based Authorization**: Four distinct roles with Pundit policies enforcing granular permissions.
+
+**Quarterly Data Model**: Immutable past quarters with draft/active states. Ratings editable only in non-archived quarters.
+
+---
+
+# Project Structure
+
+## Organization Philosophy
+
+**Standard Rails MVC** with domain-driven organization. Core entities (User, Team, Technology, Quarter) drive folder structure. Features organized by domain concern rather than technical layer.
+
+## Directory Patterns
+
+### Models (`app/models/`)
+**Location**: `app/models/`
+**Purpose**: Domain entities with business logic, validations, and associations
+**Example**: `User` (roles: engineer, team_lead, unit_lead, admin), `SkillRating` (0-3 scale with approval workflow)
+
+### Controllers (`app/controllers/`)
+**Location**: `app/controllers/`
+**Purpose**: HTTP request handling, parameter filtering, policy enforcement
+**Example**: `SkillRatingsController` manages rating lifecycle, `TeamsController` for team management
+
+### Components (`app/components/`)
+**Location**: `app/components/`
+**Purpose**: Reusable UI components using ViewComponent gem
+**Example**: `CoverageIndexComponent`, `RedZonesCardComponent`, `TeamSkillMatrixComponent`
+
+### Policies (`app/policies/`)
+**Location**: `app/policies/`
+**Purpose**: Pundit authorization rules - role-based and record-level access
+**Example**: `SkillRatingPolicy` (edit own ratings in active quarters), `DashboardPolicy` (role-based dashboard access)
+
+### Jobs (`app/jobs/`)
+**Location**: `app/jobs/`
+**Purpose**: Solid Queue background job classes
+**Example**: Metric recalculation jobs after rating changes
+
+### JavaScript (`app/frontend/`)
+**Location**: `app/frontend/`
+**Purpose**: Stimulus controllers and Turbo integration
+**Example**: `app/frontend/controllers/` directory for Stimulus, minimal JavaScript philosophy
+
+### Tests (`spec/`, `test/`)
+**Location**: `spec/` for Ruby, `test/` for JavaScript
+**Purpose**: RSpec for Ruby (factories, models, components, system tests), Vitest for Stimulus controllers
+**Example**: Component specs with `render_inline`, Stimulus tests with JSDOM
+
+## Naming Conventions
+
+- **Models**: PascalCase (e.g., `SkillRating`, `ActionPlan`)
+- **Controllers**: snake_case with `_controller` suffix (e.g., `skill_ratings_controller.rb`)
+- **Components**: PascalCase with `Component` suffix (e.g., `RedZonesCardComponent`)
+- **Policies**: snake_case with `_policy` suffix matching model (e.g., `skill_rating_policy.rb`)
+- **Database Tables**: snake_case, plural (e.g., `skill_ratings`, `action_plans`)
+
+## Import Organization
+
+### Ruby
+```ruby
+# No custom path aliases - standard Rails autoloading
+# Standard library first
+require 'some_gem'
+
+# Then gems
+require 'devise'
+require 'pundit'
+
+# Application code autoloaded by Rails
+```
+
+### JavaScript
+```javascript
+// Stimulus controllers use standard import maps
+import { Controller } from "@hotwired/stimulus"
+import { get, post } from "@rails/request.js"
+```
+
+## Code Organization Principles
+
+**Single Responsibility**: Small methods (< 5 lines), focused classes. Each model/controller/component has one clear purpose.
+
+**Policy Enforcement**: All controller actions check Pundit policies. Policies encapsulate role logic (Engineer, Team Lead, Unit Lead, Admin).
+
+**Quarter State Machine**: All ratings tied to Quarter with statuses (draft → active → closed → archived). Business logic respects quarter state for edit permissions.
+
+**Component Reusability**: Dashboard cards and metrics as ViewComponents. Components accept data objects, render HTML, contain no business logic.
+
+**Testing Philosophy**:
+- Behavior testing over implementation details
+- Component tests verify rendered output
+- Stimulus tests verify DOM interactions, not internal APIs
+- Factory-based test data, not fixtures
