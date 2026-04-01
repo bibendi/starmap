@@ -33,6 +33,7 @@ class User < ApplicationRecord
   scope :unit_leads, -> { where(role: "unit_lead") }
   scope :admins, -> { where(role: "admin") }
   scope :by_team, ->(team_id) { where(team_id: team_id) }
+  scope :unassigned_engineers, -> { engineers.where(team_id: nil) }
 
   # Role checking methods
   def engineer?

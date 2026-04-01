@@ -138,6 +138,9 @@ en:
         unit: "Unit"
         team_lead: "Team Lead"
         members: "Members"
+        add_member: "Add member"
+        remove_member: "Remove"
+        no_available_members: "No available engineers"
         active: "Active"
         created_at: "Created"
         updated_at: "Last Updated"
@@ -474,3 +477,4 @@ en:
       messages:
         too_long_evaluation_period: "Evaluation period must not exceed 30 days"
         team_already_has_lead: "Team already has a team lead"
+        team_lead_must_be_member: "must be a member of the team"

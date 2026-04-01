@@ -350,6 +350,40 @@ import { Controller } from "@hotwired/stimulus"
 import { get, post } from "@rails/request.js"
 ```
 
+## Critical Patterns
+
+### Stimulus Controller Registration
+Creating a file in `app/frontend/controllers/` is NOT enough. Every new controller MUST be manually imported AND registered in `app/frontend/entrypoints/application.js`:
+```javascript
+import TeamMembersController from "../controllers/team_members_controller"
+application.register("team-members", TeamMembersController)
+```
+Use kebab-case for the controller name in `register()` and `data-controller="..."`.
+
+### Stimulus Optional Targets
+`static targets` declares REQUIRED targets — if missing from DOM, Stimulus throws "Missing target element" on connect. For optional targets, use a getter with `querySelector` instead:
+```javascript
+get addSelectElement() {
+  return this.element.querySelector('[data-my-controller-target="addSelect"]')
+}
+```
+
+### Rails Empty Array Params
+When all hidden inputs with `name="model[field][]"` are removed from the DOM, the param is completely absent from `params`. To ensure Rails always parses it as an array, include a marker hidden input with empty value:
+```erb
+<%= hidden_field_tag "model[field][]", "", id: nil %>
+```
+Controller then uses `.reject(&:blank?)` to get an empty array.
+
+### Transactional Controller Actions
+When a controller action performs multiple data mutations (e.g., sync associations + update attributes), they MUST be wrapped in a single `ActiveRecord::Base.transaction`. Without it, partial updates can persist when a later validation fails. Operations that change DB state required by validations MUST run first:
+```ruby
+Model.transaction do
+  model.sync_associations!(ids)   # changes DB state needed by validation
+  model.update!(attrs)             # validates against updated state
+end
+```
+
 ## Code Organization Principles
 
 **Single Responsibility**: Small methods (< 5 lines), focused classes. Each model/controller/component has one clear purpose.
@@ -368,6 +402,7 @@ import { get, post } from "@rails/request.js"
 
 ## Active Technologies
 - Ruby 3.2+ + Rails 8.1.1, Pundit (authorization), ViewComponent (UI) (001-unit-lead-create-teams)
+- Ruby 3.2+ / Rails 8.1.1 + Pundit (authorization), ViewComponent (UI), Stimulus (JS), Kaminari (pagination) (002-team-member-management)
 
 ## Recent Changes
 - 001-unit-lead-create-teams: Added Ruby 3.2+ + Rails 8.1.1, Pundit (authorization), ViewComponent (UI)

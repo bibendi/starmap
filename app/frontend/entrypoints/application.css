@@ -205,6 +205,23 @@
     @apply flex w-full justify-center;
   }
 
+  /* === Member list === */
+  .member-list {
+    @apply border border-gray-200 dark:border-gray-700 rounded-md divide-y divide-gray-200 dark:divide-gray-700;
+  }
+
+  .member-list__row {
+    @apply flex items-center justify-between px-3 py-2;
+  }
+
+  .member-list__name {
+    @apply text-sm text-gray-900 dark:text-gray-100;
+  }
+
+  .member-list__remove {
+    @apply flex-shrink-0 ml-3;
+  }
+
   /* === Content cards === */
   .card {
     @apply bg-white dark:bg-gray-800 shadow sm:rounded-lg border border-gray-200 dark:border-gray-700;

@@ -270,7 +270,6 @@ RSpec.describe "Admin::Users", type: :request do
           password: "Password123!",
           password_confirmation: "Password123!",
           role: "engineer",
-          team_id: team.id,
           active: true
         }
       }
@@ -403,8 +402,7 @@ RSpec.describe "Admin::Users", type: :request do
     context "when creating a new team_lead" do
       before { sign_in admin, scope: :user }
 
-      it "prevents creating second team_lead for same team" do
-        create(:team_lead, team: team)
+      it "creates team_lead without team assignment" do
         new_lead_params = {
           user: {
             first_name: "New",
@@ -413,13 +411,13 @@ RSpec.describe "Admin::Users", type: :request do
             password: "Password123!",
             password_confirmation: "Password123!",
             role: "team_lead",
-            team_id: team.id,
             active: true
           }
         }
         post admin_users_path, params: new_lead_params
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include(I18n.t("activerecord.errors.messages.team_already_has_lead"))
+        expect(response).to redirect_to(admin_users_path)
+        expect(User.last.team_lead?).to be true
+        expect(User.last.team_id).to be_nil
       end
     end
 
@@ -441,15 +439,16 @@ RSpec.describe "Admin::Users", type: :request do
     context "when changing team_lead to different team" do
       before { sign_in admin, scope: :user }
 
-      it "allows reassigning team_lead to empty team" do
+      it "prevents changing team via user form" do
         lead = create(:team_lead, team: team)
         other_team = create(:team)
 
         patch admin_user_path(lead), params: {user: {team_id: other_team.id}}
 
         lead.reload
-        expect(lead.team_id).to eq(other_team.id)
-        expect(response).not_to have_http_status(:unprocessable_content)
+        expect(lead.team_id).to eq(team.id)
+        expect(response).to redirect_to(admin_user_path(lead))
+        expect(flash[:notice]).to be_present
       end
     end
   end

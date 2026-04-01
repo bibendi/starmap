@@ -21,32 +21,42 @@ module Admin
       authorize [:admin, Team]
       @team = Team.new
       @team.unit = current_user.unit if current_user.unit_lead?
+      set_available_members
     end
 
     def create
       authorize [:admin, Team]
-      @team = Team.new(permitted_attributes([:admin, Team]))
+      attrs = permitted_attributes([:admin, Team])
+      member_ids = attrs.delete(:member_ids)
+      @team = Team.new(attrs)
       @team.unit = current_user.unit if current_user.unit_lead?
-
-      if @team.save
-        redirect_to admin_team_path(@team), notice: t("admin.teams.created")
-      else
-        render :new, status: :unprocessable_content
-      end
+      @team.save!
+      @team.sync_members!(member_ids) if member_ids
+      redirect_to admin_team_path(@team), notice: t("admin.teams.created")
+    rescue ActiveRecord::RecordInvalid
+      set_available_members
+      render :new, status: :unprocessable_content
     end
 
     def edit
       authorize [:admin, @team]
+      set_available_members
     end
 
     def update
       authorize [:admin, @team]
+      attrs = permitted_attributes([:admin, @team])
+      member_ids = attrs.delete(:member_ids)
 
-      if @team.update(permitted_attributes([:admin, @team]))
-        redirect_to admin_team_path(@team), notice: t("admin.teams.updated")
-      else
-        render :edit, status: :unprocessable_content
+      Team.transaction do
+        @team.sync_members!(member_ids.compact_blank) if member_ids
+        @team.update!(attrs)
       end
+
+      redirect_to admin_team_path(@team), notice: t("admin.teams.updated")
+    rescue ActiveRecord::RecordInvalid
+      set_available_members
+      render :edit, status: :unprocessable_content
     end
 
     def destroy
@@ -78,6 +88,10 @@ module Admin
     def filter_by_unit(scope)
       return scope if params[:unit_id].blank?
       scope.where(unit_id: params[:unit_id])
+    end
+
+    def set_available_members
+      @available_members = User.unassigned_engineers.order(:first_name, :last_name)
     end
   end
 end

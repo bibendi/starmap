@@ -60,7 +60,6 @@ module Admin
         :last_name,
         :position,
         :role,
-        :team_id,
         :active,
         :password,
         :password_confirmation

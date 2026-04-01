@@ -10,16 +10,18 @@ session.start()
 
 // Import Stimulus controllers
 import SortableController from '../controllers/sortable_controller.js'
+import TeamMembersController from '../controllers/team_members_controller.js'
 import ThemeController from '../controllers/theme_controller.js'
 import TreemapChartController from '../controllers/treemap_chart_controller.js'
 import VerticalPaginationController from '../controllers/vertical_pagination_controller.js'
 
 // Register Stimulus controllers
 const application = Application.start()
-application.register('theme', ThemeController)
-application.register('vertical-pagination', VerticalPaginationController)
-application.register('treemap-chart', TreemapChartController)
 application.register('sortable', SortableController)
+application.register('team-members', TeamMembersController)
+application.register('theme', ThemeController)
+application.register('treemap-chart', TreemapChartController)
+application.register('vertical-pagination', VerticalPaginationController)
 
 // Custom application JavaScript
 document.addEventListener('DOMContentLoaded', () => {

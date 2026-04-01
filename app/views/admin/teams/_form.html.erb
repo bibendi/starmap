@@ -1,4 +1,5 @@
-<%= form_with model: [:admin, @team], local: true, class: "form--vertical" do |form| %>
+<%= form_with model: [:admin, @team], local: true, class: "form--vertical",
+  data: { controller: "team-members", remove_text: t("admin.teams.attributes.remove_member") } do |form| %>
   <% if @team.errors.any? %>
     <div class="alert alert--error">
       <div class="alert__icon-container">
@@ -50,12 +51,7 @@
     <div>
       <%= form.label :team_lead_id, t("admin.teams.attributes.team_lead"), class: "form-label" %>
       <div class="form-field">
-        <% team_lead_collection = if current_user.unit_lead?
-          User.joins(:team).where(teams: { unit_id: current_user.unit.id }).order(:first_name, :last_name)
-        else
-          User.order(:first_name, :last_name)
-        end %>
-        <%= form.collection_select :team_lead_id, team_lead_collection, :id, :display_name_or_full_name, {include_blank: true}, class: "form-input" %>
+        <%= form.collection_select :team_lead_id, @team.users.order(:first_name, :last_name), :id, :display_name_or_full_name, {include_blank: true}, class: "form-input", data: { team_members_target: "teamLeadSelect" } %>
       </div>
     </div>
 
@@ -66,6 +62,38 @@
           [t("admin.teams.active"), true],
           [t("admin.teams.inactive"), false]
         ], @team.active), {}, class: "form-input" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <label class="form-label"><%= t("admin.teams.attributes.members") %></label>
+    <div class="form-field space-y-3">
+      <div data-team-members-target="memberList" class="member-list">
+        <% @team.users.order(:first_name, :last_name).each do |member| %>
+          <div data-member-id="<%= member.id %>" data-member-name="<%= member.display_name_or_full_name %>" data-member-row="<%= member.id %>" class="member-list__row">
+            <span class="member-list__name"><%= member.display_name_or_full_name %></span>
+            <button type="button" class="btn btn--small btn--secondary member-list__remove" data-action="click->team-members#remove">
+              <%= t("admin.teams.attributes.remove_member") %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="flex gap-3">
+        <% if @available_members.present? %>
+          <select data-team-members-target="addSelect" class="form-input flex-1">
+            <option value="">-- <%= t("admin.teams.attributes.add_member") %> --</option>
+            <% @available_members.each do |user| %>
+              <option value="<%= user.id %>"><%= user.display_name_or_full_name %></option>
+            <% end %>
+          </select>
+          <button type="button" class="btn btn--small btn--secondary" data-action="click->team-members#add">
+            <%= t("admin.teams.attributes.add_member") %>
+          </button>
+        <% else %>
+          <p class="text-sm text-gray-500 dark:text-gray-400"><%= t("admin.teams.attributes.no_available_members") %></p>
+        <% end %>
       </div>
     </div>
   </div>

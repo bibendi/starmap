@@ -44,7 +44,7 @@ class Admin::TeamPolicy < Admin::BasePolicy
   end
 
   def base_permitted_attributes
-    attrs = [:name, :description, :active, :team_lead_id]
+    attrs = [:name, :description, :active, :team_lead_id, {member_ids: []}]
     attrs << :unit_id if admin?
     attrs
   end

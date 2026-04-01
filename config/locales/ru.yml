@@ -109,6 +109,9 @@ ru:
         unit: "Отдел"
         team_lead: "Руководитель"
         members: "Участники"
+        add_member: "Добавить участника"
+        remove_member: "Удалить"
+        no_available_members: "Нет доступных инженеров"
         active: "Активна"
         created_at: "Создана"
         updated_at: "Обновлена"
@@ -456,3 +459,4 @@ ru:
       messages:
         too_long_evaluation_period: "период оценки не должен превышать 30 дней"
         team_already_has_lead: "В команде уже есть тимлид"
+        team_lead_must_be_member: "должен быть участником команды"

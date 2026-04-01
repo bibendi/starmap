@@ -5,9 +5,13 @@ RSpec.describe "Admin::Teams", type: :request do
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:unit) { create(:unit, name: "Engineering") }
   let_it_be(:other_unit) { create(:unit, name: "Marketing") }
-  let_it_be(:team_lead_user) { create(:team_lead) }
-  let_it_be(:team) { create(:team, name: "Alpha Team", unit: unit, team_lead: team_lead_user) }
+  let_it_be(:team) { create(:team, name: "Alpha Team", unit: unit) }
+  let_it_be(:team_lead_user) { create(:team_lead, team: team) }
   let_it_be(:inactive_team) { create(:team, name: "Legacy Team", unit: unit, active: false) }
+
+  before do
+    team.update!(team_lead: team_lead_user)
+  end
 
   describe "GET /admin/teams" do
     context "when user is not authenticated" do
@@ -253,10 +257,11 @@ RSpec.describe "Admin::Teams", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
       end
 
-      it "sets team lead" do
-        params = valid_params[:team].merge(team_lead_id: team_lead_user.id)
+      it "sets team lead when user is a member" do
+        member = create(:engineer)
+        params = valid_params[:team].merge(team_lead_id: member.id, member_ids: [member.id])
         post admin_teams_path, params: {team: params}
-        expect(Team.last.team_lead).to eq(team_lead_user)
+        expect(Team.last.team_lead).to eq(member)
       end
     end
 
@@ -381,6 +386,27 @@ RSpec.describe "Admin::Teams", type: :request do
 
       it "renders form with errors when name is empty" do
         patch admin_team_path(team), params: {team: {name: ""}}
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it "adds member and sets as team lead in single request" do
+        engineer = create(:engineer)
+        patch admin_team_path(team), params: {
+          team: {name: team.name, team_lead_id: engineer.id, member_ids: [engineer.id]}
+        }
+        team.reload
+        expect(team.team_lead).to eq(engineer)
+        expect(team.users).to include(engineer)
+        expect(response).to redirect_to(admin_team_path(team))
+      end
+
+      it "rolls back member changes when team attributes are invalid" do
+        engineer = create(:engineer)
+        expect {
+          patch admin_team_path(team), params: {
+            team: {name: "", team_lead_id: engineer.id, member_ids: [engineer.id]}
+          }
+        }.not_to change(engineer, :team_id)
         expect(response).to have_http_status(:unprocessable_content)
       end
     end
