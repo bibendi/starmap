@@ -37,7 +37,9 @@ Rails.application.routes.draw do
       end
     end
     resources :units
-    resources :teams
+    resources :teams do
+      resources :team_technologies, only: [:new, :create, :edit, :update, :destroy]
+    end
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
     resources :quarters do
       member do

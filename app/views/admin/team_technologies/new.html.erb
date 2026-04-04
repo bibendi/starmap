@@ -1,0 +1,47 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.team_technologies.new_title") %></h1>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <%= form_with model: [:admin, @team, @team_technology],
+          url: admin_team_team_technologies_path(@team),
+          class: "form--vertical" do |f| %>
+        <% if @team_technology.errors.any? %>
+          <div class="alert alert--error">
+            <div class="alert__content">
+              <p class="alert__text alert__text--error">
+                <%= t("activerecord.errors.template.header", count: @team_technology.errors.count) %>
+              </p>
+              <ul class="mt-2 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
+                <% @team_technology.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="field">
+          <%= f.label :technology_id, t("admin.team_technologies.attributes.technology"), class: "form-label" %>
+          <div class="form-field">
+            <%= f.select :technology_id,
+                options_from_collection_for_select(@available_technologies, :id, :name),
+                { prompt: t("admin.team_technologies.attributes.technology") },
+                class: "form-input" %>
+          </div>
+        </div>
+
+        <div class="form-submit flex gap-4">
+          <%= f.submit t("admin.team_technologies.create"), class: "btn btn--primary" %>
+          <%= link_to t("admin.team_technologies.cancel"), admin_team_path(@team), class: "btn btn--secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</main>

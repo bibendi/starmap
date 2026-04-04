@@ -279,6 +279,10 @@ bundle exec brakeman
 
 # Project Structure
 
+## IMPORTANT CONSTRAINTS
+
+**NEVER traverse above the project root directory**. All file reads, writes, and searches must stay within this directory. This is a hard rule — do not violate it.
+
 ## Organization Philosophy
 
 **Standard Rails MVC** with domain-driven organization. Core entities (User, Team, Technology, Quarter) drive folder structure. Features organized by domain concern rather than technical layer.

@@ -6,6 +6,7 @@ class TeamTechnology < ApplicationRecord
   # Validations
   validates :criticality, presence: true, inclusion: {in: %w[high normal low]}
   validates :target_experts, presence: true, numericality: {only_integer: true, greater_than: 0}
+  validates :technology_id, uniqueness: {scope: :team_id, message: :taken}
 
   # Scopes
   scope :high_criticality, -> { where(criticality: "high") }

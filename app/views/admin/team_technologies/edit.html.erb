@@ -1,0 +1,77 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.team_technologies.edit_title") %></h1>
+      <div class="flex gap-2">
+        <%= button_to t("admin.team_technologies.remove"),
+            admin_team_team_technology_path(@team, @team_technology),
+            method: :delete,
+            class: "btn btn--danger",
+            data: { turbo_confirm: t("admin.team_technologies.confirm_destroy") } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <%= form_with model: [:admin, @team, @team_technology],
+          url: admin_team_team_technology_path(@team, @team_technology),
+          method: :patch,
+          class: "form--vertical" do |f| %>
+        <% if @team_technology.errors.any? %>
+          <div class="alert alert--error">
+            <div class="alert__content">
+              <p class="alert__text alert__text--error">
+                <%= t("activerecord.errors.template.header", count: @team_technology.errors.count) %>
+              </p>
+              <ul class="mt-2 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
+                <% @team_technology.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <dt class="label"><%= t("admin.team_technologies.attributes.technology") %></dt>
+            <dd class="value"><%= @team_technology.technology.name %></dd>
+          </div>
+
+          <div>
+            <dt class="label"><%= t("admin.team_technologies.attributes.category") %></dt>
+            <dd class="value"><%= @team_technology.technology.category&.name || "-" %></dd>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :criticality, t("admin.team_technologies.attributes.criticality"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.select :criticality, [
+                [t("admin.technologies.badges.high"), "high"],
+                [t("admin.technologies.badges.normal"), "normal"],
+                [t("admin.technologies.badges.low"), "low"]
+              ], {}, class: "form-input" %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :target_experts, t("admin.team_technologies.attributes.target_experts"), class: "form-label" %>
+            <div class="form-field">
+              <%= f.number_field :target_experts, class: "form-input", min: 1 %>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-submit flex gap-4">
+          <%= f.submit t("admin.team_technologies.save"), class: "btn btn--primary" %>
+          <%= link_to t("admin.team_technologies.cancel"), admin_team_path(@team), class: "btn btn--secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</main>

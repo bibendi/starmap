@@ -1,0 +1,23 @@
+<%= turbo_frame_tag dom_id(team_technology) do %>
+  <tr>
+    <td class="table__cell">
+      <%= team_technology.technology.name %>
+    </td>
+    <td class="table__cell">
+      <%= team_technology.technology.category&.name || "-" %>
+    </td>
+    <td class="table__cell">
+      <span class="badge badge--<%= team_technology.criticality %>">
+        <%= t("admin.technologies.badges.#{team_technology.criticality}") %>
+      </span>
+    </td>
+    <td class="table__cell">
+      <%= team_technology.target_experts %>
+    </td>
+    <td class="table__cell">
+      <%= link_to t("admin.team_technologies.edit"),
+          edit_admin_team_team_technology_path(team_technology.team, team_technology),
+          class: "btn btn--small btn--secondary" %>
+    </td>
+  </tr>
+<% end %>

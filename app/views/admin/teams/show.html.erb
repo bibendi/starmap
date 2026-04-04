@@ -68,4 +68,40 @@
       </dl>
     </div>
   </div>
+
+  <div class="card mt-6">
+    <div class="card__body">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="page-title"><%= t("admin.team_technologies.title") %></h2>
+        <%= link_to t("admin.team_technologies.add"),
+            new_admin_team_team_technology_path(@team),
+            class: "btn btn--primary" %>
+      </div>
+
+      <% if @team.team_technologies.exists? %>
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="table__header-cell"><%= t("admin.team_technologies.attributes.technology") %></th>
+                <th class="table__header-cell"><%= t("admin.team_technologies.attributes.category") %></th>
+                <th class="table__header-cell"><%= t("admin.team_technologies.attributes.criticality") %></th>
+                <th class="table__header-cell"><%= t("admin.team_technologies.attributes.target_experts") %></th>
+                <th class="table__header-cell"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @team.team_technologies.includes(:technology).each do |tt| %>
+                <%= render "admin/team_technologies/row", team_technology: tt %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="empty-state">
+          <p><%= t("admin.team_technologies.empty_state") %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </main>
