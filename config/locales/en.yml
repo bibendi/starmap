@@ -167,17 +167,17 @@ en:
         category: "Category"
     technologies:
       index_title: "Competencies"
-      new: "New Technology"
+      new: "New Competency"
       edit: "Edit"
-      show: "Technology Details"
+      show: "Competency Details"
       create: "Create"
-      created: "Technology created successfully"
+      created: "Competency created successfully"
       update: "Update"
-      updated: "Technology updated successfully"
+      updated: "Competency updated successfully"
       destroy: "Delete"
-      destroyed: "Technology deleted successfully"
-      cannot_delete_with_dependencies: "Cannot delete technology with associated skill ratings, action plans, or teams"
-      confirm_destroy: "Are you sure you want to delete this technology?"
+      destroyed: "Competency deleted successfully"
+      cannot_delete_with_dependencies: "Cannot delete competency with associated skill ratings, action plans, or teams"
+      confirm_destroy: "Are you sure you want to delete this competency?"
       cancel: "Cancel"
       back: "Back"
       actions: "Actions"
@@ -191,7 +191,7 @@ en:
       search_placeholder: "Search by name..."
       clear: "Clear"
       reorder: "Reorder"
-      reorder_title: "Reorder Technologies"
+      reorder_title: "Reorder Competencies"
       reorder_description: "Drag and drop to change the display order"
       save_order: "Save Order"
       saved: "saved"
@@ -460,6 +460,8 @@ en:
       system: "Theme switched to system"
 
   activerecord:
+    models:
+      technology: "Competency"
     attributes:
       quarter:
         year: "Year"

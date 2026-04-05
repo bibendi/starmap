@@ -138,17 +138,17 @@ ru:
         category: "Категория"
     technologies:
       index_title: "Компетенции"
-      new: "Новая технология"
+      new: "Новая компетенция"
       edit: "Изменить"
-      show: "Детали технологии"
+      show: "Детали компетенции"
       create: "Создать"
-      created: "Технология успешно создана"
+      created: "Компетенция успешно создана"
       update: "Обновить"
-      updated: "Технология успешно обновлена"
+      updated: "Компетенция успешно обновлена"
       destroy: "Удалить"
-      destroyed: "Технология удалена"
-      cannot_delete_with_dependencies: "Нельзя удалить технологию с привязанными оценками, планами развития или командами"
-      confirm_destroy: "Вы уверены, что хотите удалить эту технологию?"
+      destroyed: "Компетенция удалена"
+      cannot_delete_with_dependencies: "Нельзя удалить компетенцию с привязанными оценками, планами развития или командами"
+      confirm_destroy: "Вы уверены, что хотите удалить эту компетенцию?"
       cancel: "Отмена"
       back: "Назад"
       actions: "Действия"
@@ -162,7 +162,7 @@ ru:
       search_placeholder: "Поиск по названию..."
       clear: "Очистить"
       reorder: "Изменить порядок"
-      reorder_title: "Порядок технологий"
+      reorder_title: "Порядок компетенций"
       reorder_description: "Перетаскивайте для изменения порядка отображения"
       save_order: "Сохранить порядок"
       saved: "сохранено"
@@ -442,6 +442,8 @@ ru:
       system: "Тема изменена на системную"
 
   activerecord:
+    models:
+      technology: "Competency"
     attributes:
       quarter:
         year: "Год"
