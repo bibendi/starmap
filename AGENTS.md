@@ -198,6 +198,7 @@ Status tracking of development plans linked to quarters and technologies.
 
 **Ruby (RSpec)**:
 - Factory-based test data (not fixtures)
+- `let_it_be` (from test-prof) for all shared test data — see [Factory Best Practices](#factory-best-practices) below
 - N+1 testing with `n_plus_one_control` gem:
   - Tag tests with `:n_plus_one`
   - Use `populate` blocks to create data at different scales
@@ -219,6 +220,55 @@ Status tracking of development plans linked to quarters and technologies.
   - Test behavior, not implementation
   - Use `data-testid` for stable element selection (stable API)
   - Verify visibility/state of elements, not internal details
+
+### Factory Best Practices
+
+**Why `let_it_be` instead of `let` or `before { create }`**
+
+`let_it_be` (from test-prof) creates records **once** per describe/context group and reuses them across all examples inside. This avoids redundant DB writes and bcrypt hashing on every test.
+
+- `let` recreates the record for **every** `it` block
+- `before { create }` recreates records for **every** `it` block
+- `let_it_be` creates the record **once** and wraps each test in a transaction rollback, so tests stay isolated
+
+**Rules:**
+
+1. Declare ALL `let_it_be` at the **top level** of `RSpec.describe` — never inside nested `context` or `describe` blocks. This ensures records are created once for the entire spec file.
+2. Use `let_it_be` only for records **shared across multiple tests**. If a record is used in a single test, use `let` inside the relevant context — don't pollute the top level with single-use variables.
+3. Prefer `build` over `create` when persistence is not required. Policy tests, component rendering, and validation checks often don't need DB-persisted records — `build(:user)` is instant, `create(:user)` triggers bcrypt.
+4. Use `before { create }` only for records that are **specific to a particular test scenario**. These are lightweight associations without expensive callbacks.
+5. Name variables descriptively to avoid collisions — e.g., `user_in_team2` instead of reusing `user2` with different semantics across contexts.
+
+**Example:**
+
+```ruby
+RSpec.describe MyComponent, type: :component do
+  # Shared across multiple tests — let_it_be at top level
+  let_it_be(:team) { create(:team) }
+  let_it_be(:team2) { create(:team) }
+  let_it_be(:user) { create(:user, team: team) }
+  let_it_be(:user_in_team2) { create(:user, team: team2) }
+
+  context "scenario A" do
+    before do
+      create(:skill_rating, user: user, technology: tech, quarter: quarter)
+    end
+    # ...
+  end
+
+  context "scenario B — single-use record" do
+    # Used only here — keep as `let`, no need for let_it_be
+    let(:other_user) { create(:engineer, team: team2) }
+    # ...
+  end
+
+  context "policy check — no DB needed" do
+    # No persistence required — use `build` instead of `create`
+    let(:record) { build(:user, team: nil) }
+    # ...
+  end
+end
+```
 
 ### Debugging
 
@@ -403,10 +453,3 @@ end
 - Component tests verify rendered output
 - Stimulus tests verify DOM interactions, not internal APIs
 - Factory-based test data, not fixtures
-
-## Active Technologies
-- Ruby 3.2+ + Rails 8.1.1, Pundit (authorization), ViewComponent (UI) (001-unit-lead-create-teams)
-- Ruby 3.2+ / Rails 8.1.1 + Pundit (authorization), ViewComponent (UI), Stimulus (JS), Kaminari (pagination) (002-team-member-management)
-
-## Recent Changes
-- 001-unit-lead-create-teams: Added Ruby 3.2+ + Rails 8.1.1, Pundit (authorization), ViewComponent (UI)

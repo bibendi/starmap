@@ -5,9 +5,15 @@ require "rails_helper"
 RSpec.describe RedZonesDetailsComponent, type: :component do
   let_it_be(:current_quarter) { create(:quarter, status: :active) }
   let_it_be(:team) { create(:team) }
+  let_it_be(:team2) { create(:team) }
   let_it_be(:user) { create(:user, team: team) }
+  let_it_be(:user2) { create(:user, team: team) }
+  let_it_be(:user3) { create(:user, team: team) }
+  let_it_be(:user_in_team2) { create(:user, team: team2) }
   let_it_be(:technology1) { create(:technology) }
   let_it_be(:technology2) { create(:technology) }
+  let_it_be(:technology3) { create(:technology) }
+  let_it_be(:n_plus_one_technologies) { create_list(:technology, 3) }
 
   describe "#red_zones_data" do
     context "when technologies have sufficient experts" do
@@ -15,9 +21,9 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
         create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
         create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user3, technology: technology2, quarter: current_quarter, rating: 2, team: team)
       end
 
       it "returns empty array" do
@@ -30,7 +36,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
       end
 
       it "returns false" do
@@ -67,15 +73,11 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
     end
 
     context "with multiple teams" do
-      let_it_be(:team2) { create(:team) }
-      let_it_be(:user2) { create(:user, team: team2) }
-
       before do
-        # Same technology, different teams
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
         create(:team_technology, team: team2, technology: technology1, target_experts: 2, criticality: "normal")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 2, team: team2)
+        create(:skill_rating, user: user_in_team2, technology: technology1, quarter: current_quarter, rating: 2, team: team2)
       end
 
       it "returns hash grouped by technology" do
@@ -109,16 +111,11 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       end
 
       context "with multiple teams" do
-        let(:team2) { create(:team, name: "Team B") }
-        let(:user2) { create(:user, team: team2) }
-        let(:test_technology) { create(:technology, name: "Test Tech") }
-
         before do
-          # Same technology, different teams
-          create(:team_technology, team: team, technology: test_technology, target_experts: 2, criticality: "high")
-          create(:team_technology, team: team2, technology: test_technology, target_experts: 2, criticality: "normal")
-          create(:skill_rating, user: user, technology: test_technology, quarter: current_quarter, rating: 2, team: team)
-          create(:skill_rating, user: user2, technology: test_technology, quarter: current_quarter, rating: 2, team: team2)
+          create(:team_technology, team: team, technology: technology3, target_experts: 2, criticality: "high")
+          create(:team_technology, team: team2, technology: technology3, target_experts: 2, criticality: "normal")
+          create(:skill_rating, user: user, technology: technology3, quarter: current_quarter, rating: 2, team: team)
+          create(:skill_rating, user: user_in_team2, technology: technology3, quarter: current_quarter, rating: 2, team: team2)
         end
 
         it "renders grouped red zones with team links" do
@@ -127,10 +124,10 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
 
           expect(page).to have_text("Red Zones")
           expect(page).to have_text(/critical coverage gaps/i)
-          expect(page).to have_text(test_technology.name, count: 1) # Technology appears once
+          expect(page).to have_text(technology3.name, count: 1)
           expect(page).to have_text(team.name)
           expect(page).to have_text(team2.name)
-          expect(page).to have_text("1/2", count: 2) # Two badges
+          expect(page).to have_text("1/2", count: 2)
           expect(page).to have_link(team.name)
           expect(page).to have_link(team2.name)
         end
@@ -149,10 +146,8 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
   end
 
   describe "N+1 queries", :n_plus_one do
-    let_it_be(:technologies) { create_list(:technology, 3) }
-
     before do
-      technologies.each do |tech|
+      n_plus_one_technologies.each do |tech|
         create(:team_technology, team: team, technology: tech,
           criticality: [:normal, :high].sample, target_experts: 2)
       end
@@ -166,7 +161,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       users = create_list(:user, n, team: team)
 
       users.each do |user|
-        technologies.each do |tech|
+        n_plus_one_technologies.each do |tech|
           create(:skill_rating,
             user: user,
             technology: tech,

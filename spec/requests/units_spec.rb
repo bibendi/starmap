@@ -1,15 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "Units", type: :request do
-  let_it_be(:unit) { create(:unit) }
   let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:unit) { create(:unit, unit_lead: unit_lead) }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:team_lead) { create(:team_lead) }
-
-  before do
-    unit.update(unit_lead: unit_lead)
-  end
 
   describe "GET /units/:id" do
     context "when user is not authenticated" do
@@ -92,7 +88,6 @@ RSpec.describe "Units", type: :request do
     context "when user is authenticated" do
       context "as unit lead with unit" do
         before do
-          unit.update(unit_lead: unit_lead)
           sign_in unit_lead, scope: :user
         end
 

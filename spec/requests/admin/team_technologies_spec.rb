@@ -5,6 +5,7 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:unit) { create(:unit) }
   let_it_be(:other_unit) { create(:unit) }
+  let_it_be(:unit_lead) { create(:unit_lead, team: nil) }
   let_it_be(:team) { create(:team, unit: unit) }
   let_it_be(:other_team) { create(:team, unit: other_unit) }
   let_it_be(:technology) { create(:technology, name: "Ruby") }
@@ -32,8 +33,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -75,8 +74,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for their unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -89,8 +86,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for another unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -139,8 +134,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for their unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -156,8 +149,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for another unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -197,8 +188,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for their unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -212,8 +201,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for another unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -262,8 +249,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for their unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -280,8 +265,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for another unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -333,8 +316,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for their unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -349,8 +330,6 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     end
 
     context "when user is unit lead for another unit" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user

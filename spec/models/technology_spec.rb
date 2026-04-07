@@ -4,14 +4,14 @@ RSpec.describe Technology, type: :model do
   describe "associations" do
     it "belongs to category" do
       category = create(:category, name: "Backend")
-      technology = create(:technology, category: category)
+      technology = build(:technology, category: category)
 
       expect(technology.category).to eq(category)
       expect(technology.category_id).to eq(category.id)
     end
 
     it "allows nil category" do
-      technology = create(:technology, category: nil)
+      technology = build(:technology, category: nil)
 
       expect(technology.category).to be_nil
     end
@@ -33,14 +33,14 @@ RSpec.describe Technology, type: :model do
 
   describe "#category_name" do
     it "returns category name via association" do
-      category = create(:category, name: "Backend")
-      technology = create(:technology, category: category)
+      category = build(:category, name: "Backend")
+      technology = build(:technology, category: category)
 
       expect(technology.category&.name).to eq("Backend")
     end
 
     it "returns nil when no category" do
-      technology = create(:technology, category: nil)
+      technology = build(:technology, category: nil)
 
       expect(technology.category).to be_nil
     end

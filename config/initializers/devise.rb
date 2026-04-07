@@ -28,4 +28,8 @@ Devise.setup do |config|
 
   # Timeouts
   config.timeout_in = 30.minutes
+
+  if Rails.env.test?
+    config.stretches = 1
+  end
 end

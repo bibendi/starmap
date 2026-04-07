@@ -1,7 +1,5 @@
 require "rails_helper"
 
-# RSpec tests for UserPolicy
-# Tests all role-based access control scenarios
 RSpec.describe UserPolicy, type: :policy do
   subject { described_class }
 
@@ -10,11 +8,9 @@ RSpec.describe UserPolicy, type: :policy do
   let_it_be(:team_lead) { create(:team_lead) }
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:inactive_user) { create(:inactive_user) }
+  let_it_be(:user_from_same_team) { create(:engineer, team: team_lead.team) }
+  let_it_be(:user_from_different_team) { create(:engineer) }
 
-  let(:user_from_same_team) { create(:engineer, team: team_lead.team) }
-  let(:user_from_different_team) { create(:engineer) }
-
-  # Context: User is nil (unauthenticated)
   describe "when user is nil" do
     let(:user) { nil }
     let(:record) { build(:user) }
@@ -26,7 +22,6 @@ RSpec.describe UserPolicy, type: :policy do
     end
   end
 
-  # Context: User is inactive
   describe "when user is inactive" do
     let(:user) { inactive_user }
     let(:record) { build(:user) }
@@ -38,7 +33,6 @@ RSpec.describe UserPolicy, type: :policy do
     end
   end
 
-  # Context: Role-based access control
   context "for admin" do
     let(:user) { admin }
     let(:record) { build(:user) }
@@ -137,7 +131,6 @@ RSpec.describe UserPolicy, type: :policy do
     end
   end
 
-  # Scope tests
   describe "Scope" do
     let(:other_team_lead) { create(:team_lead) }
     let(:other_team_engineer) { create(:engineer, team: other_team_lead.team) }
@@ -192,7 +185,6 @@ RSpec.describe UserPolicy, type: :policy do
     end
   end
 
-  # Edge cases and special scenarios
   describe "edge cases" do
     context "when user is team lead but viewing a user without team" do
       let(:user) { team_lead }

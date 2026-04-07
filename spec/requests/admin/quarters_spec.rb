@@ -182,10 +182,10 @@ RSpec.describe "Admin::Quarters", type: :request do
     let(:valid_params) do
       {
         quarter: {
-          year: Date.current.year + 1,
+          year: Date.current.year + 10,
           quarter_number: 1,
-          start_date: "#{Date.current.year + 1}-01-01",
-          end_date: "#{Date.current.year + 1}-03-31"
+          start_date: "#{Date.current.year + 10}-01-01",
+          end_date: "#{Date.current.year + 10}-03-31"
         }
       }
     end

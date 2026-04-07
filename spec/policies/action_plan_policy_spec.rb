@@ -1,23 +1,18 @@
 require "rails_helper"
 
-# RSpec tests for ActionPlanPolicy
-# Tests all role-based access control scenarios for action plans
 RSpec.describe ActionPlanPolicy, type: :policy do
   subject { described_class }
 
-  # Create test users for all roles
   let_it_be(:admin) { create(:admin) }
   let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:team_lead) { create(:team_lead) }
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:inactive_user) { create(:inactive_user) }
 
-  # Create test data
   let_it_be(:technology) { create(:technology) }
   let_it_be(:quarter) { create(:quarter) }
   let_it_be(:other_team) { create(:team) }
 
-  # Create action plans for different scenarios
   let_it_be(:own_action_plan) { create(:action_plan, user: engineer, technology: technology, quarter: quarter, created_by: engineer) }
   let_it_be(:team_lead_action_plan) { create(:action_plan, user: team_lead, technology: technology, quarter: quarter, created_by: team_lead) }
   let_it_be(:other_team_user) { create(:engineer, team: other_team) }
@@ -25,8 +20,8 @@ RSpec.describe ActionPlanPolicy, type: :policy do
   let_it_be(:assigned_user) { create(:engineer, team: team_lead.team) }
   let_it_be(:assigned_action_plan) { create(:action_plan, :assigned, user: assigned_user, technology: technology, quarter: quarter, created_by: team_lead, assigned_to: engineer) }
   let_it_be(:unassigned_action_plan) { create(:action_plan, user: other_team_user, technology: technology, quarter: quarter, created_by: admin) }
+  let_it_be(:team_member) { create(:engineer, team: team_lead.team) }
 
-  # Context: User is nil (unauthenticated)
   describe "when user is nil" do
     let(:user) { nil }
     let(:record) { build(:action_plan) }
@@ -44,7 +39,6 @@ RSpec.describe ActionPlanPolicy, type: :policy do
     end
   end
 
-  # Context: User is inactive
   describe "when user is inactive" do
     let(:user) { inactive_user }
     let(:record) { build(:action_plan) }
@@ -101,7 +95,7 @@ RSpec.describe ActionPlanPolicy, type: :policy do
 
     permissions :create?, :new? do
       context "when creating action plan for own team member" do
-        let(:record) { build(:action_plan, user: create(:engineer, team: team_lead.team), created_by: team_lead) }
+        let(:record) { build(:action_plan, user: team_member, created_by: team_lead) }
 
         it "grants access" do
           expect(subject).to permit(user, record)
@@ -244,7 +238,6 @@ RSpec.describe ActionPlanPolicy, type: :policy do
     end
   end
 
-  # Scope tests
   describe "Scope" do
     context "for admin" do
       let(:user) { admin }
@@ -296,7 +289,6 @@ RSpec.describe ActionPlanPolicy, type: :policy do
     end
   end
 
-  # Edge cases and special scenarios
   describe "edge cases" do
     context "when action_plan is nil" do
       let(:user) { admin }
@@ -340,7 +332,7 @@ RSpec.describe ActionPlanPolicy, type: :policy do
 
     context "when team_lead is accessing team member action plan" do
       let(:user) { team_lead }
-      let(:record) { build(:action_plan, user: create(:engineer, team: team_lead.team), technology: technology, quarter: quarter, created_by: create(:engineer, team: team_lead.team)) }
+      let(:record) { build(:action_plan, user: team_member, technology: technology, quarter: quarter, created_by: team_member) }
 
       permissions :show?, :update?, :edit?, :approve?, :complete?, :pause?, :resume?, :assign_to?, :view_progress? do
         it "grants access" do

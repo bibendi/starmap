@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe Admin::UnitPolicy, type: :policy do
   subject { described_class }
 
-  let(:admin) { create(:user, role: "admin", team: nil) }
-  let(:engineer) { create(:engineer) }
-  let(:unit) { create(:unit) }
+  let_it_be(:admin) { create(:user, role: "admin", team: nil) }
+  let_it_be(:engineer) { create(:engineer) }
+  let_it_be(:unit) { create(:unit) }
 
   permissions :index?, :show?, :create?, :update?, :destroy?, :new?, :edit? do
     it "grants access to admin" do
@@ -20,7 +20,7 @@ RSpec.describe Admin::UnitPolicy, type: :policy do
   describe "Scope" do
     it "returns all units for admin" do
       create_list(:unit, 3)
-      scope = described_class::Scope.new(create(:user, role: "admin", team: nil), Unit.all)
+      scope = described_class::Scope.new(admin, Unit.all)
       total = Unit.count
       expect(scope.resolve.count).to eq(total)
     end

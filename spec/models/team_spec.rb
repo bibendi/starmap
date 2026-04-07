@@ -3,21 +3,21 @@ require "rails_helper"
 RSpec.describe Team, type: :model do
   describe "associations" do
     it "belongs to unit" do
-      unit = create(:unit)
-      team = create(:team, unit: unit)
+      unit = build(:unit)
+      team = build(:team, unit: unit)
 
       expect(team.unit).to eq(unit)
     end
 
     it "belongs to team_lead" do
-      user = create(:team_lead)
-      team = create(:team, team_lead: user)
+      user = build(:team_lead, team: nil)
+      team = build(:team, unit: build(:unit), team_lead: user)
 
       expect(team.team_lead).to eq(user)
     end
 
     it "allows nil team_lead" do
-      team = create(:team, team_lead: nil)
+      team = build(:team, team_lead: nil, unit: build(:unit))
 
       expect(team.team_lead).to be_nil
     end
@@ -91,8 +91,8 @@ RSpec.describe Team, type: :model do
 
   describe "delegation" do
     it "delegates name to unit" do
-      unit = create(:unit, name: "Engineering")
-      team = create(:team, unit: unit)
+      unit = build(:unit, name: "Engineering")
+      team = build(:team, unit: unit)
 
       expect(team.unit_name).to eq("Engineering")
     end
@@ -105,7 +105,7 @@ RSpec.describe Team, type: :model do
     end
 
     it "returns false when team_lead is nil" do
-      team = create(:team, team_lead: nil)
+      team = build(:team, team_lead: nil, unit: build(:unit))
       expect(team.has_team_lead?).to be false
     end
   end
@@ -121,7 +121,6 @@ RSpec.describe Team, type: :model do
 
     it "destroys team without associated users" do
       team = create(:team)
-      create(:team, name: "Other Team")
 
       expect { team.destroy }.to change(described_class, :count).by(-1)
     end

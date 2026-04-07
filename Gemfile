@@ -54,7 +54,6 @@ group :test do
   gem "factory_bot_rails"
   gem "shoulda-matchers"
   gem "capybara"
-  gem "database_cleaner-active_record"
 
   # Testing optimization
   gem "test-prof", "~> 1.0"

@@ -1,23 +1,19 @@
 require "rails_helper"
 
 RSpec.describe "SkillRatings", type: :request do
-  let_it_be(:unit) { create(:unit) }
+  let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:unit) { create(:unit, unit_lead: unit_lead) }
   let_it_be(:team) { create(:team, unit: unit) }
   let_it_be(:other_team) { create(:team, unit: unit) }
   let_it_be(:engineer) { create(:engineer, team: team) }
   let_it_be(:other_engineer) { create(:engineer, team: other_team) }
   let_it_be(:team_lead) { create(:team_lead, team: team) }
-  let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:engineer_without_team) { create(:engineer, team: nil) }
 
   let_it_be(:quarter) { create(:quarter, :current, status: "active") }
   let_it_be(:technology) { create(:technology) }
   let_it_be(:team_technology) { create(:team_technology, team: team, technology: technology) }
-
-  before do
-    unit.update(unit_lead: unit_lead)
-  end
 
   describe "GET /users/:user_id/skill_ratings (show)" do
     context "when not authenticated" do

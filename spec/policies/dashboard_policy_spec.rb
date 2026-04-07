@@ -1,7 +1,5 @@
 require "rails_helper"
 
-# RSpec tests for DashboardPolicy
-# Tests all role-based access control scenarios for dashboard permissions
 RSpec.describe DashboardPolicy, type: :policy do
   subject { described_class }
 
@@ -11,7 +9,6 @@ RSpec.describe DashboardPolicy, type: :policy do
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:inactive_user) { create(:inactive_user) }
 
-  # Context: User is nil (unauthenticated)
   describe "when user is nil" do
     let(:user) { nil }
 
@@ -22,7 +19,6 @@ RSpec.describe DashboardPolicy, type: :policy do
     end
   end
 
-  # Context: User is inactive
   describe "when user is inactive" do
     let(:user) { inactive_user }
 
@@ -33,7 +29,6 @@ RSpec.describe DashboardPolicy, type: :policy do
     end
   end
 
-  # Context: Role-based access control
   context "for admin" do
     let(:user) { admin }
 
@@ -65,18 +60,14 @@ RSpec.describe DashboardPolicy, type: :policy do
       end
 
       context "when viewing team member dashboard" do
-        let(:user_from_same_team) { create(:engineer, team: team_lead.team) }
-
         it "grants access" do
-          expect(subject).to permit(user, user_from_same_team)
+          expect(subject).to permit(user, build(:engineer, team: team_lead.team))
         end
       end
 
       context "when viewing user from different team" do
-        let(:user_from_different_team) { create(:engineer) }
-
         it "grants access" do
-          expect(subject).to permit(user, user_from_different_team)
+          expect(subject).to permit(user, build(:engineer))
         end
       end
     end

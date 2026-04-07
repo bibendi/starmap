@@ -8,6 +8,8 @@ RSpec.describe "Teams", type: :request do
   let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:current_quarter) { create(:quarter, :current) }
+  let_it_be(:unit_for_unit_lead) { create(:unit, unit_lead: unit_lead) }
+  let_it_be(:unit_lead_team) { create(:team, unit: unit_for_unit_lead) }
 
   before do
     team.update(team_lead: team_lead)
@@ -157,9 +159,6 @@ RSpec.describe "Teams", type: :request do
       end
 
       context "as unit lead" do
-        let!(:unit_for_lead) { create(:unit, unit_lead: unit_lead) }
-        let!(:unit_team) { create(:team, unit: unit_for_lead) }
-
         before { sign_in unit_lead, scope: :user }
 
         it "returns successful response" do
@@ -170,7 +169,7 @@ RSpec.describe "Teams", type: :request do
         it "displays all teams" do
           get teams_path
           expect(response.body).to include(team.name)
-          expect(response.body).to include(unit_team.name)
+          expect(response.body).to include(unit_lead_team.name)
         end
       end
 

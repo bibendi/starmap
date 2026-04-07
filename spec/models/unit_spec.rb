@@ -10,14 +10,14 @@ RSpec.describe Unit, type: :model do
     end
 
     it "belongs to unit_lead" do
-      user = create(:admin)
-      unit = create(:unit, unit_lead: user)
+      user = build(:admin, team: nil)
+      unit = build(:unit, unit_lead: user)
 
       expect(unit.unit_lead).to eq(user)
     end
 
     it "allows nil unit_lead" do
-      unit = create(:unit, unit_lead: nil)
+      unit = build(:unit, unit_lead: nil)
 
       expect(unit.unit_lead).to be_nil
     end
@@ -80,7 +80,6 @@ RSpec.describe Unit, type: :model do
 
     it "destroys unit without associated teams" do
       unit = create(:unit)
-      create(:unit, name: "Other Unit")
 
       expect { unit.destroy }.to change(described_class, :count).by(-1)
     end

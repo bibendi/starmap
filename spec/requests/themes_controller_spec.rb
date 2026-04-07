@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe ThemesController, type: :request do
   describe "POST /theme/:theme" do
-    let(:user) { create(:user) }
+    let_it_be(:user) { create(:user) }
 
     before do
       sign_in user, scope: :user

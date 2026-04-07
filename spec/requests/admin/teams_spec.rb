@@ -5,6 +5,7 @@ RSpec.describe "Admin::Teams", type: :request do
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:unit) { create(:unit, name: "Engineering") }
   let_it_be(:other_unit) { create(:unit, name: "Marketing") }
+  let_it_be(:unit_lead) { create(:unit_lead, team: nil) }
   let_it_be(:team) { create(:team, name: "Alpha Team", unit: unit) }
   let_it_be(:team_lead_user) { create(:team_lead, team: team) }
   let_it_be(:inactive_team) { create(:team, name: "Legacy Team", unit: unit, active: false) }
@@ -75,8 +76,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -138,8 +137,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -188,8 +185,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -266,8 +261,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -326,8 +319,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -412,8 +403,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user
@@ -494,8 +483,6 @@ RSpec.describe "Admin::Teams", type: :request do
     end
 
     context "when user is authenticated as unit lead" do
-      let(:unit_lead) { create(:unit_lead, team: nil) }
-
       before do
         unit.update!(unit_lead: unit_lead)
         sign_in unit_lead, scope: :user

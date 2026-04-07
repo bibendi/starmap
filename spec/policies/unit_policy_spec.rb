@@ -1,27 +1,21 @@
 require "rails_helper"
 
-# RSpec tests for UnitPolicy
-# Tests all role-based access control scenarios
 RSpec.describe UnitPolicy, type: :policy do
   subject { described_class }
 
-  # Create test users for all roles
   let_it_be(:admin) { create(:admin) }
   let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:team_lead) { create(:team_lead) }
   let_it_be(:engineer) { create(:engineer) }
   let_it_be(:inactive_user) { create(:inactive_user) }
+  let_it_be(:unit_lead_without_unit) { create(:unit_lead) }
+  let_it_be(:other_unit_lead) { create(:unit_lead) }
 
-  # Create units for testing
-  let_it_be(:unit) { create(:unit) }
+  let_it_be(:unit) { create(:unit, unit_lead: unit_lead) }
   let_it_be(:other_unit) { create(:unit) }
   let_it_be(:unit_without_lead) { create(:unit, unit_lead: nil) }
+  let_it_be(:other_unit_with_lead) { create(:unit, unit_lead: other_unit_lead) }
 
-  before do
-    unit.update(unit_lead: unit_lead)
-  end
-
-  # Context: User is nil (unauthenticated)
   describe "when user is nil" do
     let(:user) { nil }
     let(:record) { unit }
@@ -33,7 +27,6 @@ RSpec.describe UnitPolicy, type: :policy do
     end
   end
 
-  # Context: User is inactive
   describe "when user is inactive" do
     let(:user) { inactive_user }
     let(:record) { unit }
@@ -45,7 +38,6 @@ RSpec.describe UnitPolicy, type: :policy do
     end
   end
 
-  # Context: Role-based access control
   context "for admin" do
     let(:user) { admin }
 
@@ -83,7 +75,6 @@ RSpec.describe UnitPolicy, type: :policy do
       end
 
       context "when unit_lead has no unit assigned" do
-        let(:unit_lead_without_unit) { create(:unit_lead) }
         let(:user) { unit_lead_without_unit }
 
         it "denies access to any unit" do
@@ -117,17 +108,7 @@ RSpec.describe UnitPolicy, type: :policy do
     end
   end
 
-  # Scope tests
   describe "scope" do
-    let(:unit_lead_without_unit) { create(:unit_lead) }
-    let(:other_unit_lead) { create(:unit_lead) }
-    let(:other_unit_with_lead) { create(:unit, unit_lead: other_unit_lead) }
-
-    before do
-      unit.update(unit_lead: unit_lead)
-      other_unit_with_lead
-    end
-
     context "when user is admin" do
       let(:user) { admin }
 

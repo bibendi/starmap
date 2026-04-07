@@ -1,18 +1,14 @@
 require "rails_helper"
 
 RSpec.describe "Users", type: :request do
-  let_it_be(:unit) { create(:unit) }
+  let_it_be(:unit_lead) { create(:unit_lead) }
+  let_it_be(:unit) { create(:unit, unit_lead: unit_lead) }
   let_it_be(:team) { create(:team, unit: unit) }
   let_it_be(:engineer) { create(:engineer, team: team) }
   let_it_be(:team_lead) { create(:team_lead, team: team) }
-  let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:other_team) { create(:team) }
   let_it_be(:other_engineer) { create(:engineer, team: other_team) }
-
-  before do
-    unit.update(unit_lead: unit_lead)
-  end
 
   describe "GET /users/:id" do
     context "when user is not authenticated" do

@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Category, type: :model do
+  let_it_be(:existing_category) { create(:category, name: "Backend") }
+
   describe "validations" do
     it "requires name" do
       category = described_class.new(name: nil)
@@ -10,16 +12,14 @@ RSpec.describe Category, type: :model do
     end
 
     it "requires unique name" do
-      create(:category, name: "Backend")
-      category = described_class.new(name: "Backend")
+      category = described_class.new(name: existing_category.name)
       category.valid?
 
       expect(category.errors[:name]).to include("has already been taken")
     end
 
     it "requires case-insensitive unique name" do
-      create(:category, name: "Backend")
-      category = described_class.new(name: "backend")
+      category = described_class.new(name: existing_category.name.downcase)
       category.valid?
 
       expect(category.errors[:name]).to include("has already been taken")
@@ -39,7 +39,7 @@ RSpec.describe Category, type: :model do
       z_category = create(:category, name: "Zeta")
       a_category = create(:category, name: "Alpha")
 
-      expect(described_class.ordered).to eq([a_category, z_category])
+      expect(described_class.where(id: [a_category.id, z_category.id]).ordered).to eq([a_category, z_category])
     end
   end
 

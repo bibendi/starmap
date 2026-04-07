@@ -85,18 +85,6 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::IntegrationHelpers, type: :request
 
-  # Database Cleaner configuration for better database isolation
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
-  end
-
-  config.around do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
-  end
-
   config.around do |example|
     I18n.with_locale(:en) do
       example.run

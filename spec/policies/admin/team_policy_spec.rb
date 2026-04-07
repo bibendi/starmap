@@ -3,14 +3,12 @@ require "rails_helper"
 RSpec.describe Admin::TeamPolicy, type: :policy do
   subject { described_class }
 
-  let(:admin) { create(:user, role: "admin", team: nil) }
-  let(:engineer) { create(:engineer) }
-  let(:unit) { create(:unit) }
-  let(:unit_lead) { create(:unit_lead, team: nil) }
-  let(:team_lead_user) { create(:team_lead) }
-  let(:team) { create(:team, unit: unit) }
-
-  before { unit.update!(unit_lead: unit_lead) }
+  let_it_be(:admin) { create(:user, role: "admin", team: nil) }
+  let_it_be(:engineer) { create(:engineer) }
+  let_it_be(:unit_lead) { create(:unit_lead, team: nil) }
+  let_it_be(:unit) { create(:unit, unit_lead: unit_lead) }
+  let_it_be(:team_lead_user) { create(:team_lead) }
+  let_it_be(:team) { create(:team, unit: unit) }
 
   permissions :index?, :create?, :new? do
     it "grants access to admin" do
@@ -57,7 +55,7 @@ RSpec.describe Admin::TeamPolicy, type: :policy do
   describe "Scope" do
     it "returns all teams for admin" do
       create_list(:team, 3)
-      scope = described_class::Scope.new(create(:user, role: "admin", team: nil), Team.all)
+      scope = described_class::Scope.new(admin, Team.all)
       total = Team.count
       expect(scope.resolve.count).to eq(total)
     end
@@ -67,7 +65,7 @@ RSpec.describe Admin::TeamPolicy, type: :policy do
       create_list(:team, 3)
 
       scope = described_class::Scope.new(unit_lead, Team.all)
-      expect(scope.resolve).to match_array(unit_teams)
+      expect(scope.resolve).to match_array([team] + unit_teams)
     end
 
     it "returns none for team lead" do
