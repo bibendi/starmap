@@ -173,33 +173,50 @@ end
 
 Rails.logger.debug "Creating quarters..."
 
-# Create current and previous quarters
+now = Date.current
+current_q_num = ((now.month - 1) / 3) + 1
+current_year = now.year
+
+prev_q_num = current_q_num - 1
+prev_year = current_year
+if prev_q_num.zero?
+  prev_q_num = 4
+  prev_year = current_year - 1
+end
+
+quarter_start_month = lambda { |q_num| (q_num - 1) * 3 + 1 }
+quarter_end_month = lambda { |q_num| q_num * 3 }
+
+current_start = Date.new(current_year, quarter_start_month.call(current_q_num), 1)
+current_end = Date.new(current_year, quarter_end_month.call(current_q_num), -1)
+prev_start = Date.new(prev_year, quarter_start_month.call(prev_q_num), 1)
+prev_end = Date.new(prev_year, quarter_end_month.call(prev_q_num), -1)
+
 current_quarter = Quarter.find_or_create_by!(
-  year: 2024,
-  quarter_number: 4
+  year: current_year,
+  quarter_number: current_q_num
 ) do |quarter|
-  quarter.name = "Q4 2024"
-  quarter.start_date = Date.new(2024, 10, 1)
-  quarter.end_date = Date.new(2024, 12, 31)
+  quarter.name = "Q#{current_q_num} #{current_year}"
+  quarter.start_date = current_start
+  quarter.end_date = current_end
   quarter.status = "active"
-  quarter.description = "Fourth quarter 2024"
+  quarter.description = "Quarter #{current_q_num} #{current_year}"
   quarter.is_current = true
 end
 
 previous_quarter = Quarter.find_or_create_by!(
-  year: 2024,
-  quarter_number: 3
+  year: prev_year,
+  quarter_number: prev_q_num
 ) do |quarter|
-  quarter.name = "Q3 2024"
-  quarter.start_date = Date.new(2024, 7, 1)
-  quarter.end_date = Date.new(2024, 9, 30)
+  quarter.name = "Q#{prev_q_num} #{prev_year}"
+  quarter.start_date = prev_start
+  quarter.end_date = prev_end
   quarter.status = "closed"
-  quarter.description = "Third quarter 2024"
+  quarter.description = "Quarter #{prev_q_num} #{prev_year}"
   quarter.is_current = false
-  quarter.previous_quarter_id = nil  # No previous quarter
+  quarter.previous_quarter_id = nil
 end
 
-# Link quarters
 current_quarter.update!(previous_quarter_id: previous_quarter.id)
 
 Rails.logger.debug "Creating test users..."
