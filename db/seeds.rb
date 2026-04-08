@@ -202,6 +202,8 @@ current_quarter = Quarter.find_or_create_by!(
   quarter.status = "active"
   quarter.description = "Quarter #{current_q_num} #{current_year}"
   quarter.is_current = true
+  quarter.evaluation_start_date = current_start
+  quarter.evaluation_end_date = current_start + 14.days
 end
 
 previous_quarter = Quarter.find_or_create_by!(
@@ -215,6 +217,8 @@ previous_quarter = Quarter.find_or_create_by!(
   quarter.description = "Quarter #{prev_q_num} #{prev_year}"
   quarter.is_current = false
   quarter.previous_quarter_id = nil
+  quarter.evaluation_start_date = prev_start
+  quarter.evaluation_end_date = prev_start + 14.days
 end
 
 current_quarter.update!(previous_quarter_id: previous_quarter.id)
@@ -428,7 +432,7 @@ Rails.logger.debug "Creating sample skill ratings..."
 
 # Define skill levels for each user (0-3 scale)
 # Admin and unit lead are excluded as they don't have team_id
-user_skills = {
+teamlead_skills = {
   backend_team_lead.id => {
     technologies[:ruby_on_rails].id => 3,
     technologies[:postgresql].id => 3,
@@ -505,19 +509,23 @@ engineer_skills = {
   }
 }
 
-# Create skill ratings
-user_skills.each do |user_id, skills|
+statuses_with_weights = {"draft" => 3, "submitted" => 3, "approved" => 3, "rejected" => 1}
+weighted_statuses = statuses_with_weights.flat_map { |s, w| [s] * w }
+
+teamlead_skills.each do |user_id, skills|
   skills.each do |tech_id, rating_level|
+    status = weighted_statuses.sample(random: Random.new(user_id + tech_id))
+
     SkillRating.find_or_create_by!(
       user_id: user_id,
       technology_id: tech_id,
       quarter_id: current_quarter.id
     ) do |rating|
       rating.rating = rating_level
-      rating.status = "approved"
-      rating.approved_at = Time.current
-      rating.approved_by_id = unit_lead_user.id
-      rating.locked = true
+      rating.status = status
+      rating.approved_at = (status == "approved") ? Time.current : nil
+      rating.approved_by_id = (status == "approved") ? unit_lead_user.id : nil
+      rating.locked = status == "approved"
     end
   end
 end
@@ -527,6 +535,8 @@ engineer_skills.each do |email, skills|
   next unless user
 
   skills.each do |tech_id, rating_level|
+    status = weighted_statuses.sample(random: Random.new(user.id + tech_id))
+
     SkillRating.find_or_create_by!(
       user_id: user.id,
       technology_id: tech_id,
@@ -534,8 +544,10 @@ engineer_skills.each do |email, skills|
     ) do |rating|
       rating.team_id = user.team_id
       rating.rating = rating_level
-      rating.status = "draft"
-      rating.locked = false
+      rating.status = status
+      rating.approved_at = (status == "approved") ? Time.current : nil
+      rating.approved_by_id = (status == "approved") ? unit_lead_user.id : nil
+      rating.locked = status == "approved"
     end
   end
 end
@@ -543,7 +555,7 @@ end
 # Create skill ratings for previous quarter (Q3) to show dynamics
 Rails.logger.debug "Creating previous quarter skill ratings for dynamics..."
 
-previous_user_skills = {
+previous_teamlead_skills = {
   backend_team_lead.id => {
     technologies[:ruby_on_rails].id => 2,
     technologies[:postgresql].id => 3,
@@ -618,7 +630,7 @@ previous_engineer_skills = {
   }
 }
 
-previous_user_skills.each do |user_id, skills|
+previous_teamlead_skills.each do |user_id, skills|
   skills.each do |tech_id, rating_level|
     next if rating_level == 0
 

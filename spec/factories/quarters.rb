@@ -9,7 +9,7 @@ FactoryBot.define do
     name { "#{year} Q#{quarter_number}" }
     start_date { Date.new(year, (quarter_number - 1) * 3 + 1, 1) }
     end_date { start_date.end_of_quarter }
-    evaluation_start_date { start_date + 45.days }
+    evaluation_start_date { start_date }
     evaluation_end_date { evaluation_start_date + 14.days }
     status { "active" }
     is_current { false }
@@ -43,7 +43,7 @@ FactoryBot.define do
           quarter.name = "#{quarter.year} Q#{quarter.quarter_number}"
           quarter.start_date = Date.new(quarter.year, (quarter.quarter_number - 1) * 3 + 1, 1)
           quarter.end_date = quarter.start_date.end_of_quarter
-          quarter.evaluation_start_date = quarter.start_date + 45.days
+          quarter.evaluation_start_date = quarter.start_date
           quarter.evaluation_end_date = quarter.evaluation_start_date + 14.days
         end
       end

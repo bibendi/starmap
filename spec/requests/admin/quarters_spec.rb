@@ -185,7 +185,9 @@ RSpec.describe "Admin::Quarters", type: :request do
           year: Date.current.year + 10,
           quarter_number: 1,
           start_date: "#{Date.current.year + 10}-01-01",
-          end_date: "#{Date.current.year + 10}-03-31"
+          end_date: "#{Date.current.year + 10}-03-31",
+          evaluation_start_date: "#{Date.current.year + 10}-01-15",
+          evaluation_end_date: "#{Date.current.year + 10}-02-15"
         }
       }
     end
@@ -221,13 +223,6 @@ RSpec.describe "Admin::Quarters", type: :request do
         post admin_quarters_path, params: valid_params
         expect(response).to redirect_to(admin_quarters_path)
         expect(flash[:notice]).to be_present
-      end
-
-      it "auto-calculates evaluation dates" do
-        post admin_quarters_path, params: valid_params
-        quarter = Quarter.last
-        expect(quarter.evaluation_start_date).to be_present
-        expect(quarter.evaluation_end_date).to be_present
       end
 
       it "does not create quarter with duplicate year and quarter_number" do

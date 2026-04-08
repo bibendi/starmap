@@ -39,7 +39,6 @@ class Quarter < ApplicationRecord
 
   # Callbacks
   before_validation :set_quarter_name, on: :create
-  before_validation :calculate_evaluation_dates, on: :create
   after_create :set_as_current_if_first
   after_update :handle_status_change
 
@@ -174,45 +173,6 @@ class Quarter < ApplicationRecord
     find_by(is_current: true)
   end
 
-  def self.find_or_create_current
-    current || create_current_quarter
-  end
-
-  def self.create_current_quarter
-    current_date = Date.current
-    year = current_date.year
-
-    # Calculate current quarter
-    quarter_number = ((current_date.month - 1) / 3) + 1
-
-    # Calculate quarter dates
-    start_date = Date.new(year, (quarter_number - 1) * 3 + 1, 1)
-    end_date = start_date.end_of_quarter
-
-    # Evaluation period (2 weeks in the middle of quarter)
-    evaluation_start_date = start_date + 45.days
-    evaluation_end_date = evaluation_start_date + 14.days
-
-    # Find previous quarter
-    if quarter_number > 1
-      Quarter.find_by(year: year, quarter_number: quarter_number - 1)
-    else
-      Quarter.find_by(year: year - 1, quarter_number: 4)
-    end
-
-    create!(
-      year: year,
-      quarter_number: quarter_number,
-      start_date: start_date,
-      end_date: end_date,
-      evaluation_start_date: evaluation_start_date,
-      evaluation_end_date: evaluation_end_date,
-      status: "active",
-      is_current: true,
-      description: "Автоматически созданный квартал #{year} Q#{quarter_number}"
-    )
-  end
-
   # Analytics for dashboards
   def team_maturity_data
     # Returns maturity data grouped by teams
@@ -282,13 +242,6 @@ class Quarter < ApplicationRecord
     end
   end
 
-  def self.activate_current_quarter
-    current_quarter = find_or_create_current
-    # Deactivate other current quarters
-    Quarter.where(is_current: true).where.not(id: current_quarter.id).update_all(is_current: false)
-    current_quarter
-  end
-
   private
 
   def validate_year_is_current_or_future
@@ -299,8 +252,9 @@ class Quarter < ApplicationRecord
 
   def validate_date_sequence
     return unless start_date.present? && end_date.present?
-
     errors.add(:end_date, :after_start_date) if end_date <= start_date
+
+    return unless evaluation_start_date.present? && evaluation_end_date.present?
     errors.add(:evaluation_start_date, :within_quarter) if evaluation_start_date < start_date || evaluation_start_date > end_date
     errors.add(:evaluation_end_date, :within_quarter) if evaluation_end_date < start_date || evaluation_end_date > end_date
     errors.add(:evaluation_end_date, :after_eval_start) if evaluation_end_date <= evaluation_start_date
@@ -316,16 +270,6 @@ class Quarter < ApplicationRecord
 
   def set_quarter_name
     self.name ||= full_name
-  end
-
-  def calculate_evaluation_dates
-    return if evaluation_start_date.present? && evaluation_end_date.present?
-    return unless start_date.present? && end_date.present?
-
-    # Default evaluation period: middle 2 weeks of quarter
-    quarter_midpoint = start_date + ((end_date - start_date) / 2).days
-    self.evaluation_start_date = quarter_midpoint - 7.days
-    self.evaluation_end_date = quarter_midpoint + 7.days
   end
 
   def set_as_current_if_first
