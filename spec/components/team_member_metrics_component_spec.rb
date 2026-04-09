@@ -138,7 +138,7 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
             user: user,
             technology: tech,
             quarter: current_quarter,
-            rating: rand(0..3),
+            rating: rand(1..3),
             team: team)
         end
       end

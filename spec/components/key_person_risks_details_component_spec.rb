@@ -184,7 +184,7 @@ RSpec.describe KeyPersonRisksDetailsComponent, type: :component do
           rating = if user_index == 0
             [2, 3].sample
           else
-            [0, 1].sample
+            1
           end
           create(:skill_rating,
             user: user,

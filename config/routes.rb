@@ -18,7 +18,9 @@ Rails.application.routes.draw do
 
   # User routes
   resources :users, only: [:show] do
-    resource :skill_ratings, only: [:show, :edit, :update]
+    resource :skill_ratings, only: [:show, :edit, :update] do
+      post :submit
+    end
   end
 
   # Locale switching

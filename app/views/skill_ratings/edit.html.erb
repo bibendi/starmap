@@ -24,9 +24,9 @@
                     <tr>
                       <th class="table__header-cell"><%= t("skill_ratings.edit.technology") %></th>
                       <th class="table__header-cell"><%= t("skill_ratings.edit.criticality") %></th>
-                      <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.edit.target_experts") %></th>
                       <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.edit.rating") %></th>
                       <th class="table__header-cell"><%= t("skill_ratings.edit.level") %></th>
+                      <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.edit.status") %></th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -54,9 +54,7 @@
                           <% end %>
                         </td>
                         <td class="table__cell table__cell--center">
-                          <%= team_tech.target_experts %>
-                        </td>
-                        <td class="table__cell table__cell--center">
+                          <% rating_disabled = skill_rating.approved? && current_user == @target_user %>
                           <div class="flex items-center justify-center gap-2">
                             <% (0..3).each do |rating_value| %>
                               <label class="cursor-pointer">
@@ -64,7 +62,8 @@
                                     rating_value,
                                     skill_rating.rating == rating_value,
                                     class: "sr-only peer",
-                                    data: { rating: rating_value } %>
+                                    data: { rating: rating_value },
+                                    disabled: rating_disabled %>
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg border-2 font-semibold transition-colors
                                   <%= case rating_value
                                     when 0 then "border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
@@ -73,7 +72,8 @@
                                     when 3 then "border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-900/30"
                                     end %>
                                   peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-checked:text-white
-                                  peer-checked:dark:bg-blue-600 peer-checked:dark:border-blue-600">
+                                  peer-checked:dark:bg-blue-600 peer-checked:dark:border-blue-600
+                                  <%= 'opacity-50 cursor-not-allowed' if rating_disabled %>">
                                   <%= rating_value %>
                                 </span>
                               </label>
@@ -82,6 +82,26 @@
                         </td>
                         <td class="table__cell text-gray-700 dark:text-gray-300">
                           <%= skill_rating.level %>
+                        </td>
+                        <td class="table__cell table__cell--center">
+                          <% case skill_rating.status %>
+                          <% when "draft" %>
+                            <span class="badge badge--secondary">
+                              <%= t("skill_ratings.status.draft") %>
+                            </span>
+                          <% when "submitted" %>
+                            <span class="badge badge--warning">
+                              <%= t("skill_ratings.status.submitted") %>
+                            </span>
+                          <% when "approved" %>
+                            <span class="badge badge--success">
+                              <%= t("skill_ratings.status.approved") %>
+                            </span>
+                          <% when "rejected" %>
+                            <span class="badge badge--danger">
+                              <%= t("skill_ratings.status.rejected") %>
+                            </span>
+                          <% end %>
                         </td>
                       </tr>
                     <% end %>
@@ -96,8 +116,10 @@
                 user_skill_ratings_path(@target_user),
                 class: "btn btn--secondary" %>
 
-            <%= form.submit t("skill_ratings.edit.save"),
-                class: "btn btn--primary" %>
+            <% unless @skill_ratings_data.all? { |d| d[:skill_rating].approved? && current_user == @target_user } %>
+              <%= form.submit t("skill_ratings.edit.save"),
+                  class: "btn btn--primary" %>
+            <% end %>
           </div>
         <% end %>
       <% else %>

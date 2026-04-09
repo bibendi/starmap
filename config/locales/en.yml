@@ -320,12 +320,18 @@ en:
       target_experts: "Target Experts"
       rating: "Rating"
       level: "Skill Level"
+      status: "Status"
       save: "Save"
       cancel: "Cancel"
       no_technologies: "Team has no assigned technologies to edit"
       back_to_show: "Back to view"
     update:
       success: "Ratings saved successfully"
+    submit:
+      success: "Ratings submitted for approval"
+      no_drafts: "No draft ratings to submit"
+      has_rejected: "Fix rejected ratings before submitting"
+      button: "Submit for Approval"
     errors:
       not_evaluation_period: "Evaluation period is closed"
       no_team: "User is not assigned to a team"

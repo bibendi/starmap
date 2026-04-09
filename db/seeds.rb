@@ -509,23 +509,17 @@ engineer_skills = {
   }
 }
 
-statuses_with_weights = {"draft" => 3, "submitted" => 3, "approved" => 3, "rejected" => 1}
-weighted_statuses = statuses_with_weights.flat_map { |s, w| [s] * w }
-
 teamlead_skills.each do |user_id, skills|
   skills.each do |tech_id, rating_level|
-    status = weighted_statuses.sample(random: Random.new(user_id + tech_id))
-
     SkillRating.find_or_create_by!(
       user_id: user_id,
       technology_id: tech_id,
       quarter_id: current_quarter.id
     ) do |rating|
       rating.rating = rating_level
-      rating.status = status
-      rating.approved_at = (status == "approved") ? Time.current : nil
-      rating.approved_by_id = (status == "approved") ? unit_lead_user.id : nil
-      rating.locked = status == "approved"
+      rating.status = "approved"
+      rating.approved_at = Time.current
+      rating.approved_by_id = unit_lead_user.id
     end
   end
 end
@@ -535,8 +529,6 @@ engineer_skills.each do |email, skills|
   next unless user
 
   skills.each do |tech_id, rating_level|
-    status = weighted_statuses.sample(random: Random.new(user.id + tech_id))
-
     SkillRating.find_or_create_by!(
       user_id: user.id,
       technology_id: tech_id,
@@ -544,10 +536,9 @@ engineer_skills.each do |email, skills|
     ) do |rating|
       rating.team_id = user.team_id
       rating.rating = rating_level
-      rating.status = status
-      rating.approved_at = (status == "approved") ? Time.current : nil
-      rating.approved_by_id = (status == "approved") ? unit_lead_user.id : nil
-      rating.locked = status == "approved"
+      rating.status = "approved"
+      rating.approved_at = Time.current
+      rating.approved_by_id = unit_lead_user.id
     end
   end
 end
@@ -643,7 +634,6 @@ previous_teamlead_skills.each do |user_id, skills|
       rating.status = "approved"
       rating.approved_at = 3.months.ago
       rating.approved_by_id = unit_lead_user.id
-      rating.locked = true
     end
   end
 end
@@ -665,7 +655,6 @@ previous_engineer_skills.each do |email, skills|
       rating.status = "approved"
       rating.approved_at = 3.months.ago
       rating.approved_by_id = unit_lead_user.id
-      rating.locked = true
     end
   end
 end

@@ -22,29 +22,18 @@ class SkillRatingPolicy < ApplicationPolicy
   def create?
     return false unless active_user?
 
-    # Users can create ratings for themselves
     return true if own_record?(record)
 
-    # Team leads can create ratings for their team members
-    return team_lead_of?(record.user.team) if team_lead?
-
-    false
+    admin?
   end
 
   def update?
     return false unless active_user?
     return false unless record
 
-    # Users can update their own ratings if not approved
     return true if own_record?(record) && !record.approved?
 
-    # Team leads can update their team's ratings
-    return team_lead_of?(record.user.team) if team_lead?
-
-    # Admins and unit leads can update any rating
-    return true if admin? || unit_lead?
-
-    false
+    admin?
   end
 
   def destroy?
@@ -87,16 +76,9 @@ class SkillRatingPolicy < ApplicationPolicy
   def new?
     return false unless active_user?
 
-    # Users can create ratings for themselves
     return true if record.nil? || own_record?(record)
 
-    # Team leads can create ratings for their team members
-    return team_lead_of?(record.user.team) if team_lead?
-
-    # Admins and unit leads can create any rating
-    return true if admin? || unit_lead?
-
-    false
+    admin?
   end
 
   def copy_from_previous?

@@ -26,7 +26,8 @@ class CoverageIndexComponent < ViewComponent::Base
     expert_counts = SkillRating
       .where(quarter: current_quarter,
         rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
-        team_id: team_ids)
+        team_id: team_ids,
+        status: :approved)
       .group(:team_id, :technology_id)
       .count
       .transform_keys { |k| "#{k[0]}-#{k[1]}" }

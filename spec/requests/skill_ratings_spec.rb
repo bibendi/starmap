@@ -74,13 +74,13 @@ RSpec.describe "SkillRatings", type: :request do
     end
 
     context "with existing ratings" do
-      let_it_be(:skill_rating) { create(:skill_rating, user: engineer, technology: technology, quarter: quarter, team: team, rating: 2) }
+      let_it_be(:skill_rating) { create(:skill_rating, :draft, user: engineer, technology: technology, quarter: quarter, team: team, rating: 2) }
 
       before { sign_in engineer, scope: :user }
 
       it "displays ratings with status and level" do
         get user_skill_ratings_path(engineer)
-        expect(response.body).to include(skill_rating.rating.to_s, skill_rating.level, I18n.t("skill_ratings.status.draft"))
+        expect(response.body).to include(skill_rating.rating.to_s, skill_rating.level, I18n.t("skill_ratings.status.#{skill_rating.status}"))
       end
     end
 
@@ -120,10 +120,11 @@ RSpec.describe "SkillRatings", type: :request do
         expect(response).to be_successful
       end
 
-      it "allows team lead to edit team member's ratings" do
+      it "denies team lead access to team member's ratings" do
         sign_in team_lead, scope: :user
-        get edit_user_skill_ratings_path(engineer)
-        expect(response).to be_successful
+        expect {
+          get edit_user_skill_ratings_path(engineer)
+        }.to raise_error(Pundit::NotAuthorizedError)
       end
 
       it "denies team lead access to other team's ratings" do
@@ -210,7 +211,7 @@ RSpec.describe "SkillRatings", type: :request do
       end
 
       context "with existing rating" do
-        let!(:existing_rating) { create(:skill_rating, user: engineer, technology: technology, quarter: quarter, team: team, rating: 0) }
+        let!(:existing_rating) { create(:skill_rating, :draft, user: engineer, technology: technology, quarter: quarter, team: team, rating: 0) }
 
         it "updates existing rating instead of creating new" do
           expect {
@@ -244,11 +245,10 @@ RSpec.describe "SkillRatings", type: :request do
         sign_in team_lead, scope: :user
       end
 
-      it "creates rating with team lead as creator" do
-        patch user_skill_ratings_path(engineer), params: valid_params
-
-        rating = SkillRating.find_by(user: engineer, technology: technology)
-        expect(rating.created_by).to eq(team_lead)
+      it "denies access to team member" do
+        expect {
+          patch user_skill_ratings_path(engineer), params: valid_params
+        }.to raise_error(Pundit::NotAuthorizedError)
       end
 
       it "denies access to other team" do

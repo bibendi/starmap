@@ -28,7 +28,6 @@
                   <tr>
                     <th class="table__header-cell"><%= t("skill_ratings.show.technology") %></th>
                     <th class="table__header-cell"><%= t("skill_ratings.show.criticality") %></th>
-                    <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.target_experts") %></th>
                     <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.rating") %></th>
                     <th class="table__header-cell"><%= t("skill_ratings.show.level") %></th>
                     <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.status") %></th>
@@ -57,9 +56,6 @@
                             <%= t("activerecord.attributes.technology.criticality.low") %>
                           </span>
                         <% end %>
-                      </td>
-                      <td class="table__cell table__cell--center">
-                        <%= team_tech.target_experts %>
                       </td>
                       <td class="table__cell table__cell--center">
                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold
@@ -109,9 +105,17 @@
               class: "link" %>
 
         <% if @current_quarter&.evaluation_period? && policy(@skill_ratings_data.first[:skill_rating]).update? %>
-            <%= link_to t("skill_ratings.show.edit_button"),
-                edit_user_skill_ratings_path(@target_user),
-                class: "btn btn--primary" %>
+            <div class="flex items-center gap-3">
+              <% if @skill_ratings_data.any? { |d| d[:skill_rating].draft? } && @skill_ratings_data.none? { |d| d[:skill_rating].rejected? } %>
+                <%= button_to t("skill_ratings.submit.button"),
+                    submit_user_skill_ratings_path(@target_user),
+                    method: :post,
+                    class: "btn btn--primary" %>
+              <% end %>
+              <%= link_to t("skill_ratings.show.edit_button"),
+                  edit_user_skill_ratings_path(@target_user),
+                  class: "btn btn--secondary" %>
+            </div>
         <% end %>
         </div>
       <% else %>

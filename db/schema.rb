@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_30_202122) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_182104) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,7 +80,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_30_202122) do
     t.text "comment"
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
-    t.boolean "locked", default: false, null: false
     t.bigint "quarter_id", null: false
     t.integer "rating", null: false
     t.string "status", default: "draft", null: false
@@ -91,7 +90,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_30_202122) do
     t.bigint "user_id", null: false
     t.index ["approved_by_id"], name: "index_skill_ratings_on_approved_by_id"
     t.index ["created_by_id"], name: "index_skill_ratings_on_created_by_id"
-    t.index ["locked"], name: "index_skill_ratings_on_locked"
     t.index ["quarter_id"], name: "index_skill_ratings_on_quarter_id"
     t.index ["rating"], name: "index_skill_ratings_on_rating"
     t.index ["status"], name: "index_skill_ratings_on_status"

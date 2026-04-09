@@ -19,7 +19,7 @@ class KeyPersonRisksComponent < ViewComponent::Base
     return 0 unless current_quarter
 
     SkillRating
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
+      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, status: :approved)
       .group(:technology_id)
       .having("COUNT(DISTINCT user_id) = 1")
       .count

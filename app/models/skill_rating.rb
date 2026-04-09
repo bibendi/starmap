@@ -18,14 +18,12 @@ class SkillRating < ApplicationRecord
   validates :user_id, uniqueness: {scope: [:technology_id, :quarter_id], message: "уже имеет оценку для этой технологии в данном квартале"}
 
   # Validate rating based on status
-  validate :validate_rating_for_status
 
   # Callbacks
   before_validation :set_default_status, on: :create
   before_validation :set_team_from_user, if: -> { team_id.nil? && user_id.present? }
   before_update :set_updated_by, if: :saved_changes?
   after_update :handle_approval_change, if: :status_changed?
-  after_update :handle_lock_change, if: :locked_changed?
 
   # Scopes
   scope :by_quarter, ->(quarter) { where(quarter: quarter) }
@@ -35,8 +33,6 @@ class SkillRating < ApplicationRecord
   scope :approved, -> { where(status: "approved") }
   scope :draft, -> { where(status: "draft") }
   scope :submitted, -> { where(status: "submitted") }
-  scope :locked, -> { where(locked: true) }
-  scope :unlocked, -> { where(locked: false) }
   scope :experts, -> { where(rating: 2..3) }
   scope :novices, -> { where(rating: 0..1) }
   scope :active_users, -> { joins(:user).where(users: {active: true}) }
@@ -74,10 +70,6 @@ class SkillRating < ApplicationRecord
     rating <= 1
   end
 
-  def can_be_edited?
-    !locked && !approved?
-  end
-
   def can_be_approved?
     draft? || submitted?
   end
@@ -91,6 +83,7 @@ class SkillRating < ApplicationRecord
   end
 
   # Status helpers
+  # FIXME: move to rails enum definition
   def draft?
     status == "draft"
   end
@@ -141,16 +134,6 @@ class SkillRating < ApplicationRecord
     update!(status: "draft") if rejected?
   end
 
-  # Lock management
-  def lock!
-    update!(locked: true) unless locked?
-  end
-
-  def unlock!
-    update!(locked: false) if locked?
-  end
-
-  # Rating change tracking
   def rating_changed?
     saved_change_to_rating?
   end
@@ -290,14 +273,6 @@ class SkillRating < ApplicationRecord
     copied_count
   end
 
-  def self.lock_all_for_quarter(quarter)
-    by_quarter(quarter).update_all(locked: true)
-  end
-
-  def self.unlock_all_for_quarter(quarter)
-    by_quarter(quarter).update_all(locked: false)
-  end
-
   def self.approve_all_for_quarter(quarter, approver)
     by_quarter(quarter).where(status: %w[draft submitted]).update_all(
       status: "approved",
@@ -307,14 +282,6 @@ class SkillRating < ApplicationRecord
   end
 
   private
-
-  def validate_rating_for_status
-    return if rating.blank?
-
-    if rating == 0 && approved?
-      errors.add(:rating, "не может быть 0 для утвержденной оценки")
-    end
-  end
 
   def set_default_status
     self.status ||= "draft"
@@ -332,15 +299,9 @@ class SkillRating < ApplicationRecord
   def handle_approval_change
     if approved?
       self.approved_at ||= Time.current
-      self.approved_by ||= User.first # Fallback
     elsif draft?
       self.approved_at = nil
       self.approved_by = nil
     end
-  end
-
-  def handle_lock_change
-    # Additional logic when lock status changes
-    # Could trigger notifications or other side effects
   end
 end

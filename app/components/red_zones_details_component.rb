@@ -66,7 +66,8 @@ class RedZonesDetailsComponent < ViewComponent::Base
         quarter: current_quarter,
         technology_id: technology_ids,
         rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
-        team_id: team_ids
+        team_id: team_ids,
+        status: :approved
       )
 
     # Group experts by technology_id and team_id

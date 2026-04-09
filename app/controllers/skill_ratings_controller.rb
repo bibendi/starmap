@@ -6,10 +6,10 @@ class SkillRatingsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_target_user
   before_action :set_current_quarter
-  before_action :ensure_evaluation_period, only: [:edit, :update]
+  before_action :ensure_evaluation_period, only: [:edit, :update, :submit]
   before_action :ensure_team_assignment
-  before_action :set_team_technologies, only: [:show, :edit, :update]
-  before_action :set_skill_ratings, only: [:show, :edit, :update]
+  before_action :set_team_technologies, only: [:show, :edit, :update, :submit]
+  before_action :set_skill_ratings, only: [:show, :edit, :update, :submit]
 
   skip_after_action :verify_policy_scoped
 
@@ -32,6 +32,29 @@ class SkillRatingsController < ApplicationController
       set_skill_ratings
       render :edit, status: :unprocessable_content
     end
+  end
+
+  def submit
+    authorize_skill_ratings
+
+    if @skill_ratings_data.any? { |d| d[:skill_rating].rejected? }
+      return redirect_to user_skill_ratings_path(@target_user),
+        alert: t("skill_ratings.submit.has_rejected")
+    end
+
+    draft_ratings = @skill_ratings_data
+      .map { |d| d[:skill_rating] }
+      .select { |r| r.persisted? && r.draft? }
+
+    if draft_ratings.empty?
+      return redirect_to user_skill_ratings_path(@target_user),
+        alert: t("skill_ratings.submit.no_drafts")
+    end
+
+    draft_ratings.each { |r| r.submit_for_approval }
+
+    redirect_to user_skill_ratings_path(@target_user),
+      notice: t("skill_ratings.submit.success")
   end
 
   private
@@ -135,9 +158,13 @@ class SkillRatingsController < ApplicationController
       skill_rating.team_id = @target_user.team_id
     end
 
+    return if skill_rating.approved? && current_user == @target_user
+
+    rating_changed = skill_rating.new_record? || skill_rating.rating != rating_value
+
     skill_rating.assign_attributes(
       rating: rating_value,
-      status: "draft",
+      status: rating_changed ? "draft" : skill_rating.status,
       updated_by: current_user
     )
 

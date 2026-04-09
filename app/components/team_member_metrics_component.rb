@@ -50,7 +50,7 @@ class TeamMemberMetricsComponent < ViewComponent::Base
     ratings = SkillRating
       .joins(:technology)
       .joins("LEFT JOIN team_technologies ON team_technologies.team_id = skill_ratings.team_id AND team_technologies.technology_id = skill_ratings.technology_id")
-      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: {active: true})
+      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: {active: true}, status: :approved)
       .select(
         "skill_ratings.*",
         "COALESCE(team_technologies.criticality, technologies.criticality) as effective_criticality"

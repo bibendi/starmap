@@ -127,8 +127,9 @@ module Admin
 
     def load_quarter_metrics
       @skill_ratings_count = @quarter.skill_ratings.count
+      @approved_ratings_count = @quarter.skill_ratings.where(status: :approved).count
       @action_plans_count = @quarter.action_plans.count
-      @users_with_ratings = @quarter.skill_ratings.distinct.count(:user_id)
+      @users_with_ratings = @quarter.skill_ratings.where(status: :approved).distinct.count(:user_id)
     end
 
     def filter_by_status(scope)

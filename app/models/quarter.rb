@@ -280,11 +280,7 @@ class Quarter < ApplicationRecord
     return unless status_changed?
 
     if status == "closed"
-      # Lock all skill ratings when quarter is closed
-      skill_ratings.where(status: %w[draft submitted]).update_all(status: "approved", locked: true)
-    elsif status == "draft"
-      # Unlock skill ratings when returning to draft
-      skill_ratings.update_all(locked: false)
+      skill_ratings.where(status: %w[draft submitted]).update_all(status: "approved")
     end
   end
 end

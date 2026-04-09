@@ -65,7 +65,8 @@ class TeamSkillMatrixComponent < ViewComponent::Base
           quarter: quarters,
           rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
           team_id: @team.id,
-          technology_id: @technologies.map(&:id)
+          technology_id: @technologies.map(&:id),
+          status: :approved
         )
         .group(:technology_id, :quarter_id)
         .count
@@ -131,7 +132,8 @@ class TeamSkillMatrixComponent < ViewComponent::Base
         quarter: @current_quarter,
         team_id: @team.id,
         technology_id: @technologies.map(&:id),
-        user_id: @team_members.map(&:id)
+        user_id: @team_members.map(&:id),
+        status: :approved
       )
       .pluck(:technology_id, :user_id, :rating)
       .each_with_object({}) { |(tech_id, user_id, rating), hash|
@@ -171,7 +173,8 @@ class TeamSkillMatrixComponent < ViewComponent::Base
         quarter: [@current_quarter, previous_quarter],
         team_id: @team.id,
         technology_id: @technologies.map(&:id),
-        user_id: @team_members.map(&:id)
+        user_id: @team_members.map(&:id),
+        status: :approved
       )
       .pluck(:technology_id, :user_id, :quarter_id, :rating)
 

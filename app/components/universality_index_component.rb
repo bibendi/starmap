@@ -15,7 +15,7 @@ class UniversalityIndexComponent < ViewComponent::Base
     return {} unless current_quarter
 
     SkillRating
-      .where(quarter: current_quarter, team_id: @team.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
+      .where(quarter: current_quarter, team_id: @team.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, status: :approved)
       .group(:user_id)
       .count
   end

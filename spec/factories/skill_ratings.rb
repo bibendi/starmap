@@ -5,15 +5,16 @@ FactoryBot.define do
     technology
     quarter
     rating { rand(0..3) }
-    status { "draft" }
+    status { "approved" }
+    approved_at { Time.current }
     comment { "Test comment" }
-    locked { false }
-
     trait :approved do
-      rating { [1, 2, 3].sample } # Can't be 0 for approved ratings
-      status { "approved" }
-      approved_at { Time.current }
       association :approved_by, factory: :user
+    end
+
+    trait :draft do
+      status { "draft" }
+      approved_at { nil }
     end
 
     trait :submitted do
@@ -24,10 +25,6 @@ FactoryBot.define do
       status { "rejected" }
       approved_at { Time.current }
       association :approved_by, factory: :user
-    end
-
-    trait :locked do
-      locked { true }
     end
 
     trait :expert_level do
