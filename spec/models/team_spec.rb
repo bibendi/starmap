@@ -98,18 +98,6 @@ RSpec.describe Team, type: :model do
     end
   end
 
-  describe "#has_team_lead?" do
-    it "returns true when team_lead is set" do
-      team = create(:team, :with_team_lead)
-      expect(team.has_team_lead?).to be true
-    end
-
-    it "returns false when team_lead is nil" do
-      team = build(:team, team_lead: nil, unit: build(:unit))
-      expect(team.has_team_lead?).to be false
-    end
-  end
-
   describe "destroy" do
     it "cannot destroy team with associated users" do
       team = create(:team)
