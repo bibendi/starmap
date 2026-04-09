@@ -80,7 +80,7 @@ RSpec.describe "SkillRatings", type: :request do
 
       it "displays ratings with status and level" do
         get user_skill_ratings_path(engineer)
-        expect(response.body).to include(skill_rating.rating.to_s, skill_rating.level, I18n.t("skill_ratings.status.#{skill_rating.status}"))
+        expect(response.body).to include(skill_rating.rating.to_s, I18n.t("skill_ratings.levels.two"), I18n.t("skill_ratings.status.#{skill_rating.status}"))
       end
     end
 

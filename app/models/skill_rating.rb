@@ -12,22 +12,12 @@ class SkillRating < ApplicationRecord
   enum :status, {draft: "draft", submitted: "submitted", approved: "approved", rejected: "rejected"}, default: :draft
 
   validates :rating, presence: true, inclusion: {in: 0..3}
-  validates :user_id, uniqueness: {scope: [:technology_id, :quarter_id], message: "уже имеет оценку для этой технологии в данном квартале"}
+  validates :user_id, uniqueness: {scope: [:technology_id, :quarter_id]}
 
   before_validation :set_team_from_user, if: -> { team_id.nil? && user_id.present? }
 
   scope :by_quarter, ->(quarter) { where(quarter: quarter) }
   scope :by_user, ->(user) { where(user: user) }
-
-  def level
-    case rating
-    when 0 then "Не имею представления"
-    when 1 then "Имею представление"
-    when 2 then "Свободно владею"
-    when 3 then "Могу учить других"
-    else "Неизвестно"
-    end
-  end
 
   def can_be_submitted?
     draft?

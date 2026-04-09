@@ -335,6 +335,11 @@ en:
     errors:
       not_evaluation_period: "Evaluation period is closed"
       no_team: "User is not assigned to a team"
+    levels:
+      zero: "No knowledge"
+      one: "Basic understanding"
+      two: "Proficient"
+      three: "Can teach others"
     status:
       draft: "Draft"
       submitted: "Pending Approval"

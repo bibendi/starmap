@@ -69,7 +69,7 @@
                         </span>
                       </td>
                       <td class="table__cell text-gray-700 dark:text-gray-300">
-                        <%= skill_rating.level %>
+                        <%= t("skill_ratings.levels.#{%w[zero one two three][skill_rating.rating] || 'zero'}") %>
                       </td>
                       <td class="table__cell table__cell--center">
                         <% case skill_rating.status %>
