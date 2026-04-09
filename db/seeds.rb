@@ -216,12 +216,9 @@ previous_quarter = Quarter.find_or_create_by!(
   quarter.status = "closed"
   quarter.description = "Quarter #{prev_q_num} #{prev_year}"
   quarter.is_current = false
-  quarter.previous_quarter_id = nil
   quarter.evaluation_start_date = prev_start
   quarter.evaluation_end_date = prev_start + 14.days
 end
-
-current_quarter.update!(previous_quarter_id: previous_quarter.id)
 
 Rails.logger.debug "Creating test users..."
 

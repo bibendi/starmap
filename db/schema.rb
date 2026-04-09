@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_182104) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_195346) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,7 +58,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_182104) do
     t.date "evaluation_start_date"
     t.boolean "is_current", default: false, null: false
     t.string "name", null: false
-    t.bigint "previous_quarter_id"
     t.integer "quarter_number", null: false
     t.date "start_date", null: false
     t.string "status", default: "active", null: false
@@ -68,7 +67,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_182104) do
     t.index ["end_date"], name: "index_quarters_on_end_date"
     t.index ["is_current"], name: "index_quarters_on_is_current"
     t.index ["name", "year"], name: "index_quarters_on_name_and_year", unique: true
-    t.index ["previous_quarter_id"], name: "index_quarters_on_previous_quarter_id"
     t.index ["start_date"], name: "index_quarters_on_start_date"
     t.index ["status"], name: "index_quarters_on_status"
     t.index ["year", "quarter_number"], name: "index_quarters_on_year_and_quarter_number", unique: true
@@ -200,7 +198,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_182104) do
   add_foreign_key "action_plans", "users"
   add_foreign_key "action_plans", "users", column: "assigned_to_id"
   add_foreign_key "action_plans", "users", column: "created_by_id"
-  add_foreign_key "quarters", "quarters", column: "previous_quarter_id"
   add_foreign_key "quarters", "users", column: "created_by_id"
   add_foreign_key "skill_ratings", "quarters"
   add_foreign_key "skill_ratings", "teams"
