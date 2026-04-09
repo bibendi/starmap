@@ -313,7 +313,7 @@ class ActionPlan < ApplicationRecord
         status: "active",
         priority: (tech.criticality == "high") ? "high" : "medium",
         due_date: quarter.end_date,
-        created_by: User.admins.first || User.first
+        created_by: User.admin.first || User.first
       )
       created_count += 1
     end
@@ -334,7 +334,7 @@ class ActionPlan < ApplicationRecord
         status: "active",
         priority: "medium",
         due_date: quarter.end_date,
-        created_by: user.team_lead || User.admins.first || User.first,
+        created_by: user.team_lead || User.admin.first || User.first,
         assigned_to: user
       )
       created_count += 1

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_195346) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_202351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -161,7 +161,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_195346) do
 
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true, null: false
-    t.boolean "admin", default: false, null: false
     t.string "avatar_url"
     t.datetime "confirmation_sent_at"
     t.boolean "confirmed_at", null: false

@@ -36,7 +36,7 @@ class ApplicationPolicy
   end
 
   def admin?
-    user&.role == "admin" || user&.admin?
+    user&.admin?
   end
 
   def team_lead_of?(team)
