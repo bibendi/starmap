@@ -9,10 +9,18 @@
               <%= @target_user.full_name %> • <%= @current_quarter.full_name %>
             </p>
           </div>
-          <% if @skill_ratings_data.present? && @current_quarter&.evaluation_period? && policy(@skill_ratings_data.first[:skill_rating]).update? %>
-            <%= link_to t("skill_ratings.show.edit_button"),
-                edit_user_skill_ratings_path(@target_user),
-                class: "btn btn--primary" %>
+          <% if @skill_ratings_data.present? && @current_quarter&.evaluation_period? && @skill_ratings_data.any? { |d| policy(d[:skill_rating]).update? } %>
+            <div class="flex items-center gap-3">
+              <% if @skill_ratings_data.any? { |d| d[:skill_rating].draft? } && @skill_ratings_data.none? { |d| d[:skill_rating].rejected? } %>
+                <%= button_to t("skill_ratings.submit.button"),
+                    submit_user_skill_ratings_path(@target_user),
+                    method: :post,
+                    class: "btn btn--primary" %>
+              <% end %>
+              <%= link_to t("skill_ratings.show.edit_button"),
+                  edit_user_skill_ratings_path(@target_user),
+                  class: "btn btn--secondary" %>
+            </div>
           <% end %>
         </div>
       </div>
@@ -99,24 +107,10 @@
           </div>
         </div>
 
-        <div class="mt-6 flex items-center justify-between">
+        <div class="mt-6">
           <%= link_to t("skill_ratings.show.back_to_user"),
               user_path(@target_user),
               class: "link" %>
-
-        <% if @current_quarter&.evaluation_period? && policy(@skill_ratings_data.first[:skill_rating]).update? %>
-            <div class="flex items-center gap-3">
-              <% if @skill_ratings_data.any? { |d| d[:skill_rating].draft? } && @skill_ratings_data.none? { |d| d[:skill_rating].rejected? } %>
-                <%= button_to t("skill_ratings.submit.button"),
-                    submit_user_skill_ratings_path(@target_user),
-                    method: :post,
-                    class: "btn btn--primary" %>
-              <% end %>
-              <%= link_to t("skill_ratings.show.edit_button"),
-                  edit_user_skill_ratings_path(@target_user),
-                  class: "btn btn--secondary" %>
-            </div>
-        <% end %>
         </div>
       <% else %>
         <div class="alert alert--warning">

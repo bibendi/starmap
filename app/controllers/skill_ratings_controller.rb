@@ -123,7 +123,9 @@ class SkillRatingsController < ApplicationController
   end
 
   def authorize_skill_ratings
-    rating = @skill_ratings_data.first&.[](:skill_rating) ||
+    rating = @skill_ratings_data
+      .map { |d| d[:skill_rating] }
+      .find { |r| policy(r).update? } ||
       SkillRating.new(user: @target_user, quarter: @current_quarter)
     authorize rating
   end
