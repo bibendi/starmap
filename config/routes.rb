@@ -11,7 +11,9 @@ Rails.application.routes.draw do
   root "teams#show"
 
   # Teams routes
-  resources :teams, only: [:index, :show]
+  resources :teams, only: [:index, :show] do
+    resources :technologies, only: [:show], controller: "team_technologies"
+  end
 
   # Unit routes
   resources :units, only: [:index, :show]

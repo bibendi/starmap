@@ -1,0 +1,131 @@
+<div class="flex flex-col min-h-screen">
+  <main class="flex-1 flex flex-col">
+    <div class="page-header">
+      <div class="page-header__container">
+        <div class="page-header__content">
+          <h1 class="page-title"><%= t('team_technologies.show.title', technology: @technology.name) %></h1>
+        </div>
+      </div>
+    </div>
+
+    <main class="page-main">
+      <div class="card mb-8">
+        <div class="card__body">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-8">
+              <div>
+                <dt class="label"><%= t('teams.show.team') %></dt>
+                <dd class="value--large"><%= link_to @team.name, team_path(@team), class: "link" %></dd>
+              </div>
+              <div>
+                <dt class="label"><%= t('team_technologies.show.category') %></dt>
+                <dd class="value--medium"><%= @technology.category&.name || '-' %></dd>
+              </div>
+            </div>
+            <div class="flex items-center gap-8">
+              <div>
+                <dt class="label"><%= t('components.team_skill_matrix.bus_factor') %></dt>
+                <dd>
+                  <div class="inline-flex items-center gap-1.5">
+                    <span class="badge <%= case @bus_factor_risk_level when 'high' then 'badge--danger' when 'medium' then 'badge--warning' else 'badge--success' end %>">
+                      <% if @bus_factor_risk_level == 'high' %>
+                        <svg class="w-3 h-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                      <% elsif @bus_factor_risk_level == 'medium' %>
+                        <svg class="w-3 h-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                      <% else %>
+                        <svg class="w-3 h-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                      <% end %>
+                      <%= @expert_count %>/<%= @team_technology&.target_experts || 0 %>
+                    </span>
+                    <% if @bus_factor_change != 0 %>
+                      <span class="inline-flex items-center gap-0.5 text-xs font-medium <%= @bus_factor_change > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
+                        <%= @bus_factor_change > 0 ? '+' : '' %><%= @bus_factor_change %>
+                      </span>
+                    <% end %>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt class="label"><%= t('components.team_skill_matrix.coverage') %></dt>
+                <dd>
+                  <div class="progress-bar">
+                    <div class="progress-bar__track">
+                      <div class="progress-bar__fill <%= case when @coverage >= 80 then 'progress-bar__fill--success' when @coverage >= 50 then 'progress-bar__fill--warning' else 'progress-bar__fill--danger' end %>" style="width: <%= @coverage %>%"></div>
+                    </div>
+                    <div class="progress-bar__label text-center"><%= @coverage %>%</div>
+                  </div>
+                </dd>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card__body">
+          <% if @team_members.any? %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="table__header-cell"><%= t('team_technologies.show.member') %></th>
+                  <th class="table__header-cell table__header-cell--center"><%= t('team_technologies.show.rating') %></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <% @team_members.each do |member| %>
+                  <% rating = @skill_ratings[member.id] %>
+                  <% previous_rating = @previous_ratings[member.id] || 0 %>
+                  <% change = rating.nil? ? nil : rating - previous_rating %>
+                  <tr class="table__row">
+                    <td class="table__cell table__cell--heading">
+                      <%= link_to member.full_name, user_path(member), class: "text-heading hover:underline hover:text-indigo-600 dark:hover:text-indigo-400" %>
+                    </td>
+                    <td class="table__cell table__cell--center">
+                      <div class="relative-container">
+                        <% if rating.present? %>
+                          <span class="rating-indicator <%= case rating when 3 then 'rating-indicator--expert' when 2 then 'rating-indicator--proficient' when 1 then 'rating-indicator--basic' else 'rating-indicator--none' end %>">
+                            <%= rating %>
+                          </span>
+                        <% else %>
+                          <span class="text-muted">-</span>
+                        <% end %>
+                        <% if change && change != 0 %>
+                          <span class="change-indicator <%= change > 0 ? 'change-indicator--positive' : 'change-indicator--negative' %>">
+                            <% if change > 0 %>
+                              <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                              </svg>
+                            <% else %>
+                              <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                              </svg>
+                            <% end %>
+                            <%= change > 0 ? '+' : '' %><%= change %>
+                          </span>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+
+            <div class="legend">
+              <div class="legend-item"><span class="legend-badge legend-badge--expert">3</span> <%= t('team_technologies.show.legend.expert') %></div>
+              <div class="legend-item"><span class="legend-badge legend-badge--proficient">2</span> <%= t('team_technologies.show.legend.proficient') %></div>
+              <div class="legend-item"><span class="legend-badge legend-badge--basic">1</span> <%= t('team_technologies.show.legend.basic') %></div>
+              <div class="legend-item"><span class="legend-badge legend-badge--none">0</span> <%= t('team_technologies.show.legend.none') %></div>
+            </div>
+          <% else %>
+            <p class="text-muted--center py-4"><%= t('team_technologies.show.no_data') %></p>
+          <% end %>
+        </div>
+      </div>
+    </main>
+  </main>
+</div>

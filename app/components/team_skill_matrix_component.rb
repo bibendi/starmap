@@ -5,12 +5,17 @@ class TeamSkillMatrixComponent < ViewComponent::Base
 
   attr_reader :team, :team_skill_matrix, :team_members, :technologies, :bus_factor, :rating_dynamics
 
-  def initialize(team:)
+  def initialize(team:, show_technology_links: false)
     @team = team
     @current_quarter = Quarter.current
     @team_members = @team&.users || []
     @technologies = team_technologies
+    @show_technology_links = show_technology_links
     build_data
+  end
+
+  def show_technology_links?
+    @show_technology_links
   end
 
   def any_data?
@@ -21,6 +26,16 @@ class TeamSkillMatrixComponent < ViewComponent::Base
 
   def bus_factor_for(technology_id)
     @bus_factor[technology_id]
+  end
+
+  def coverage_for(technology_id)
+    bus_factor_data = @bus_factor[technology_id]
+    return 0 unless bus_factor_data
+
+    total = @team_members.size
+    return 0 if total.zero?
+
+    [(bus_factor_data[:count].to_f / total * 100).round, 100].min
   end
 
   def rating_for(technology_id, user_id)

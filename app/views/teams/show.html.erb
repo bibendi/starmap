@@ -152,7 +152,7 @@
           <%= render UniversalityIndexComponent.new(team: @team) %>
         </div>
 
-        <%= render TeamSkillMatrixComponent.new(team: @team) %>
+        <%= render TeamSkillMatrixComponent.new(team: @team, show_technology_links: policy(TeamTechnology.new(team: @team)).show?) %>
 
         <%= render TeamMemberMetricsComponent.new(team: @team) %>
       <% else %>

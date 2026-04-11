@@ -36,8 +36,12 @@
                     <% end %>
                   <% end %>
 
-                  <% if policy(:navigation).show_team? && current_user.team %>
-                    <%= link_to t('navigation.team'), team_path(current_user.team), class: "nav-link #{current_page?(team_path(current_user.team)) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                  <% if policy(:navigation).show_team? %>
+                    <% if current_user.team %>
+                      <%= link_to t('navigation.team'), team_path(current_user.team), class: "nav-link #{current_page?(team_path(current_user.team)) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <% else %>
+                      <%= link_to t('navigation.team'), teams_path, class: "nav-link #{current_page?(teams_path) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <% end %>
                   <% end %>
 
                   <% if policy(:navigation).show_personal_dashboard? %>

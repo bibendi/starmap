@@ -282,6 +282,8 @@ ru:
   skill_ratings:
     show:
       title: "Оценки навыков"
+      competency: "Компетенция"
+      category: "Категория"
       technology: "Технология"
       criticality: "Критичность"
       target_experts: "Целевое количество экспертов"
@@ -384,10 +386,11 @@ ru:
       description: "Количество технологий с уровнем 2-3"
       technologies: "технологий"
     team_skill_matrix:
-      title: "Карта навыков команды"
+      title: "Компетенции команды"
       description: "Показатель покрытия технологий и уровень зрелости компетенций"
       technology: "Технология"
       bus_factor: "Bus Factor"
+      coverage: "Покрытие"
       criticality:
         high: "Высокая"
         normal: "Обычная"
@@ -450,6 +453,31 @@ ru:
       light: "Тема изменена на светлую"
       dark: "Тема изменена на тёмную"
       system: "Тема изменена на системную"
+
+  team_technologies:
+    show:
+      title: "%{technology}"
+      team_link: "Команда: %{team}"
+      category: "Категория"
+      criticality: "Критичность"
+      target_experts_label: "Цель"
+      target_experts:
+        one: "%{count} эксперт"
+        few: "%{count} эксперта"
+        many: "%{count} экспертов"
+        other: "%{count} экспертов"
+      member: "Участник"
+      rating: "Оценка"
+      change: "Изменение"
+      no_data: "Нет оценок для этой технологии"
+      no_active_quarter:
+        title: "Нет активного квартала"
+        message: "Пожалуйста, создайте квартал в админке."
+      legend:
+        expert: "Может учить других"
+        proficient: "Свободно владеет"
+        basic: "Имеет представление"
+        none: "Не владеет"
 
   activerecord:
     models:
