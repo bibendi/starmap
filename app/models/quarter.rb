@@ -3,7 +3,6 @@ class Quarter < ApplicationRecord
   has_many :skill_ratings, dependent: :destroy
   has_many :users, through: :skill_ratings
   has_many :technologies, through: :skill_ratings
-  has_many :action_plans, dependent: :destroy
 
   enum :status, {
     draft: "draft",

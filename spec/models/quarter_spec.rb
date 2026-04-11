@@ -250,12 +250,5 @@ RSpec.describe Quarter, type: :model do
 
       expect { quarter.destroy }.to change(SkillRating, :count).by(-1)
     end
-
-    it "destroys action_plans on destroy" do
-      quarter = create(:quarter)
-      create(:action_plan, quarter: quarter)
-
-      expect { quarter.destroy }.to change(ActionPlan, :count).by(-1)
-    end
   end
 end

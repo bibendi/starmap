@@ -7,8 +7,6 @@ class User < ApplicationRecord
 
   belongs_to :team, optional: true
   has_many :skill_ratings, dependent: :destroy
-  has_many :action_plans, dependent: :destroy
-  has_many :created_action_plans, class_name: "ActionPlan", foreign_key: "created_by_id", dependent: :nullify
 
   enum :role, {
     engineer: "engineer",

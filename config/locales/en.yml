@@ -231,7 +231,7 @@ en:
       metrics:
         title: "Metrics"
         skill_ratings: "Skill Ratings"
-        action_plans: "Development Plans"
+        approved_ratings: "Approved Ratings"
         users_with_ratings: "Users with Ratings"
       actions:
         activate: "Activate"

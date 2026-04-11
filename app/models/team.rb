@@ -6,7 +6,6 @@ class Team < ApplicationRecord
   belongs_to :unit, optional: false
   has_many :users, dependent: :restrict_with_error
   has_many :skill_ratings, through: :users
-  has_many :action_plans, through: :users
   has_many :team_technologies, dependent: :destroy
   has_many :technologies, through: :team_technologies
 

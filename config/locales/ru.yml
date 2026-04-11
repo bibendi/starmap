@@ -202,7 +202,7 @@ ru:
       metrics:
         title: "Метрики"
         skill_ratings: "Оценки компетенций"
-        action_plans: "Планы развития"
+        approved_ratings: "Утвержденные оценки"
         users_with_ratings: "Сотрудников с оценками"
       actions:
         activate: "Активировать"

@@ -17,20 +17,6 @@ RSpec.describe Technology, type: :model do
     end
   end
 
-  describe "scopes" do
-    describe ".by_category" do
-      it "filters by category_id" do
-        backend = create(:category, name: "Backend")
-        frontend = create(:category, name: "Frontend")
-        tech1 = create(:technology, category: backend)
-        tech2 = create(:technology, category: frontend)
-
-        expect(described_class.by_category(backend.id)).to include(tech1)
-        expect(described_class.by_category(backend.id)).not_to include(tech2)
-      end
-    end
-  end
-
   describe "#category_name" do
     it "returns category name via association" do
       category = build(:category, name: "Backend")

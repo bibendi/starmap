@@ -42,7 +42,7 @@ module Admin
     def update
       authorize [:admin, @technology]
 
-      if @technology.update(technology_params)
+      if @technology.update(technology_params.merge(updated_by: current_user))
         redirect_to admin_technology_path(@technology), notice: t("admin.technologies.updated")
       else
         render :edit, status: :unprocessable_content
