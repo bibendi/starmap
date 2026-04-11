@@ -22,6 +22,13 @@ Rails.application.routes.draw do
   resources :users, only: [:show] do
     resource :skill_ratings, only: [:show, :edit, :update] do
       post :submit
+      post :approve_all
+    end
+    resources :skill_ratings, only: [] do
+      member do
+        post :approve
+        post :reject
+      end
     end
   end
 

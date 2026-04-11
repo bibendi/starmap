@@ -45,7 +45,12 @@
                   <% end %>
 
                   <% if policy(:navigation).show_personal_dashboard? %>
-                    <%= link_to t('navigation.profile'), user_path(current_user), class: "nav-link #{current_page?(user_path(current_user)) ? 'nav-link--active' : 'nav-link--inactive'}" %>
+                    <%= link_to user_path(current_user), class: "nav-link #{current_page?(user_path(current_user)) ? 'nav-link--active' : 'nav-link--inactive'} relative inline-flex" do %>
+                      <%= t('navigation.profile') %>
+                      <% if current_user.team_lead? || current_user.unit_lead? || current_user.admin? %>
+                        <%= render "shared/nav_profile_badge", count: User.pending_approvals_count(current_user) %>
+                      <% end %>
+                    <% end %>
                   <% end %>
 
                 <% if policy(:navigation).show_admin? %>

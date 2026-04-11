@@ -160,6 +160,10 @@
     @apply border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-indigo-500 dark:focus:ring-offset-gray-900;
   }
 
+  .btn--danger {
+    @apply border-transparent text-white bg-red-600 hover:bg-red-700 focus:ring-red-500 dark:focus:ring-offset-gray-900;
+  }
+
     .btn--icon {
      @apply p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700;
    }
@@ -943,5 +947,9 @@
 
     .progress-bar__label {
       @apply text-xs font-medium text-gray-600 dark:text-gray-400 mt-1;
+    }
+
+    .notification-badge {
+      @apply absolute -top-2 -right-2 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold text-white bg-red-500 dark:bg-red-400 dark:text-gray-900;
     }
   }

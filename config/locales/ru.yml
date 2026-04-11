@@ -324,6 +324,21 @@ ru:
       submitted: "На утверждении"
       approved: "Утверждено"
       rejected: "Отклонено"
+    approve:
+      button: "Утвердить"
+      success: "Оценка утверждена"
+      already_processed: "Оценка больше не ожидает утверждения"
+      no_submitted: "Нет оценок для утверждения"
+      all_success: "Все отправленные оценки утверждены"
+      all_button: "Утвердить все"
+    reject:
+      button: "Отклонить"
+      success: "Оценка отклонена"
+    pending_approvals:
+      title: "Ожидают утверждения"
+      empty: "Нет ожидающих утверждений"
+      user_link: "Посмотреть оценки"
+      badge_count: "%{count}"
 
   units:
     index:

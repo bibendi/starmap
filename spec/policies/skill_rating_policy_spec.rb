@@ -68,7 +68,9 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
   context "for unit_lead" do
     let(:user) { unit_lead }
-    let(:record) { build(:skill_rating, user: unit_lead) }
+    let(:unit) { create(:unit, unit_lead: unit_lead) }
+    let(:unit_team_lead) { create(:team_lead, team: create(:team, unit: unit)) }
+    let(:record) { build(:skill_rating, user: unit_team_lead) }
 
     permissions :index?, :show?, :approve?, :reject?, :copy_from_previous? do
       it "grants access" do
@@ -83,14 +85,25 @@ RSpec.describe SkillRatingPolicy, type: :policy do
     end
 
     permissions :create?, :new? do
-      it "grants access" do
-        expect(subject).to permit(user, record)
+      it "denies access" do
+        expect(subject).not_to permit(user, record)
       end
     end
 
     permissions :destroy? do
       it "denies access" do
         expect(subject).not_to permit(user, record)
+      end
+    end
+
+    context "when rating belongs to engineer in own unit" do
+      let(:engineer_in_unit) { create(:engineer, team: unit_team_lead.team) }
+      let(:engineer_record) { build(:skill_rating, user: engineer_in_unit) }
+
+      permissions :approve?, :reject? do
+        it "denies access" do
+          expect(subject).not_to permit(user, engineer_record)
+        end
       end
     end
   end

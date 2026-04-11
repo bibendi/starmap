@@ -22,6 +22,12 @@
                   class: "btn btn--secondary" %>
             </div>
           <% end %>
+          <% if @can_approve_any && @skill_ratings_data.any? { |d| d[:skill_rating].submitted? } %>
+            <%= button_to t("skill_ratings.approve.all_button"),
+                approve_all_user_skill_ratings_path(@target_user),
+                method: :post,
+                class: "btn btn--primary" %>
+          <% end %>
         </div>
       </div>
     </div>
@@ -40,74 +46,18 @@
                     <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.rating") %></th>
                     <th class="table__header-cell"><%= t("skill_ratings.show.level") %></th>
                     <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.status") %></th>
+                    <% if @can_approve_any %>
+                      <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.actions", default: "Actions") %></th>
+                    <% end %>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                   <% @skill_ratings_data.each do |data| %>
-                    <% team_tech = data[:team_technology] %>
-                    <% skill_rating = data[:skill_rating] %>
-                    <tr>
-                      <td class="table__cell table__cell--heading">
-                        <% if policy(TeamTechnology.new(team: team_tech.team, technology: team_tech.technology)).show? %>
-                          <%= link_to team_tech.technology.name, team_technology_path(team_tech.team, team_tech.technology), class: "text-heading hover:underline hover:text-indigo-600 dark:hover:text-indigo-400" %>
-                        <% else %>
-                          <span class="text-heading"><%= team_tech.technology.name %></span>
-                        <% end %>
-                      </td>
-                      <td class="table__cell">
-                        <span class="text-subtle"><%= team_tech.technology.category&.name || '-' %></span>
-                      </td>
-                      <td class="table__cell">
-                        <% case team_tech.criticality %>
-                        <% when "high" %>
-                          <span class="badge badge--danger">
-                            <%= t("activerecord.attributes.technology.criticality.high") %>
-                          </span>
-                        <% when "normal" %>
-                          <span class="badge badge--warning">
-                            <%= t("activerecord.attributes.technology.criticality.normal") %>
-                          </span>
-                        <% when "low" %>
-                          <span class="badge badge--secondary">
-                            <%= t("activerecord.attributes.technology.criticality.low") %>
-                          </span>
-                        <% end %>
-                      </td>
-                      <td class="table__cell table__cell--center">
-                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold
-                          <%= case skill_rating.rating
-                            when 0 then "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-                            when 1 then "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                            when 2 then "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                            when 3 then "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-                            end %>">
-                          <%= skill_rating.rating %>
-                        </span>
-                      </td>
-                      <td class="table__cell text-gray-700 dark:text-gray-300">
-                        <%= t("skill_ratings.levels.#{%w[zero one two three][skill_rating.rating] || 'zero'}") %>
-                      </td>
-                      <td class="table__cell table__cell--center">
-                        <% case skill_rating.status %>
-                        <% when "draft" %>
-                          <span class="badge badge--secondary">
-                            <%= t("skill_ratings.status.draft") %>
-                          </span>
-                        <% when "submitted" %>
-                          <span class="badge badge--warning">
-                            <%= t("skill_ratings.status.submitted") %>
-                          </span>
-                        <% when "approved" %>
-                          <span class="badge badge--success">
-                            <%= t("skill_ratings.status.approved") %>
-                          </span>
-                        <% when "rejected" %>
-                          <span class="badge badge--danger">
-                            <%= t("skill_ratings.status.rejected") %>
-                          </span>
-                        <% end %>
-                      </td>
-                    </tr>
+                    <%= render "skill_ratings/skill_rating_row",
+                        skill_rating: data[:skill_rating],
+                        team_technology: data[:team_technology],
+                        can_approve: @can_approve_any && policy(data[:skill_rating]).approve?,
+                        target_user: @target_user %>
                   <% end %>
                 </tbody>
               </table>

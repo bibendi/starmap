@@ -1,0 +1,10 @@
+<%= turbo_stream.replace dom_id(@skill_rating) do %>
+  <% data = @skill_ratings_data.find { |d| d[:skill_rating].id == @skill_rating.id } %>
+  <% if data %>
+    <%= render "skill_ratings/skill_rating_row",
+        skill_rating: data[:skill_rating],
+        team_technology: data[:team_technology],
+        can_approve: @can_approve_any && policy(data[:skill_rating]).approve?,
+        target_user: @target_user %>
+  <% end %>
+<% end %>

@@ -8,13 +8,15 @@ class SkillRatingsController < ApplicationController
   before_action :set_current_quarter
   before_action :ensure_evaluation_period, only: [:edit, :update, :submit]
   before_action :ensure_team_assignment
-  before_action :set_team_technologies, only: [:show, :edit, :update, :submit]
-  before_action :set_skill_ratings, only: [:show, :edit, :update, :submit]
+  before_action :set_team_technologies, only: [:show, :edit, :update, :submit, :approve, :reject]
+  before_action :set_skill_ratings, only: [:show, :edit, :update, :submit, :approve, :reject]
+  before_action :set_skill_rating, only: [:approve, :reject]
 
   skip_after_action :verify_policy_scoped
 
   def show
     authorize_skill_ratings
+    set_can_approve_any
   end
 
   def edit
@@ -55,6 +57,60 @@ class SkillRatingsController < ApplicationController
 
     redirect_to user_skill_ratings_path(@target_user),
       notice: t("skill_ratings.submit.success")
+  end
+
+  def approve
+    authorize @skill_rating
+    @skill_rating.approve!(current_user)
+    set_skill_ratings
+    set_can_approve_any
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to user_skill_ratings_path(@target_user), notice: t("skill_ratings.approve.success") }
+    end
+  rescue ActiveRecord::RecordInvalid
+    redirect_to user_skill_ratings_path(@target_user),
+      alert: t("skill_ratings.approve.already_processed")
+  end
+
+  def reject
+    authorize @skill_rating
+    @skill_rating.reject!(current_user)
+    set_skill_ratings
+    set_can_approve_any
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to user_skill_ratings_path(@target_user), notice: t("skill_ratings.reject.success") }
+    end
+  rescue ActiveRecord::RecordInvalid
+    redirect_to user_skill_ratings_path(@target_user),
+      alert: t("skill_ratings.approve.already_processed")
+  end
+
+  def approve_all
+    authorize SkillRating.new(user: @target_user, quarter: @current_quarter), :approve?
+
+    submitted_ratings = find_submitted_ratings
+
+    if submitted_ratings.empty?
+      return redirect_to user_skill_ratings_path(@target_user),
+        alert: t("skill_ratings.approve.no_submitted")
+    end
+
+    authorizeable = submitted_ratings.select { |r| policy(r).approve? }
+    if authorizeable.empty?
+      return redirect_to user_skill_ratings_path(@target_user),
+        alert: t("skill_ratings.approve.no_submitted")
+    end
+
+    ActiveRecord::Base.transaction do
+      authorizeable.each { |r| r.approve!(current_user) }
+    end
+
+    redirect_to user_skill_ratings_path(@target_user),
+      notice: t("skill_ratings.approve.all_success")
   end
 
   private
@@ -175,5 +231,21 @@ class SkillRatingsController < ApplicationController
 
   def skill_ratings_params
     params.permit(ratings: [:rating, :comment])
+  end
+
+  def set_skill_rating
+    @skill_rating = SkillRating.find(params[:id])
+  end
+
+  def set_can_approve_any
+    @can_approve_any = @skill_ratings_data.any? { |d| policy(d[:skill_rating]).approve? }
+  end
+
+  def find_submitted_ratings
+    return [] unless @current_quarter
+
+    SkillRating.by_user(@target_user)
+      .by_quarter(@current_quarter)
+      .submitted
   end
 end

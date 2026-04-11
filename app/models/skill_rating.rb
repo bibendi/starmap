@@ -27,6 +27,18 @@ class SkillRating < ApplicationRecord
     update!(status: :submitted) if draft?
   end
 
+  def approve!(approver)
+    raise ActiveRecord::RecordInvalid, self unless submitted?
+
+    update!(status: :approved, approved_by: approver, approved_at: Time.current)
+  end
+
+  def reject!(approver)
+    raise ActiveRecord::RecordInvalid, self unless submitted?
+
+    update!(status: :rejected, approved_by: approver, approved_at: Time.current)
+  end
+
   private
 
   def set_team_from_user

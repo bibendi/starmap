@@ -1,0 +1,20 @@
+<div class="card mt-6">
+  <div class="card__header">
+    <div class="flex items-center justify-between">
+      <h3 class="card__title"><%= t("skill_ratings.pending_approvals.title") %></h3>
+      <span class="badge badge--danger"><%= users.count %></span>
+    </div>
+  </div>
+  <div class="card__body">
+    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+      <% users.each do |user| %>
+        <li class="py-3 flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-900 dark:text-gray-100"><%= user.full_name %></span>
+          <%= link_to t("skill_ratings.pending_approvals.user_link"),
+              user_skill_ratings_path(user),
+              class: "btn btn--small btn--secondary" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

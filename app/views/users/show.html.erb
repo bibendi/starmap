@@ -77,6 +77,8 @@
           </div>
         </div>
       <% end %>
+
+      <%= render PendingApprovalsComponent.new(users: @pending_users, current_user: current_user) %>
     </main>
   </main>
 </div>

@@ -162,6 +162,175 @@ RSpec.describe "SkillRatings", type: :request do
     end
   end
 
+  describe "POST /users/:user_id/skill_ratings/:id/approve" do
+    let_it_be(:submitted_rating) { create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 2) }
+
+    context "when not authenticated" do
+      it "redirects to sign in" do
+        post approve_user_skill_rating_path(engineer, submitted_rating)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "as team lead of engineer's team" do
+      before { sign_in team_lead, scope: :user }
+
+      it "approves the rating" do
+        post approve_user_skill_rating_path(engineer, submitted_rating)
+        submitted_rating.reload
+        expect(submitted_rating).to have_attributes(
+          status: "approved",
+          approved_by: team_lead
+        )
+      end
+
+      it "returns turbo stream" do
+        post approve_user_skill_rating_path(engineer, submitted_rating), as: :turbo_stream
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+      end
+    end
+
+    context "as unit lead" do
+      before { sign_in unit_lead, scope: :user }
+
+      it "denies approving engineer rating" do
+        expect {
+          post approve_user_skill_rating_path(engineer, submitted_rating)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+
+      it "approves team lead rating" do
+        tl_rating = create(:skill_rating, :submitted, user: team_lead, technology: technology, quarter: quarter, team: team, rating: 2)
+        post approve_user_skill_rating_path(team_lead, tl_rating)
+        tl_rating.reload
+        expect(tl_rating.status).to eq("approved")
+      end
+    end
+
+    context "as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          post approve_user_skill_rating_path(engineer, submitted_rating)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+
+    context "when rating is not submitted" do
+      let_it_be(:other_technology) { create(:technology) }
+      let_it_be(:draft_rating) { create(:skill_rating, :draft, user: engineer, technology: other_technology, quarter: quarter, team: team, rating: 1) }
+
+      before { sign_in team_lead, scope: :user }
+
+      it "redirects with alert" do
+        post approve_user_skill_rating_path(engineer, draft_rating)
+        expect(response).to redirect_to(user_skill_ratings_path(engineer))
+        expect(flash[:alert]).to eq(I18n.t("skill_ratings.approve.already_processed"))
+      end
+    end
+  end
+
+  describe "POST /users/:user_id/skill_ratings/:id/reject" do
+    let_it_be(:submitted_rating) { create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 2) }
+
+    context "as team lead" do
+      before { sign_in team_lead, scope: :user }
+
+      it "rejects the rating" do
+        post reject_user_skill_rating_path(engineer, submitted_rating)
+        submitted_rating.reload
+        expect(submitted_rating).to have_attributes(
+          status: "rejected",
+          approved_by: team_lead
+        )
+      end
+
+      it "returns turbo stream" do
+        post reject_user_skill_rating_path(engineer, submitted_rating), as: :turbo_stream
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+      end
+    end
+
+    context "as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        expect {
+          post reject_user_skill_rating_path(engineer, submitted_rating)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "POST /users/:user_id/skill_ratings/approve_all" do
+    context "as team lead" do
+      before { sign_in team_lead, scope: :user }
+
+      it "approves all submitted ratings for user in team" do
+        rating1 = create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
+        tech2 = create(:technology)
+        create(:team_technology, team: team, technology: tech2)
+        rating2 = create(:skill_rating, :submitted, user: engineer, technology: tech2, quarter: quarter, team: team, rating: 2)
+
+        post approve_all_user_skill_ratings_path(engineer)
+
+        [rating1, rating2].each { |r| r.reload }
+        expect(rating1.status).to eq("approved")
+        expect(rating2.status).to eq("approved")
+      end
+
+      it "redirects with success notice" do
+        create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
+
+        post approve_all_user_skill_ratings_path(engineer)
+        expect(response).to redirect_to(user_skill_ratings_path(engineer))
+        expect(flash[:notice]).to eq(I18n.t("skill_ratings.approve.all_success"))
+      end
+
+      it "redirects with alert when no submitted ratings" do
+        create(:skill_rating, :draft, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
+
+        post approve_all_user_skill_ratings_path(engineer)
+        expect(flash[:alert]).to eq(I18n.t("skill_ratings.approve.no_submitted"))
+      end
+    end
+
+    context "as unit lead" do
+      before { sign_in unit_lead, scope: :user }
+
+      it "approves team lead ratings in own unit" do
+        tl_rating = create(:skill_rating, :submitted, user: team_lead, technology: technology, quarter: quarter, team: team, rating: 2)
+
+        post approve_all_user_skill_ratings_path(team_lead)
+        tl_rating.reload
+        expect(tl_rating.status).to eq("approved")
+      end
+
+      it "does not approve engineer ratings" do
+        create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
+
+        expect {
+          post approve_all_user_skill_ratings_path(engineer)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+
+    context "as engineer" do
+      before { sign_in engineer, scope: :user }
+
+      it "denies access" do
+        create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
+
+        expect {
+          post approve_all_user_skill_ratings_path(engineer)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
   describe "PATCH /users/:user_id/skill_ratings (update)" do
     let(:valid_params) do
       {

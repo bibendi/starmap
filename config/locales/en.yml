@@ -345,6 +345,21 @@ en:
       submitted: "Pending Approval"
       approved: "Approved"
       rejected: "Rejected"
+    approve:
+      button: "Approve"
+      success: "Rating approved"
+      already_processed: "Rating is no longer pending"
+      no_submitted: "No submitted ratings to approve"
+      all_success: "All submitted ratings approved"
+      all_button: "Approve All"
+    reject:
+      button: "Reject"
+      success: "Rating rejected"
+    pending_approvals:
+      title: "Pending Approvals"
+      empty: "No pending approvals"
+      user_link: "View ratings"
+      badge_count: "%{count}"
 
   units:
     index:

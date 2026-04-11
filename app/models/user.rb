@@ -44,6 +44,60 @@ class User < ApplicationRecord
     display_name.presence || full_name
   end
 
+  def self.pending_approvals_count(approver)
+    return 0 unless approver
+    return 0 if approver.engineer?
+
+    current_quarter = Quarter.current
+    return 0 unless current_quarter
+
+    user_ids_scope = case approver.role
+    when "admin"
+      submitted_rating_user_ids(current_quarter)
+    when "unit_lead"
+      unit = Unit.find_by(unit_lead_id: approver.id)
+      return 0 unless unit
+      team_ids = unit.teams.pluck(:id)
+      submitted_rating_user_ids(current_quarter, team_ids: team_ids, roles: ["team_lead"])
+    when "team_lead"
+      submitted_rating_user_ids(current_quarter, team_ids: [approver.team_id])
+    else
+      return 0
+    end
+
+    user_ids_scope.count
+  end
+
+  def self.users_with_pending_approvals(approver)
+    return User.none unless approver
+    return User.none if approver.engineer?
+
+    current_quarter = Quarter.current
+    return User.none unless current_quarter
+
+    ids = case approver.role
+    when "admin"
+      submitted_rating_user_ids(current_quarter)
+    when "unit_lead"
+      unit = Unit.find_by(unit_lead_id: approver.id)
+      return User.none unless unit
+      submitted_rating_user_ids(current_quarter, team_ids: unit.teams.pluck(:id), roles: ["team_lead"])
+    when "team_lead"
+      submitted_rating_user_ids(current_quarter, team_ids: [approver.team_id])
+    else
+      return User.none
+    end
+
+    User.where(id: ids).order(:first_name, :last_name)
+  end
+
+  def self.submitted_rating_user_ids(quarter, team_ids: nil, roles: nil)
+    scope = SkillRating.where(quarter: quarter, status: :submitted)
+    scope = scope.where(team_id: team_ids) if team_ids
+    scope = scope.joins(:user).where(users: {role: roles}) if roles
+    scope.select(:user_id).distinct
+  end
+
   private
 
   def team_lead_role_changed?
