@@ -65,48 +65,6 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
     end
   end
 
-  describe "#rating_for" do
-    before do
-      create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-    end
-
-    it "returns the rating for a user and technology" do
-      component = described_class.new(team: team)
-      expect(component.rating_for(technology1.id, user1.id)).to eq(2)
-    end
-
-    it "returns 0 when no rating exists" do
-      component = described_class.new(team: team)
-      expect(component.rating_for(technology2.id, user1.id)).to eq(0)
-    end
-  end
-
-  describe "#change_for" do
-    context "when there is a change" do
-      before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "returns the change in rating" do
-        component = described_class.new(team: team)
-        expect(component.change_for(technology1.id, user1.id)).to eq(1)
-      end
-    end
-
-    context "when there is no change" do
-      before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "returns nil" do
-        component = described_class.new(team: team)
-        expect(component.change_for(technology1.id, user1.id)).to be_nil
-      end
-    end
-  end
-
   describe "#bus_factor_for" do
     context "when technology has no experts" do
       it "returns high risk level" do
@@ -159,6 +117,50 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
     end
   end
 
+  describe "#coverage_for" do
+    context "when no experts" do
+      it "returns 0" do
+        component = described_class.new(team: team)
+        expect(component.coverage_for(technology1.id)).to eq(0)
+      end
+    end
+
+    context "when partial coverage" do
+      before do
+        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+      end
+
+      it "returns 50" do
+        component = described_class.new(team: team)
+        expect(component.coverage_for(technology1.id)).to eq(50)
+      end
+    end
+
+    context "when full coverage" do
+      before do
+        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "returns 100" do
+        component = described_class.new(team: team)
+        expect(component.coverage_for(technology1.id)).to eq(100)
+      end
+    end
+
+    context "when exceeding target" do
+      before do
+        create(:skill_rating, user: user1, technology: technology3, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology3, quarter: current_quarter, rating: 3, team: team)
+      end
+
+      it "caps at 100" do
+        component = described_class.new(team: team)
+        expect(component.coverage_for(technology3.id)).to eq(100)
+      end
+    end
+  end
+
   describe "rendering" do
     context "when there is no data" do
       it "renders empty state message" do
@@ -180,65 +182,36 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
         render_inline(component)
         expect(page).to have_text("Technology")
         expect(page).to have_text("Bus Factor")
+        expect(page).to have_text("Coverage")
       end
 
-      it "renders technology names" do
+      it "does not render member name columns" do
         component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).not_to have_text(user1.full_name.split.first)
+      end
+
+      it "renders technology names as links when show_technology_links is true" do
+        component = described_class.new(team: team, show_technology_links: true)
+        render_inline(component)
+        expect(page).to have_link("Ruby", href: /\/teams\/#{team.id}\/technologies\/#{technology1.id}/)
+        expect(page).to have_link("React", href: /\/teams\/#{team.id}\/technologies\/#{technology2.id}/)
+      end
+
+      it "renders technology names as plain text when show_technology_links is false" do
+        component = described_class.new(team: team, show_technology_links: false)
         render_inline(component)
         expect(page).to have_text("Ruby")
         expect(page).to have_text("React")
+        expect(page).not_to have_link("Ruby")
+        expect(page).not_to have_link("React")
       end
 
-      it "renders user first names" do
+      it "renders progress bar for coverage" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text(user1.full_name.split.first)
-        expect(page).to have_text(user2.full_name.split.first)
-      end
-
-      it "renders ratings" do
-        component = described_class.new(team: team)
-        render_inline(component)
-        expect(page).to have_text("2")
-        expect(page).to have_text("3")
-        expect(page).to have_text("1")
-      end
-
-      it "renders the legend" do
-        component = described_class.new(team: team)
-        render_inline(component)
-        expect(page).to have_text("Can teach others")
-        expect(page).to have_text("Proficient")
-        expect(page).to have_text("Has basic understanding")
-        expect(page).to have_text("No knowledge")
-      end
-    end
-
-    context "when there is rating dynamics" do
-      before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "renders the change indicator" do
-        component = described_class.new(team: team)
-        render_inline(component)
-        expect(page).to have_text("+1")
-      end
-    end
-
-    context "when there is no previous quarter" do
-      let(:single_quarter) { create(:quarter, status: :active, is_current: true) }
-
-      before do
-        Quarter.where.not(id: single_quarter.id).delete_all
-        create(:skill_rating, user: user1, technology: technology1, quarter: single_quarter, rating: 2, team: team)
-      end
-
-      it "does not render change indicators" do
-        component = described_class.new(team: team)
-        render_inline(component)
-        expect(page).not_to have_selector(".change-indicator")
+        expect(page).to have_selector(".progress-bar")
+        expect(page).to have_selector(".progress-bar__fill")
       end
     end
 
@@ -288,6 +261,18 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("1/2")
+      end
+    end
+
+    context "coverage color thresholds" do
+      before do
+        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+      end
+
+      it "renders danger class for low coverage" do
+        component = described_class.new(team: team)
+        render_inline(component)
+        expect(page).to have_selector(".progress-bar__fill--warning")
       end
     end
   end

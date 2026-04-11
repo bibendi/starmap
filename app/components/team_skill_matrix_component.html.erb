@@ -10,19 +10,22 @@
           <tr>
                <th class="table__header-cell"><%= t('components.team_skill_matrix.technology') %></th>
                <th class="table__header-cell table__header-cell--center"><%= t('components.team_skill_matrix.bus_factor') %></th>
-            <% team_members.each do |member| %>
-                <th class="table__header-cell table__header-cell--center"><%= member.full_name.split.first %></th>
-            <% end %>
+               <th class="table__header-cell table__header-cell--center"><%= t('components.team_skill_matrix.coverage') %></th>
           </tr>
         </thead>
          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          <% team_skill_matrix.each do |tech_id, user_ratings| %>
+          <% team_skill_matrix.each do |tech_id, _user_ratings| %>
             <% tech = technology_for(tech_id) %>
             <% bus_factor_data = bus_factor_for(tech_id) %>
+            <% coverage = coverage_for(tech_id) %>
             <tr>
                <td class="table__cell table__cell--heading">
                  <div class="content-card">
-                    <span class="text-heading"><%= tech&.name %></span>
+                    <% if show_technology_links? %>
+                      <%= link_to tech&.name, team_technology_path(team, tech), class: "text-heading hover:underline hover:text-indigo-600 dark:hover:text-indigo-400" %>
+                    <% else %>
+                      <span class="text-heading"><%= tech&.name %></span>
+                    <% end %>
                    <div class="content-row content-row--gap mt-0.5">
                        <span class="text-subtle"><%= tech&.category&.name %></span>
                     <% criticality = bus_factor_data&.dig(:criticality) || tech&.criticality %>
@@ -89,41 +92,17 @@
                    <span class="text-muted">-</span>
                 <% end %>
               </td>
-              <% team_members.each do |member| %>
-                <% rating = rating_for(tech_id, member.id) %>
-                <% change = change_for(tech_id, member.id) %>
-                <td class="table__cell table__cell--center">
-                   <div class="relative-container">
-                     <span class="rating-indicator <%= case rating when 3 then 'rating-indicator--expert' when 2 then 'rating-indicator--proficient' when 1 then 'rating-indicator--basic' else 'rating-indicator--none' end %>">
-                       <%= rating > 0 ? rating : '-' %>
-                     </span>
-                    <% if change && change != 0 %>
-                        <span class="change-indicator <%= change > 0 ? 'change-indicator--positive' : 'change-indicator--negative' %>">
-                        <% if change > 0 %>
-                          <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                          </svg>
-                        <% else %>
-                          <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                          </svg>
-                        <% end %>
-                        <%= change > 0 ? '+' : '' %><%= change %>
-                      </span>
-                    <% end %>
+              <td class="table__cell table__cell--center">
+                <div class="progress-bar">
+                  <div class="progress-bar__track">
+                    <div class="progress-bar__fill <%= case when coverage >= 80 then 'progress-bar__fill--success' when coverage >= 50 then 'progress-bar__fill--warning' else 'progress-bar__fill--danger' end %>" style="width: <%= coverage %>%"></div>
                   </div>
-                </td>
-              <% end %>
-            </tr>
+                  <div class="progress-bar__label"><%= coverage %>%</div>
+                </div>
+              </td>
           <% end %>
         </tbody>
       </table>
-       <div class="legend">
-          <div class="legend-item"><span class="legend-badge legend-badge--expert">3</span> <%= t('components.team_skill_matrix.legend.expert') %></div>
-          <div class="legend-item"><span class="legend-badge legend-badge--proficient">2</span> <%= t('components.team_skill_matrix.legend.proficient') %></div>
-          <div class="legend-item"><span class="legend-badge legend-badge--basic">1</span> <%= t('components.team_skill_matrix.legend.basic') %></div>
-          <div class="legend-item"><span class="legend-badge legend-badge--none">0</span> <%= t('components.team_skill_matrix.legend.none') %></div>
-       </div>
     <% else %>
         <p class="text-muted--center py-4"><%= t('components.team_skill_matrix.no_data') %></p>
     <% end %>

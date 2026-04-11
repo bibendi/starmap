@@ -403,10 +403,11 @@ en:
       description: "Number of technologies with level 2-3"
       technologies: "technologies"
     team_skill_matrix:
-      title: "Team Skill Matrix"
+      title: "Team Competencies"
       description: "Technology coverage and competency maturity indicators"
       technology: "Technology"
       bus_factor: "Bus Factor"
+      coverage: "Coverage"
       criticality:
         high: "High"
         normal: "Norm"
@@ -469,6 +470,29 @@ en:
       light: "Theme switched to light"
       dark: "Theme switched to dark"
       system: "Theme switched to system"
+
+  team_technologies:
+    show:
+      title: "%{technology}"
+      team_link: "Team: %{team}"
+      category: "Category"
+      criticality: "Criticality"
+      target_experts_label: "Target"
+      target_experts:
+        one: "%{count} expert"
+        other: "%{count} experts"
+      member: "Member"
+      rating: "Rating"
+      change: "Change"
+      no_data: "No ratings for this technology"
+      no_active_quarter:
+        title: "No active quarter"
+        message: "Please create a quarter in the admin panel."
+      legend:
+        expert: "Can teach others"
+        proficient: "Proficient"
+        basic: "Basic understanding"
+        none: "No knowledge"
 
   activerecord:
     models:

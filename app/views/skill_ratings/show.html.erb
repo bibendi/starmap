@@ -34,7 +34,8 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th class="table__header-cell"><%= t("skill_ratings.show.technology") %></th>
+                    <th class="table__header-cell"><%= t("skill_ratings.show.competency") %></th>
+                    <th class="table__header-cell"><%= t("skill_ratings.show.category") %></th>
                     <th class="table__header-cell"><%= t("skill_ratings.show.criticality") %></th>
                     <th class="table__header-cell table__header-cell--center"><%= t("skill_ratings.show.rating") %></th>
                     <th class="table__header-cell"><%= t("skill_ratings.show.level") %></th>
@@ -47,7 +48,14 @@
                     <% skill_rating = data[:skill_rating] %>
                     <tr>
                       <td class="table__cell table__cell--heading">
-                        <%= team_tech.technology.name %>
+                        <% if policy(TeamTechnology.new(team: team_tech.team, technology: team_tech.technology)).show? %>
+                          <%= link_to team_tech.technology.name, team_technology_path(team_tech.team, team_tech.technology), class: "text-heading hover:underline hover:text-indigo-600 dark:hover:text-indigo-400" %>
+                        <% else %>
+                          <span class="text-heading"><%= team_tech.technology.name %></span>
+                        <% end %>
+                      </td>
+                      <td class="table__cell">
+                        <span class="text-subtle"><%= team_tech.technology.category&.name || '-' %></span>
                       </td>
                       <td class="table__cell">
                         <% case team_tech.criticality %>
