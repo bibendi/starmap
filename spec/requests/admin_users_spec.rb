@@ -2,12 +2,10 @@
 
 require "rails_helper"
 
-RSpec.describe Admin::UsersController, type: :request do
+RSpec.describe "Admin Users", type: :request do
   let_it_be(:admin_user) { create(:admin) }
 
-  before do
-    sign_in admin_user
-  end
+  before { sign_in admin_user, scope: :user }
 
   describe "POST /admin/users" do
     it "creates user with password" do
