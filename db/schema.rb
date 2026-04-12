@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_202351) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -163,7 +163,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_202351) do
     t.boolean "active", default: true, null: false
     t.string "avatar_url"
     t.datetime "confirmation_sent_at"
-    t.boolean "confirmed_at", null: false
+    t.datetime "confirmed_at", precision: nil
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "current_sign_in_ip"
@@ -178,16 +178,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_202351) do
     t.string "last_sign_in_ip"
     t.string "phone"
     t.string "position"
+    t.string "provider"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.string "role", default: "engineer", null: false
     t.integer "sign_in_count", default: 0, null: false
     t.integer "team_id"
+    t.string "uid"
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_users_on_active"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["role"], name: "index_users_on_role"
     t.index ["team_id"], name: "index_users_on_team_id"
   end

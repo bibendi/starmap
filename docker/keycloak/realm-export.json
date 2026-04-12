@@ -1,0 +1,168 @@
+{
+  "realm": "starmap",
+  "enabled": true,
+  "sslRequired": "none",
+  "roles": {
+    "realm": [
+      { "name": "admin" }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin@company.com",
+      "enabled": true,
+      "email": "admin@company.com",
+      "firstName": "System",
+      "lastName": "Administrator",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "unit.lead@company.com",
+      "enabled": true,
+      "email": "unit.lead@company.com",
+      "firstName": "Alex",
+      "lastName": "UnitLead",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "backend.lead@company.com",
+      "enabled": true,
+      "email": "backend.lead@company.com",
+      "firstName": "Bob",
+      "lastName": "BackendLead",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "frontend.lead@company.com",
+      "enabled": true,
+      "email": "frontend.lead@company.com",
+      "firstName": "Carol",
+      "lastName": "FrontendLead",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "devops.lead@company.com",
+      "enabled": true,
+      "email": "devops.lead@company.com",
+      "firstName": "David",
+      "lastName": "DevOpsLead",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "john.doe@company.com",
+      "enabled": true,
+      "email": "john.doe@company.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "jane.smith@company.com",
+      "enabled": true,
+      "email": "jane.smith@company.com",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "mike.wilson@company.com",
+      "enabled": true,
+      "email": "mike.wilson@company.com",
+      "firstName": "Mike",
+      "lastName": "Wilson",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "sarah.brown@company.com",
+      "enabled": true,
+      "email": "sarah.brown@company.com",
+      "firstName": "Sarah",
+      "lastName": "Brown",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "tom.johnson@company.com",
+      "enabled": true,
+      "email": "tom.johnson@company.com",
+      "firstName": "Tom",
+      "lastName": "Johnson",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "lisa.davis@company.com",
+      "enabled": true,
+      "email": "lisa.davis@company.com",
+      "firstName": "Lisa",
+      "lastName": "Davis",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "james.miller@company.com",
+      "enabled": true,
+      "email": "james.miller@company.com",
+      "firstName": "James",
+      "lastName": "Miller",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    },
+    {
+      "username": "emma.taylor@company.com",
+      "enabled": true,
+      "email": "emma.taylor@company.com",
+      "firstName": "Emma",
+      "lastName": "Taylor",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": []
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "starmap",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "starmap-secret",
+      "redirectUris": ["http://starmap.localhost:5100/*"],
+      "webOrigins": ["http://starmap.localhost:5100"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "publicClient": false
+    }
+  ]
+}

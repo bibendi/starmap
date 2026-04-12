@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
   # Set locale
   before_action :set_locale
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   # Protect from forgery
   protect_from_forgery with: :exception
@@ -51,6 +52,12 @@ class ApplicationController < ActionController::Base
   def available_locales
     I18n.available_locales
   end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name])
+  end
+
+  private
 
   def after_sign_in_path_for(resource)
     stored_location_for(resource) || (current_user.team ? team_path(current_user.team) : teams_path)

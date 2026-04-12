@@ -438,6 +438,15 @@ Model.transaction do
 end
 ```
 
+### Devise Turbo Compatibility
+All Devise `button_to` calls (sign out, OIDC authorize) MUST include `data: { turbo: false }`. Without it, Turbo intercepts the redirect and the action silently fails:
+```erb
+<%= button_to "Sign out", destroy_user_session_path, method: :delete, data: { turbo: false } %>
+```
+
+### OIDC Discovery with HTTP
+Gem `swd` (dependency of `openid_connect`) defaults to `URI::HTTPS` for discovery. For HTTP-based OIDC providers (dev Keycloak), set `SWD.url_builder = URI::HTTP` before mounting OmniAuth middleware. Without it, discovery silently fails with SSL errors.
+
 ## Code Organization Principles
 
 **Single Responsibility**: Small methods (< 5 lines), focused classes. Each model/controller/component has one clear purpose.
@@ -453,3 +462,11 @@ end
 - Component tests verify rendered output
 - Stimulus tests verify DOM interactions, not internal APIs
 - Factory-based test data, not fixtures
+
+## Active Technologies
+- Ruby 3.2+ / Rails 8.1.1 + Devise (existing), OmniAuth, omniauth-openid_connect, omniauth-rails_csrf_protection, dotenv-rails (007-auth-strategy)
+- PostgreSQL 15+ (existing `users` table extended with `provider` and `uid` columns) (007-auth-strategy)
+- Keycloak 26 (dev OIDC provider, docker-compose) (007-auth-strategy)
+
+## Recent Changes
+- 007-auth-strategy: Added OmniAuth OIDC authentication, Keycloak dev environment, dotenv-rails for env config

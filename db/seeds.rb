@@ -656,42 +656,6 @@ previous_engineer_skills.each do |email, skills|
   end
 end
 
-Rails.logger.debug "Creating sample action plans..."
-
-# Create sample action plans
-ActionPlan.find_or_create_by!(
-  title: "Improve React skills",
-  description: "Complete React advanced course and build 2 projects",
-  user_id: User.find_by(email: "john.doe@company.com")&.id,
-  technology_id: technologies[:react].id,
-  quarter_id: current_quarter.id,
-  status: "in_progress",
-  priority: "high",
-  created_by_id: backend_team_lead.id
-)
-
-ActionPlan.find_or_create_by!(
-  title: "Learn Docker containerization",
-  description: "Complete Docker certification and implement in current project",
-  user_id: User.find_by(email: "sarah.brown@company.com")&.id,
-  technology_id: technologies[:docker].id,
-  quarter_id: current_quarter.id,
-  status: "active",
-  priority: "medium",
-  created_by_id: backend_team_lead.id
-)
-
-ActionPlan.find_or_create_by!(
-  title: "AWS certification preparation",
-  description: "Prepare and pass AWS Solutions Architect certification",
-  user_id: User.find_by(email: "lisa.davis@company.com")&.id,
-  technology_id: technologies[:aws].id,
-  quarter_id: current_quarter.id,
-  status: "in_progress",
-  priority: "high",
-  created_by_id: unit_lead_user.id
-)
-
 Rails.logger.debug "Seeding completed successfully!"
 
 Rails.logger.debug "\n=== Test Users Created ==="

@@ -6,7 +6,11 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", :as => :rails_health_check
 
   # Devise authentication routes
-  devise_for :users
+  devise_options = {controllers: {}}
+  devise_options[:controllers][:omniauth_callbacks] = "users/omniauth_callbacks" if OIDC_ENABLED
+  devise_options[:controllers][:sessions] = "sessions" if OIDC_ENABLED
+  devise_options[:controllers][:registrations] = "users/registrations" if REGISTRATION_ENABLED
+  devise_for :users, **devise_options
 
   root "teams#show"
 

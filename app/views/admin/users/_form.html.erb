@@ -69,7 +69,7 @@
     </div>
   </div>
 
-  <% if @user.new_record? %>
+  <% if @user.new_record? && !OIDC_ENABLED %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <%= form.label :password, class: "form-label" %>
@@ -82,6 +82,24 @@
         <%= form.label :password_confirmation, class: "form-label" %>
         <div class="form-field">
           <%= form.password_field :password_confirmation, class: "form-input", required: true, minlength: 8 %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @user.new_record? && OIDC_ENABLED %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= form.label :password, class: "form-label" %>
+        <div class="form-field">
+          <%= form.password_field :password, class: "form-input", minlength: 8 %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, class: "form-label" %>
+        <div class="form-field">
+          <%= form.password_field :password_confirmation, class: "form-input", minlength: 8 %>
         </div>
       </div>
     </div>

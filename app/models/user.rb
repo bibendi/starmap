@@ -1,9 +1,10 @@
 class User < ApplicationRecord
-  devise :database_authenticatable,
-    :recoverable,
-    :rememberable,
-    :trackable,
-    :validatable
+  devise_modules = [:database_authenticatable, :recoverable, :rememberable, :trackable, :validatable]
+  devise_modules << :registerable if REGISTRATION_ENABLED
+  devise_modules << :omniauthable if OIDC_ENABLED
+  devise_options = {}
+  devise_options[:omniauth_providers] = [:oidc] if OIDC_ENABLED
+  devise(*devise_modules, **devise_options)
 
   belongs_to :team, optional: true
   has_many :skill_ratings, dependent: :destroy
@@ -96,6 +97,32 @@ class User < ApplicationRecord
     scope = scope.where(team_id: team_ids) if team_ids
     scope = scope.joins(:user).where(users: {role: roles}) if roles
     scope.select(:user_id).distinct
+  end
+
+  def self.from_omniauth(auth)
+    user = find_by(provider: auth.provider, uid: auth.uid)
+    return user if user
+
+    email = auth.info.email
+    raise "OIDC provider did not return email" if email.blank?
+
+    user = find_by(email: email)
+    if user
+      user.update_columns(provider: auth.provider, uid: auth.uid)
+      return user
+    end
+
+    create!(
+      provider: auth.provider,
+      uid: auth.uid,
+      email: email,
+      first_name: auth.info.first_name || auth.info.name.to_s.split(" ").first,
+      last_name: auth.info.last_name || auth.info.name.to_s.split(" ").last,
+      password: Devise.friendly_token[0, 20],
+      role: :engineer,
+      active: true,
+      confirmed_at: Time.current
+    )
   end
 
   private

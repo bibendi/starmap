@@ -1,0 +1,31 @@
+<div class="page--centered">
+  <div class="container--narrow">
+    <h2 class="heading--centered mt-6">Изменить пароль</h2>
+  </div>
+  <div class="card card--centered">
+    <div class="card--plain">
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "form--vertical px-4 sm:px-10" }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <%= f.hidden_field :reset_password_token %>
+        <div>
+          <%= f.label :password, "Новый пароль", class: "form-label" %>
+          <div class="form-field">
+            <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "form-input" %>
+          </div>
+        </div>
+        <div>
+          <%= f.label :password_confirmation, "Подтверждение пароля", class: "form-label" %>
+          <div class="form-field">
+            <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
+          </div>
+        </div>
+        <div class="form-submit">
+          <%= f.submit "Изменить пароль", class: "btn btn--primary w-full" %>
+        </div>
+      <% end %>
+      <div class="mt-6 text-center">
+        <%= render "devise/shared/links" %>
+      </div>
+    </div>
+  </div>
+</div>

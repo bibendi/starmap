@@ -122,5 +122,62 @@ RSpec.describe User, type: :model do
         expect(result).to contain_exactly(engineer, team_lead_user)
       end
     end
+
+    describe ".from_omniauth" do
+      let(:auth_hash) do
+        OmniAuth::AuthHash.new(
+          provider: "oidc",
+          uid: "12345",
+          info: {
+            email: "oidc@example.com",
+            first_name: "OIDC",
+            last_name: "User",
+            name: "OIDC User"
+          },
+          credentials: {
+            id_token: "test-id-token"
+          }
+        )
+      end
+
+      it "finds existing user by provider and uid" do
+        user = create(:user, provider: "oidc", uid: "12345", email: "oidc@example.com")
+
+        result = described_class.from_omniauth(auth_hash)
+        expect(result).to eq(user)
+      end
+
+      it "finds existing user by email and links provider" do
+        user = create(:user, email: "oidc@example.com", provider: nil, uid: nil)
+
+        result = described_class.from_omniauth(auth_hash)
+        expect(result).to eq(user)
+        expect(result.provider).to eq("oidc")
+        expect(result.uid).to eq("12345")
+      end
+
+      it "creates new user with engineer role when no match" do
+        result = described_class.from_omniauth(auth_hash)
+
+        expect(result).to be_persisted
+        expect(result.email).to eq("oidc@example.com")
+        expect(result.provider).to eq("oidc")
+        expect(result.uid).to eq("12345")
+        expect(result.role).to eq("engineer")
+        expect(result.active).to be(true)
+      end
+
+      it "raises when email is blank" do
+        blank_auth = OmniAuth::AuthHash.new(
+          provider: "oidc",
+          uid: "12345",
+          info: {email: nil},
+          credentials: {}
+        )
+
+        expect { described_class.from_omniauth(blank_auth) }
+          .to raise_error("OIDC provider did not return email")
+      end
+    end
   end
 end

@@ -76,7 +76,7 @@
 
               <% if user_signed_in? %>
                 <span class="text-sm text-gray-700 dark:text-gray-300 inline-flex items-center"><%= current_user.display_name %></span>
-                <%= button_to t('locale.sign_out'), destroy_user_session_path, method: :delete, class: "btn btn--secondary" %>
+                <%= button_to t('locale.sign_out'), destroy_user_session_path, method: :delete, class: "btn btn--secondary", data: { turbo: false } %>
               <% end %>
             </div>
           </div>

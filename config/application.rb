@@ -15,6 +15,11 @@ require "action_cable/engine"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
+if %w[development test].include?(ENV["RAILS_ENV"])
+  Dotenv::Rails.load
+end
+
 module Starmap
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

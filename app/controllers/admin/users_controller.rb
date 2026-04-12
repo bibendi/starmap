@@ -23,6 +23,10 @@ module Admin
       @user = User.new(user_params)
       @user.confirmed_at = Time.current
 
+      if OIDC_ENABLED && params[:user][:password].blank?
+        @user.encrypted_password = ""
+      end
+
       if @user.save
         redirect_to admin_users_path, notice: t("admin.users.created")
       else

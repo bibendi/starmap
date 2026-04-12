@@ -1,0 +1,55 @@
+<div class="page--centered">
+  <div class="container--narrow">
+    <h2 class="heading--centered mt-6">Регистрация</h2>
+  </div>
+  <div class="card card--centered">
+    <div class="card--plain">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form--vertical px-4 sm:px-10" }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :first_name, "Имя", class: "form-label" %>
+            <div class="form-field">
+              <%= f.text_field :first_name, autofocus: true, class: "form-input", required: true %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :last_name, "Фамилия", class: "form-label" %>
+            <div class="form-field">
+              <%= f.text_field :last_name, class: "form-input", required: true %>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :email, "Email", class: "form-label" %>
+          <div class="form-field">
+            <%= f.email_field :email, autocomplete: "email", class: "form-input", required: true %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :password, "Пароль", class: "form-label" %>
+          <div class="form-field">
+            <%= f.password_field :password, autocomplete: "new-password", class: "form-input", required: true, minlength: 6 %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :password_confirmation, "Подтверждение пароля", class: "form-label" %>
+          <div class="form-field">
+            <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input", required: true, minlength: 6 %>
+          </div>
+        </div>
+
+        <div class="form-submit">
+          <%= f.submit "Зарегистрироваться", class: "btn btn--primary" %>
+        </div>
+      <% end %>
+      <div class="mt-6 text-center">
+        <%= render "devise/shared/links" %>
+      </div>
+    </div>
+  </div>
+</div>

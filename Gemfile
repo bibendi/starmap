@@ -16,6 +16,9 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 # Authentication and Authorization
 gem "devise"
 gem "devise-i18n"
+gem "omniauth"
+gem "omniauth-rails_csrf_protection"
+gem "omniauth_openid_connect"
 gem "pundit"
 
 # Hotwire for interactivity
@@ -41,6 +44,8 @@ gem "annotate", group: :development
 gem "brakeman", group: :development
 
 group :development, :test do
+  gem "dotenv-rails"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
 
