@@ -38,9 +38,9 @@
               <% change = team_member_metrics[member.id]&.dig(:competence_level, :total_change) %>
               <td class="table__cell--value">
                 <div class="relative-container">
-                   <span class="badge badge--neutral">
-                     <%= value %>
-                   </span>
+                   <span class="badge badge--primary">
+                      <%= value %>
+                    </span>
                   <% if change && change != 0 %>
                     <span class="change-indicator <%= change > 0 ? 'change-indicator--positive' : 'change-indicator--negative' %>">
                       <% if change > 0 %>
