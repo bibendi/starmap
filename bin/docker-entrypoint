@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+bin/rails db:prepare
+
+exec "$@"
