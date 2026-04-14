@@ -47,7 +47,7 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   config.action_view.annotate_rendered_view_with_filenames = true
 
-  config.action_mailer.default_url_options = {host: "starmap.localhost", port: 5100}
+  config.action_mailer.default_url_options = {host: "starmap.localhost", port: 3000}
   config.action_mailer.delivery_method = :letter_opener
 
   # Raise error when a before_action's only/except options reference missing actions.

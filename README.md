@@ -1,232 +1,182 @@
 # Starmap
 
-[![Ruby](https://img.shields.io/badge/ruby-%23CC342D.svg?style=for-the-badge&logo=ruby&logoColor=white)](https://www.ruby-lang.org/)
-[![Rails](https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white)](https://rubyonrails.org/)
-[![PostgreSQL](https://img.shields.io/badge/postgresql-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![CI](https://github.com/bibendi/starmap/actions/workflows/ci.yml/badge.svg)](https://github.com/bibendi/starmap/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-> **Открытое веб-приложение для управления техническими компетенциями команды**
+Starmap is an open-source web application that makes engineering team competencies visible and manageable. It turns invisible, distributed knowledge into a living map of technical capabilities — so teams can proactively identify risks, plan development, and reduce bus factor.
 
-Starmap — это корпоративное веб-приложение, предназначенное для автоматизации процессов сбора, анализа и управления техническими компетенциями команды. Цель проекта — трансформировать управление скрытыми знаниями в проактивную и стратегическую деятельность, обеспечивая прозрачность, устойчивость и целенаправленное развитие.
+It is not a control system. Its goal is to help every team member see their progress, understand team priorities, and consciously plan their growth.
 
-## 🎯 Проблемы, которые решает Starmap
+<details>
+<summary>Screenshots</summary>
 
-- **Для разработчиков**: Отсутствие персонального навигатора для карьерного роста и понимания собственных компетенций
-- **Для тимлидов**: Сложность построения сбалансированных команд и объективной оценки знаний сотрудников
-- **Для Unit Lead/CTO**: Недостаточная прозрачность рисков команды и сложность обоснования инвестиций в обучение
+<p align="center">
+<img src="docs/attachments/team-dashboard.png" width="600" alt="Team Dashboard"><br>
+<em>Team Dashboard</em>
+</p>
 
-## ✨ Ключевые функции
+<p align="center">
+<img src="docs/attachments/team-competency.png" width="600" alt="Team Competency"><br>
+<em>Team Competency</em>
+</p>
 
-### 📊 Система управления компетенциями
-- **Шкала оценок 0-3** с понятными описаниями каждого уровня
-- **Процесс утверждения**: Самооценка разработчика → утверждение тимлидом
-- **История изменений**: Отслеживание развития компетенций по кварталам
-- **Валидации**: Ограничения на основе ролей и статуса квартала
+<p align="center">
+<img src="docs/attachments/unit-dashboard.png" width="600" alt="Unit Dashboard"><br>
+<em>Unit Dashboard</em>
+</p>
 
-### 🔄 Квартальные циклы
-- Автоматическое создание новых циклов с копированием предыдущих оценок
-- Управление статусами: draft → active → closed → archived
-- Ограничения редактирования для обеспечения целостности данных
+</details>
 
-### 📈 Три типа дашбордов
-- **Overview Dashboard**: Общие метрики и риски для руководителей
-- **Team Dashboard**: Детальный анализ компетенций команды для тимлидов
-- **Personal Dashboard**: Персональный прогресс для разработчиков
+## Quick Start
 
-### 🎯 Планы развития
-- Создание планов на основе выявленных пробелов в компетенциях
-- Отслеживание прогресса: active → completed/paused
-- Привязка к целевым кварталам для достижения целей
+### Prerequisites
 
-## 🏗️ Архитектура
-
-### Технологический стек
-- **Backend**: Ruby on Rails 8.1.1
-- **Frontend**: Hotwire (Turbo + Stimulus) для интерактивности без JavaScript фреймворков
-- **База данных**: PostgreSQL 15+
-- **Очереди**: Solid Queue (встроенная в Rails)
-- **Кеширование**: Solid Cache
-- **Аудит**: Audited gem для отслеживания изменений
-
-### Безопасность
-- **Аутентификация**: Devise (email/пароль) + OpenID Connect (Keycloak)
-- **Авторизация**: Pundit с ролевой системой
-- **Защита данных**: CSRF, XSS, SQL injection protection
-- **Логирование**: Структурированные логи с фильтрацией чувствительных данных
-
-## 👥 Пользовательские роли
-
-### Engineer
-- Просмотр Personal dashboard и собственных оценок
-- Редактирование собственных оценок в черновиках/активных кварталах
-- Создание личных планов развития
-
-### Team Lead
-- Все права Engineer +
-- Просмотр Team dashboard и оценок всей команды
-- Утверждение оценок подчинённых
-- Создание командных планов развития
-
-### Unit Lead
-- Все права Team Lead +
-- Просмотр Overview dashboard и всех команд юнита
-- Стратегическое планирование развития юнита
-
-### Admin
-- Полные права на все ресурсы системы
-- Управление пользователями, технологиями, кварталами
-- Системные настройки и конфигурация
-
-## 📈 Бизнес-метрики
-
-### Coverage Index
-Процент технологий с ≥2 экспертами (рейтинг 2-3). Цель: >80% для стабильной команды.
-
-### Maturity Index
-Средняя оценка по всем технологиям (0.0 - 3.0). Цель: >2.0 для зрелой команды.
-
-### Red Zones
-Критические технологии (criticality='high') с недостаточным покрытием <2 экспертов.
-
-### Key Person Risk
-Технологии, где один сотрудник является единственным экспертом.
-
-## 🗺️ Roadmap
-
-### Запрос доступа к командам
-- **Team Lead без команды**: показывать список всех команд, сгруппированных по юниту, с кнопками "Запросить доступ как тимлид"
-- **Engineer без команды**: показывать список команд с кнопками "Запросить присоединение к команде"
-- Реализовать workflow одобрения запросов unit_lead'ом
-
-### Запрос доступа к юнитам
-- **Unit Lead без юнита**: показывать список всех юнитов с кнопками "Запросить доступ как unit_lead"
-- Реализовать workflow одобрения запросов администратором
-
-## 🚀 Быстрый старт
-
-### Системные требования
-- Ruby 3.2+
+- Ruby 3.3+
+- Node.js 20+
 - PostgreSQL 15+
+- Docker (optional: for PostgreSQL and Keycloak)
 
-### Установка
+### Setup
 
-1. **Клонирование репозитория**
 ```bash
-git clone https://github.com/your-org/starmap.git
+git clone https://github.com/bibendi/starmap.git
 cd starmap
-```
 
-2. **Установка зависимостей**
-```bash
 bundle install
+npm install
+
+docker compose up -d          # PostgreSQL and Keycloak (optional)
+bin/rails db:setup            # creates DB, runs migrations, loads seed data
+
+bin/dev                        # starts Puma + Vite dev server
 ```
 
-3. **Настройка базы данных**
-```bash
-# Запуск базы через Docker Compose
-docker-compose up -d
+The app runs at `http://localhost:3000`.
 
-```bash
-# Создание базы данных и выполнение миграций
-bin/rails db:create db:migrate
+### Authentication
 
-# Загрузка seed данных (опционально)
-bin/rails db:seed
-```
+Starmap supports two authentication methods:
 
-4. **Настройка переменных окружения**
-```bash
-cp .env.example .env
-# Отредактируйте .env файл с вашими настройками
-```
+**Email and password** — enabled by default, no configuration needed.
 
-5. **Запуск сервера**
-```bash
-bin/dev
-```
+**OpenID Connect (OIDC)** — if your organization uses a Single Sign-On provider (Keycloak, Google Workspace, Okta, Auth0, and others), you can enable OIDC login. Set the following environment variables:
 
-Приложение будет доступно по адресу: http://localhost:3000
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OIDC_CLIENT_ID` | No | Client ID from your SSO provider. When set, enables OIDC login |
+| `OIDC_CLIENT_SECRET` | If OIDC enabled | Client secret from your SSO provider |
+| `OIDC_ISSUER` | If OIDC enabled | URL of your SSO realm (e.g. `https://auth.example.com/realms/my-org`) |
+| `REGISTRATION_ENABLED` | No | Show a "Sign up" link on the login page (`true`/`false`, default: `false`) |
 
-## ⚙️ Конфигурация
-
-### Переменные окружения
-Создайте файл `.env.development` для локальной разработки:
-
-```env
-# База данных (по умолчанию из database.yml)
-DATABASE_URL=postgresql://username:password@localhost:5432/starmap_development
-
-# OpenID Connect (опционально — включает OIDC аутентификацию)
-OIDC_CLIENT_ID=starmap
-OIDC_CLIENT_SECRET=your-client-secret
-OIDC_ISSUER=http://starmap.localhost:5101/realms/starmap
-OIDC_REDIRECT_URI=http://starmap.localhost:5100/users/auth/oidc/callback
-
-# Саморегистрация (опционально — включает ссылку "Зарегистрироваться" на странице входа)
-REGISTRATION_ENABLED=true
-```
-
-| Переменная | Обязательна | Описание |
-|---|---|---|
-| `OIDC_CLIENT_ID` | Нет | Client ID OIDC провайдера. При наличии включает OIDC аутентификацию |
-| `OIDC_CLIENT_SECRET` | Если `OIDC_CLIENT_ID` | Секрет клиента OIDC провайдера |
-| `OIDC_ISSUER` | Если `OIDC_CLIENT_ID` | URL realm OIDC провайдера |
-| `OIDC_REDIRECT_URI` | Нет | Callback URL (по умолчанию `{host}/users/auth/oidc/callback`) |
-| `REGISTRATION_ENABLED` | Нет | Включить саморегистрацию (`true`/`false`, по умолчанию `false`) |
-
-#### Keycloak (разработка)
+For local development, a pre-configured Keycloak instance is included in `docker-compose.yml`:
 
 ```bash
-# Запуск Keycloak + PostgreSQL
-docker compose up -d
-
-# Ключcloak доступен по адресу: http://starmap.localhost:5101
-# Admin: admin@company.com / password123
+docker compose up -d keycloak   # starts at http://localhost:5101
 ```
 
-## 🧪 Тестирование
+## How It Works
+
+### Competency Scale (0-3)
+
+Every rating answers the question: *"What can I practically do with this technology right now?"*
+
+| Level | Meaning |
+|-------|---------|
+| **0** | No prior experience. Needs an introduction from scratch |
+| **1** | Can work on simple tasks under guidance or pairing with a senior |
+| **2** | Can independently pick up a mid-complexity task and ship it to production |
+| **3** | Can explain architectural decisions, do code review, and mentor others |
+
+### Quarterly Cycle
+
+The process repeats every quarter in three phases:
+
+1. **Self-assessment** — engineers rate themselves asynchronously across team technologies
+2. **1-on-1 dialogue** — team lead and engineer discuss ratings, sync on levels, and build a development plan
+3. **Execution** — development goals are integrated into sprint planning, code reviews, and mentoring
+
+### User Roles
+
+| Role | Scope |
+|------|-------|
+| **Engineer** | Self-assessment, personal dashboard, action plans |
+| **Team Lead** | Team competency matrix, approve ratings, team planning |
+| **Unit Lead** | Unit-level metrics, risk reports, strategic development |
+| **Admin** | User/technology management, quarter lifecycle, system settings |
+
+## Metrics
+
+Metrics are like a car dashboard — they don't judge the driver, they help navigate. Their purpose is to highlight areas for discussion, not to deliver verdicts.
+
+### Team Health
+
+Four summary metrics give a quick overview:
+
+- **Coverage Index** — answers "Is our team protected if someone leaves?" Shows the percentage of technologies where enough people have expertise. Target: >80%
+- **Maturity Index** — answers "Are we growing as a team?" Tracks the average competency level across all technologies over time. Target: >2.0
+- **Red Zones** — answers "Where are we most vulnerable?" Lists critical technologies where too few people have expertise, putting delivery at risk
+- **Key Person Risks** — answers "Who is carrying too much?" Highlights technologies where only one person has expertise — a burnout risk and a single point of failure
+
+### Individual Growth
+
+- **Competency Dynamics** — answers "Is this engineer growing?" Shows rating change per person compared to the previous quarter. A starting point for 1-on-1 career discussions
+- **Universality Index** — answers "Is this person a specialist or a generalist?" Counts how many technologies someone is proficient in. Helps spot T-shaped contributors vs. deep specialists
+- **Expertise Concentration** — answers "Is this person overloaded with unique knowledge?" Counts technologies where someone is the only expert. A decrease is good — it means knowledge is being shared
+
+### Skill Matrix
+
+A visual grid of technologies vs. team members with:
+
+- **Bus Factor** — how many experts each technology has compared to the target
+- **Coverage %** — what share of the team can work with each technology
+
+## Deployment
+
+Docker images are published to GitHub Container Registry on every release tag:
 
 ```bash
-# Запуск всех тестов
-bin/rails test
-
-# Запуск тестов с покрытием
-COVERAGE=true bin/rails test
-
-# Запуск только unit тестов
-bin/rails test:units
-
-# Запуск integration тестов
-bin/rails test:integration
+docker pull ghcr.io/bibendi/starmap:latest
 ```
 
-## 📚 Документация
+Images are tagged with semver versions (`1.0.0`) and short SHAs.
 
-- [Архитектура проекта](docs/ARCHITECTURE.md)
-- [API документация](docs/API.md)
-- [Руководство разработчика](docs/DEVELOPMENT.md)
+Required environment variables when running the container:
 
-## 🤝 Участие в разработке
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e SECRET_KEY_BASE=your-secret \
+  -e DATABASE_URL=postgres://user:pass@host:5432/starmap_production \
+  ghcr.io/bibendi/starmap:latest
+```
 
-Мы приветствуем contributions! Пожалуйста, ознакомьтесь с нашим [Contributing Guide](CONTRIBUTING.md).
+## Testing
 
-### Процесс разработки
-1. Fork репозитория
-2. Создайте feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit изменения (`git commit -m 'Add amazing feature'`)
-4. Push в branch (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
+### Ruby (RSpec)
 
-### Код-стайл
-- Используйте стандартный Ruby codestyle
-- Все изменения должны быть покрыты тестами
-- Обновите документацию при необходимости
+```bash
+bundle exec rspec                           # all tests
+bundle exec rspec --tag n_plus_one          # N+1 query tests only
+LOG=all bundle exec rspec spec/path:42      # with SQL logging
+```
 
-## 📄 Лицензия
+### JavaScript (Vitest)
 
-Этот проект распространяется под лицензией MIT. Смотрите файл [LICENSE](LICENSE) для подробностей.
+```bash
+npm test                   # all tests
+npm run test:watch         # watch mode
+npm run test:coverage      # with coverage
+```
 
-## 📞 Поддержка
+## Contributing
 
-- **Issues**: [GitHub Issues](https://github.com/bibendi/starmap/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/starmap/discussions)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Make your changes with tests
+4. Run `bundle exec rspec` and `npm test`
+5. Run `bundle exec rubocop` and `npm run check:js`
+6. Open a Pull Request
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.

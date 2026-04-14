@@ -1,7 +1,7 @@
 .PHONY: build run shell stop logs
 
 IMAGE ?= starmap
-PORT ?= 5100
+PORT ?= 3000
 SECRET_KEY_BASE ?= dummy
 DATABASE_URL ?= postgres://postgres:password@host.docker.internal:5432/starmap_production
 

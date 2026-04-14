@@ -1,40 +1,47 @@
-# Starmap - Продукт
+# Starmap - Product
 
-## Цель продукта
-Starmap — корпоративное web-приложение, предназначенное для автоматизации процессов сбора, анализа и управления техническими компетенциями команды. Цель — трансформировать управление скрытыми знаниями в проактивную и стратегическую деятельность, обеспечивая прозрачность, устойчивость и целенаправленное развитие.
+## Product Purpose
 
-## Решаемые проблемы
-- **Для разработчиков**: Отсутствие персонального навигатора для карьерного роста и понимания собственных компетенций
-- **Для тимлидов**: Сложность построения сбалансированных команд и объективной оценки знаний сотрудников
-- **Для Unit Lead/CTO**: Недостаточная прозрачность рисков команды и сложность обоснования инвестиций в обучение
+Starmap is a corporate web application designed to automate the collection, analysis, and management of engineering team competencies. Its goal is to transform hidden knowledge management into a proactive and strategic activity, ensuring transparency, resilience, and intentional development.
 
-## Ключевые принципы
-- **Прозрачность**: Единая объективная картина компетенций для принятия решений
-- **Устойчивость**: Распределение экспертизы для хеджирования рисков
-- **Осознанное развитие**: Управляемый профессиональный рост
+## Problems It Solves
 
-## Целевая аудитория
-- **Разработчики (Engineers)**: Персональный дашборд, визуализация прогресса, аргументы для грейда
-- **Тимлиды (Team Leads)**: Инструмент для построения сильных команд, объективная основа для 1-on-1
-- **Unit Lead/CTO**: Гарантия стабильности юнита, снижение рисков, стратегическое планирование
-- **Администраторы/HR**: Управление пользователями, технологиями и циклами
+- **For engineers**: No personal navigator for career growth and understanding of own competencies
+- **For team leads**: Difficulty building balanced teams and objectively assessing employees' knowledge
+- **For unit leads / CTOs**: Insufficient visibility into team risks and difficulty justifying investments in training
 
-## Основные функции
-1. **Управление компетенциями**: Оценки по шкале 0-3, утверждение тимлидами, история по кварталам
-2. **Квартальные циклы**: Автоматическое создание новых циклов с копированием предыдущих оценок
-3. **Три типа дашбордов**:
-   - Overview: сводная карта рисков и метрик команды
-   - Team: детальный анализ компетенций команды для тимлидов
-   - Personal: персональный дашборд для разработчиков
-4. **Планы действий**: Система создания и отслеживания планов развития
+## Core Principles
 
-## Шкала компетенций
-- **0 - Не имею представления**: "Слышал об этом, но на практике не сталкивался. Нужен онбординг с нуля"
-- **1 - Имею представление**: "Могу выполнять простые задачи под присмотром или в паре с коллегой"
-- **2 - Свободно владею**: "Могу самостоятельно взять задачу средней сложности и довести ее до production"
-- **3 - Могу учить других**: "Могу объяснить архитектурные решения, провести код-ревью и быть ментором"
+- **Transparency**: A single, objective picture of competencies for decision-making
+- **Resilience**: Distributed expertise to hedge against risks
+- **Intentional development**: Managed, deliberate professional growth
 
-## Критичность технологий
-- **Высокая**: Критические для бизнеса технологии, требуют минимум 2 экспертов
-- **Обычная**: Стандартные технологии в разработке
-- **Низкая**: Вспомогательные технологии с низким влиянием на бизнес
+## Target Audience
+
+- **Engineers**: Personal dashboard, progress visualization, arguments for promotion
+- **Team Leads**: Tool for building strong teams, objective basis for 1-on-1s
+- **Unit Leads / CTOs**: Guarantee of unit stability, risk reduction, strategic planning
+- **Administrators / HR**: User management, technology catalog, and cycle management
+
+## Key Features
+
+1. **Competency management**: 0-3 rating scale, team lead approval, quarterly history
+2. **Quarterly cycles**: Automatic creation of new cycles with copied previous ratings
+3. **Three types of dashboards**:
+   - Overview: summary risk map and team metrics
+   - Team: detailed competency analysis for team leads
+   - Personal: individual dashboard for engineers
+4. **Action plans**: Create and track development plans
+
+## Competency Scale
+
+- **0 - No knowledge**: "I've heard of it but never used it in practice. I need onboarding from scratch"
+- **1 - Basic understanding**: "I can do simple tasks under supervision or pairing with a colleague"
+- **2 - Proficient**: "I can independently pick up a mid-complexity task and ship it to production"
+- **3 - Can teach others**: "I can explain architectural decisions, do code review, and mentor"
+
+## Technology Criticality
+
+- **High**: Business-critical technologies, require at least 2 experts
+- **Normal**: Standard technologies used in development
+- **Low**: Auxiliary technologies with low business impact
