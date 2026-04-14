@@ -20,7 +20,12 @@ export default class extends Controller {
   }
 
   renderChart() {
-    const ctx = this.element.getContext('2d')
+    const getContext = this.element.getContext?.bind(this.element)
+    if (!getContext) return
+
+    const ctx = getContext('2d')
+    if (!ctx) return
+
     const rawData = this.dataValue
 
     this.techDataMap = new Map()
