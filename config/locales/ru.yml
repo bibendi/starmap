@@ -523,14 +523,11 @@ ru:
           attributes:
             quarter_number:
               taken: "уже существует для этого года"
-            year:
-              current_or_future_only: "может быть только текущим или будущим годом"
             end_date:
               after_start_date: "должна быть позже даты начала"
             evaluation_start_date:
-              within_quarter: "должна быть в периоде квартала"
+              after_quarter_end: "должна быть не раньше даты окончания квартала"
             evaluation_end_date:
-              within_quarter: "должна быть в периоде квартала"
               after_eval_start: "должна быть позже даты начала оценки"
       messages:
         too_long_evaluation_period: "период оценки не должен превышать 30 дней"

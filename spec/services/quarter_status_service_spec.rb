@@ -22,11 +22,35 @@ RSpec.describe QuarterStatusService, type: :service do
         expect(draft_quarter.reload.is_current).to be true
       end
 
+      it "copies ratings from previous quarter" do
+        previous = create(:quarter, status: :closed, is_current: false, year: draft_quarter.year - 1)
+        create(:skill_rating, quarter: previous, rating: 2, status: :approved)
+
+        allow(draft_quarter).to receive(:previous_quarter).and_return(previous)
+        copier = instance_double(QuarterDataCopier)
+        allow(QuarterDataCopier).to receive(:new).with(draft_quarter, previous).and_return(copier)
+        allow(copier).to receive(:copy_from_previous).and_return(true)
+
+        service = described_class.new(draft_quarter, admin)
+        service.activate
+
+        expect(copier).to have_received(:copy_from_previous)
+      end
+
+      it "skips copying when no previous quarter exists" do
+        allow(draft_quarter).to receive(:previous_quarter).and_return(nil)
+
+        service = described_class.new(draft_quarter, admin)
+        result = service.activate
+
+        expect(result).to be true
+      end
+
       context "when there is a closed current quarter" do
         let!(:closed_current_quarter) do
-          create(:quarter, status: :closed, is_current: true)
+          create(:quarter, status: :closed, is_current: true, year: 2098, quarter_number: 4)
         end
-        let(:new_draft_quarter) { create(:quarter, status: :draft) }
+        let(:new_draft_quarter) { create(:quarter, status: :draft, year: 2099, quarter_number: 1) }
 
         it "deactivates the closed current quarter" do
           service = described_class.new(new_draft_quarter, admin)
@@ -50,7 +74,7 @@ RSpec.describe QuarterStatusService, type: :service do
     end
 
     context "when there is already an active quarter" do
-      before { create(:quarter, status: :active, is_current: true) }
+      before { create(:quarter, status: :active, is_current: true, year: 2099, quarter_number: 4) }
 
       it "returns false and adds error" do
         service = described_class.new(draft_quarter, admin)

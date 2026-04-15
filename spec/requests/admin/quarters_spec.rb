@@ -179,15 +179,16 @@ RSpec.describe "Admin::Quarters", type: :request do
   end
 
   describe "POST /admin/quarters" do
+    let(:quarter_year) { Date.current.year + 50 }
     let(:valid_params) do
       {
         quarter: {
-          year: Date.current.year + 10,
+          year: quarter_year,
           quarter_number: 1,
-          start_date: "#{Date.current.year + 10}-01-01",
-          end_date: "#{Date.current.year + 10}-03-31",
-          evaluation_start_date: "#{Date.current.year + 10}-01-15",
-          evaluation_end_date: "#{Date.current.year + 10}-02-15"
+          start_date: "#{quarter_year}-01-01",
+          end_date: "#{quarter_year}-03-31",
+          evaluation_start_date: "#{quarter_year}-04-01",
+          evaluation_end_date: "#{quarter_year}-04-15"
         }
       }
     end
@@ -234,23 +235,26 @@ RSpec.describe "Admin::Quarters", type: :request do
       end
 
       it "renders form with errors when quarter_number is invalid" do
-        invalid_params = {quarter: {year: valid_params[:quarter][:year], quarter_number: 5}}
+        invalid_params = {quarter: {year: quarter_year, quarter_number: 5, start_date: "#{quarter_year}-01-01", end_date: "#{quarter_year}-03-31"}}
         post admin_quarters_path, params: invalid_params
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("quarter_number")
       end
 
-      it "requires year to be current or future" do
-        invalid_params = {
+      it "accepts past year" do
+        past_params = {
           quarter: {
             year: 2020,
             quarter_number: 1,
             start_date: "2020-01-01",
-            end_date: "2020-03-31"
+            end_date: "2020-03-31",
+            evaluation_start_date: "2020-04-01",
+            evaluation_end_date: "2020-04-15"
           }
         }
-        post admin_quarters_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_content)
+        expect {
+          post admin_quarters_path, params: past_params
+        }.to change(Quarter, :count).by(1)
       end
     end
 

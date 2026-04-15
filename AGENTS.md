@@ -44,9 +44,11 @@ Starmap is a corporate web application for managing technical team competencies,
 - Role-based validation and Quarter state constraints
 
 **Quarterly Cycles**
-- Automated creation of new cycles with copying of previous ratings
+- Quarters are created **retrospectively**, after the evaluated period has ended
+- Previous quarter's ratings are copied as a starting point when a quarter is activated
 - Status workflow: draft → active → closed → archived
-- Editing restrictions based on quarter state ensure data integrity
+- Evaluation window (`evaluation_start_date`..`evaluation_end_date`) opens **after** the quarter's `end_date`
+- Editing restrictions based on quarter state and evaluation period ensure data integrity
 
 **Analytics Dashboards**
 - **Overview Dashboard**: Unit-level metrics and risks for leadership
@@ -78,7 +80,7 @@ Status tracking of development plans linked to quarters and technologies.
 ## Role Interactions
 
 1. **Data Collection**: Engineer updates self-ratings → Team Lead validates and approves → data flows to metrics
-2. **Quarterly Cycle**: Admin/Unit Lead launches new quarter, copies past ratings, notifications sent
+2. **Quarterly Cycle**: Admin creates quarter retrospectively after period ends, activates it (copies past ratings as starting point), notifications sent
 3. **Analytics**: Unit Lead tracks Coverage/Maturity/Red Zones, Team Lead monitors team competencies, Engineer tracks personal progress
 4. **Risk Management**: Metrics signal gaps; Team Lead and Unit Lead plan expertise exchange
 5. **Development**: Action Plans link development goals to quarters, technologies, and employees
@@ -323,7 +325,7 @@ bundle exec brakeman
 
 **Role-based Authorization**: Four distinct roles with Pundit policies enforcing granular permissions.
 
-**Quarterly Data Model**: Immutable past quarters with draft/active states. Ratings editable only in non-archived quarters.
+**Quarterly Data Model**: Quarters created retrospectively after the period ends. Evaluation window opens after quarter's `end_date`. Ratings editable only during evaluation period of active quarters.
 
 ---
 
