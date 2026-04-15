@@ -78,13 +78,31 @@ RSpec.describe Quarter, type: :model do
       expect(quarter.errors[:end_date]).to be_present
     end
 
-    it "validates evaluation_start_date within quarter period" do
+    it "validates evaluation_start_date must be on or after quarter end_date" do
       quarter = build(:quarter,
         start_date: Date.new(2026, 4, 1), end_date: Date.new(2026, 6, 30),
-        evaluation_start_date: Date.new(2026, 3, 1), evaluation_end_date: Date.new(2026, 4, 15))
+        evaluation_start_date: Date.new(2026, 6, 15), evaluation_end_date: Date.new(2026, 7, 15))
       quarter.valid?
 
       expect(quarter.errors[:evaluation_start_date]).to be_present
+    end
+
+    it "accepts evaluation_start_date equal to end_date" do
+      quarter = build(:quarter,
+        start_date: Date.new(2026, 4, 1), end_date: Date.new(2026, 6, 30),
+        evaluation_start_date: Date.new(2026, 6, 30), evaluation_end_date: Date.new(2026, 7, 15))
+      quarter.valid?
+
+      expect(quarter.errors[:evaluation_start_date]).to be_empty
+    end
+
+    it "accepts evaluation dates after quarter end_date" do
+      quarter = build(:quarter,
+        start_date: Date.new(2026, 4, 1), end_date: Date.new(2026, 6, 30),
+        evaluation_start_date: Date.new(2026, 7, 1), evaluation_end_date: Date.new(2026, 7, 15))
+      quarter.valid?
+
+      expect(quarter.errors[:evaluation_start_date]).to be_empty
     end
 
     it "validates evaluation_end_date after evaluation_start_date" do
@@ -96,11 +114,11 @@ RSpec.describe Quarter, type: :model do
       expect(quarter.errors[:evaluation_end_date]).to be_present
     end
 
-    it "rejects past year" do
+    it "accepts past year" do
       quarter = build(:quarter, year: 2020)
       quarter.valid?
 
-      expect(quarter.errors[:year]).to be_present
+      expect(quarter.errors[:year]).to be_empty
     end
 
     it "accepts current year" do
@@ -123,6 +141,32 @@ RSpec.describe Quarter, type: :model do
         quarter = create(:quarter, name: "Custom Name")
 
         expect(quarter.reload.name).to eq("Custom Name")
+      end
+    end
+
+    describe "before_validation :set_quarter_dates, on: :create" do
+      it "auto-sets start_date and end_date from year and quarter_number" do
+        quarter = described_class.new(year: 2026, quarter_number: 1, evaluation_end_date: Date.new(2026, 4, 14))
+        quarter.valid?
+
+        expect(quarter.start_date).to eq(Date.new(2026, 1, 1))
+        expect(quarter.end_date).to eq(Date.new(2026, 3, 31))
+      end
+
+      it "auto-sets dates for Q3" do
+        quarter = described_class.new(year: 2026, quarter_number: 3, evaluation_end_date: Date.new(2026, 10, 14))
+        quarter.valid?
+
+        expect(quarter.start_date).to eq(Date.new(2026, 7, 1))
+        expect(quarter.end_date).to eq(Date.new(2026, 9, 30))
+      end
+
+      it "does not overwrite explicit start_date" do
+        explicit = Date.new(2026, 4, 15)
+        quarter = described_class.new(year: 2026, quarter_number: 2, start_date: explicit, evaluation_end_date: Date.new(2026, 7, 14))
+        quarter.valid?
+
+        expect(quarter.start_date).to eq(explicit)
       end
     end
 

@@ -34,7 +34,7 @@
           <div>
             <%= f.label :year, t("activerecord.attributes.quarter.year"), class: "form-label" %>
             <div class="form-field">
-              <%= f.number_field :year, min: Date.current.year, required: true, class: "form-input" %>
+              <%= f.number_field :year, min: 2000, required: true, class: "form-input" %>
             </div>
           </div>
 

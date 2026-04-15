@@ -21,11 +21,11 @@ class Quarter < ApplicationRecord
   validates :status, presence: true, inclusion: {in: %w[draft active closed archived]}
   validates :quarter_number, uniqueness: {scope: :year}
 
-  validate :validate_year_is_current_or_future
   validate :validate_date_sequence
-  validate :validate_evaluation_dates
+  validate :validate_evaluation_after_quarter
 
   before_validation :set_quarter_name, on: :create
+  before_validation :set_quarter_dates, on: :create
   after_create :set_as_current_if_first
   after_update :handle_status_change
 
@@ -50,20 +50,17 @@ class Quarter < ApplicationRecord
 
   private
 
-  def validate_year_is_current_or_future
-    return if year.blank?
-
-    errors.add(:year, :current_or_future_only) if year < Date.current.year
-  end
-
   def validate_date_sequence
     return unless start_date.present? && end_date.present?
     errors.add(:end_date, :after_start_date) if end_date <= start_date
 
     return unless evaluation_start_date.present? && evaluation_end_date.present?
-    errors.add(:evaluation_start_date, :within_quarter) if evaluation_start_date < start_date || evaluation_start_date > end_date
-    errors.add(:evaluation_end_date, :within_quarter) if evaluation_end_date < start_date || evaluation_end_date > end_date
     errors.add(:evaluation_end_date, :after_eval_start) if evaluation_end_date <= evaluation_start_date
+  end
+
+  def validate_evaluation_after_quarter
+    return unless evaluation_start_date.present? && end_date.present?
+    errors.add(:evaluation_start_date, :after_quarter_end) if evaluation_start_date < end_date
   end
 
   def validate_evaluation_dates
@@ -76,6 +73,13 @@ class Quarter < ApplicationRecord
 
   def set_quarter_name
     self.name ||= full_name
+  end
+
+  def set_quarter_dates
+    return unless year.present? && quarter_number.present?
+
+    self.start_date ||= Date.new(year, (quarter_number - 1) * 3 + 1, 1)
+    self.end_date ||= start_date.end_of_quarter
   end
 
   def set_as_current_if_first

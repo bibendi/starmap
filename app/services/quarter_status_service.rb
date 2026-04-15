@@ -18,6 +18,7 @@ class QuarterStatusService
         status: :active,
         is_current: true
       )
+      copy_previous_quarter_ratings
     end
 
     true
@@ -98,5 +99,12 @@ class QuarterStatusService
 
   def deactivate_current_quarter
     Quarter.where(is_current: true).update_all(is_current: false)
+  end
+
+  def copy_previous_quarter_ratings
+    previous = @quarter.previous_quarter
+    return unless previous
+
+    QuarterDataCopier.new(@quarter, previous).copy_from_previous
   end
 end

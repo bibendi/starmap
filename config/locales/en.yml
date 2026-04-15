@@ -538,14 +538,11 @@ en:
           attributes:
             quarter_number:
               taken: "already exists for this year"
-            year:
-              current_or_future_only: "must be current or future year"
             end_date:
               after_start_date: "must be after start date"
             evaluation_start_date:
-              within_quarter: "must be within quarter period"
+              after_quarter_end: "must be on or after quarter end date"
             evaluation_end_date:
-              within_quarter: "must be within quarter period"
               after_eval_start: "must be after evaluation start date"
       messages:
         too_long_evaluation_period: "Evaluation period must not exceed 30 days"

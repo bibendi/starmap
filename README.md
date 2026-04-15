@@ -89,11 +89,14 @@ Every rating answers the question: *"What can I practically do with this technol
 
 ### Quarterly Cycle
 
-The process repeats every quarter in three phases:
+Starmap evaluates competencies **retrospectively** — after a quarter ends, not while it's in progress. The process repeats every quarter:
 
-1. **Self-assessment** — engineers rate themselves asynchronously across team technologies
-2. **1-on-1 dialogue** — team lead and engineer discuss ratings, sync on levels, and build a development plan
-3. **Execution** — development goals are integrated into sprint planning, code reviews, and mentoring
+1. **Quarter creation** — an admin creates a new quarter (e.g. "2026 Q1") after it has ended, sets the evaluation window dates
+2. **Activation & self-assessment** — the admin activates the quarter; previous quarter's ratings are copied as a starting point. Engineers then rate themselves asynchronously across team technologies during the evaluation window
+3. **1-on-1 dialogue** — team lead and engineer discuss ratings, sync on levels, and build a development plan
+4. **Close** — the admin closes the quarter; all remaining draft/submitted ratings are auto-approved. The quarter becomes read-only
+
+Quarter lifecycle: `draft` → `active` → `closed` → `archived`
 
 ### User Roles
 

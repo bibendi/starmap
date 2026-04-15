@@ -117,12 +117,19 @@ module Admin
     end
 
     def set_default_year_and_quarter
-      current_year = Date.current.year
-      existing_quarters = Quarter.where(year: current_year).pluck(:quarter_number)
-      available_quarter = (1..4).find { |q| !existing_quarters.include?(q) }
+      today = Date.current
+      current_quarter_number = ((today.month - 1) / 3) + 1
 
-      @quarter.year = current_year
-      @quarter.quarter_number = available_quarter || 1
+      previous_quarter_year = (current_quarter_number == 1) ? today.year - 1 : today.year
+      previous_quarter_number = (current_quarter_number == 1) ? 4 : current_quarter_number - 1
+
+      if Quarter.exists?(year: previous_quarter_year, quarter_number: previous_quarter_number)
+        @quarter.year = today.year
+        @quarter.quarter_number = current_quarter_number
+      else
+        @quarter.year = previous_quarter_year
+        @quarter.quarter_number = previous_quarter_number
+      end
     end
 
     def load_quarter_metrics
