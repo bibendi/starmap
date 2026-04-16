@@ -62,7 +62,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
     context "with single team" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
       end
 
       it "returns flat array" do
@@ -76,8 +76,8 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
         create(:team_technology, team: team2, technology: technology1, target_experts: 2, criticality: "normal")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user_in_team2, technology: technology1, quarter: current_quarter, rating: 2, team: team2)
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
+        create(:skill_rating, user: user_in_team2, technology: technology1, quarter: current_quarter, rating: 1, team: team2)
       end
 
       it "returns hash grouped by technology" do
@@ -96,7 +96,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
       context "with single team" do
         before do
           create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
-          create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+          create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
         end
 
         it "renders red zones list" do
@@ -106,7 +106,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
           expect(page).to have_text("Red Zones")
           expect(page).to have_text(/critical coverage gaps/i)
           expect(page).to have_text(technology1.name)
-          expect(page).to have_text("1/2")
+          expect(page).to have_text("0/2")
         end
       end
 
@@ -114,8 +114,8 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
         before do
           create(:team_technology, team: team, technology: technology3, target_experts: 2, criticality: "high")
           create(:team_technology, team: team2, technology: technology3, target_experts: 2, criticality: "normal")
-          create(:skill_rating, user: user, technology: technology3, quarter: current_quarter, rating: 2, team: team)
-          create(:skill_rating, user: user_in_team2, technology: technology3, quarter: current_quarter, rating: 2, team: team2)
+          create(:skill_rating, user: user, technology: technology3, quarter: current_quarter, rating: 1, team: team)
+          create(:skill_rating, user: user_in_team2, technology: technology3, quarter: current_quarter, rating: 1, team: team2)
         end
 
         it "renders grouped red zones with team links" do
@@ -127,7 +127,7 @@ RSpec.describe RedZonesDetailsComponent, type: :component do
           expect(page).to have_text(technology3.name, count: 1)
           expect(page).to have_text(team.name)
           expect(page).to have_text(team2.name)
-          expect(page).to have_text("1/2", count: 2)
+          expect(page).to have_text("0/2", count: 2)
           expect(page).to have_link(team.name)
           expect(page).to have_link(team2.name)
         end

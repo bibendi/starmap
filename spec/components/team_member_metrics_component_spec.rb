@@ -169,7 +169,7 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text("Team Member Metrics")
-        expect(page).to have_text("Competency level, universality and expertise concentration by technology criticality")
+        expect(page).to have_text("Competency level, universality and expertise concentration by competency criticality")
       end
 
       it "renders user first names" do

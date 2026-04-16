@@ -36,6 +36,6 @@ class CompetencyDynamicsComponent < ViewComponent::Base
 
       dynamics[user.id] = total_change
     end
-    dynamics
+    dynamics.reject { |_, change| change.zero? }
   end
 end

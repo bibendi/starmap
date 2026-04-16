@@ -278,8 +278,8 @@ en:
         one: "member"
         other: "members"
       technologies:
-        one: "technology"
-        other: "technologies"
+        one: "competency"
+        other: "competencies"
       criticality:
         high: "High"
         normal: "Normal"
@@ -304,7 +304,7 @@ en:
   skill_ratings:
     show:
       title: "Skill Ratings"
-      technology: "Technology"
+      technology: "Competency"
       criticality: "Criticality"
       target_experts: "Target Experts"
       rating: "Rating"
@@ -312,10 +312,10 @@ en:
       status: "Status"
       edit_button: "Edit"
       back_to_user: "Back to Profile"
-      no_technologies: "Team has no assigned technologies"
+      no_technologies: "Team has no assigned competencies"
     edit:
       title: "Edit Ratings"
-      technology: "Technology"
+      technology: "Competency"
       criticality: "Criticality"
       target_experts: "Target Experts"
       rating: "Rating"
@@ -323,7 +323,7 @@ en:
       status: "Status"
       save: "Save"
       cancel: "Cancel"
-      no_technologies: "Team has no assigned technologies to edit"
+      no_technologies: "Team has no assigned competencies to edit"
       back_to_show: "Back to view"
     update:
       success: "Ratings saved successfully"
@@ -390,13 +390,13 @@ en:
   components:
     coverage_index:
       label: "Coverage Index"
-      description: "Technology coverage indicator"
+      description: "Competency coverage indicator"
     maturity_index:
       label: "Maturity Index"
       description: "Competency maturity level"
     red_zones_card:
       label: "Red Zones"
-      description: "Critical technologies without coverage"
+      description: "Critical competencies without coverage"
     key_person_risks:
       label: "Key Person Risks"
       description: "Single expert risks"
@@ -407,7 +407,7 @@ en:
       experts: "Experts"
     key_person_risks_details:
       title: "Key Person Risks"
-      description: "%{count} technologies with single expert"
+      description: "%{count} competencies with single expert"
       no_data: "No key person risks detected"
     competency_dynamics:
       title: "Competency Dynamics"
@@ -415,12 +415,12 @@ en:
       no_data: "No competency dynamics data"
     universality_index:
       title: "Universality Index"
-      description: "Number of technologies with level 2-3"
-      technologies: "technologies"
+      description: "Number of competencies with level 2-3"
+      technologies: "competencies"
     team_skill_matrix:
       title: "Team Competencies"
-      description: "Technology coverage and competency maturity indicators"
-      technology: "Technology"
+      description: "Competency coverage and maturity indicators"
+      technology: "Competency"
       bus_factor: "Bus Factor"
       coverage: "Coverage"
       criticality:
@@ -434,8 +434,8 @@ en:
         none: "No knowledge"
       no_data: "No team skill data"
     unit_technology_treemap:
-      title: "Technology Heatmap"
-      description: "%{count} technologies with experts"
+      title: "Competency Heatmap"
+      description: "%{count} competencies with experts"
       experts: "experts"
       legend:
         expert: "Can teach others"
@@ -445,14 +445,14 @@ en:
       no_data: "No team skill data"
     team_member_metrics:
       title: "Team Member Metrics"
-      description: "Competency level, universality and expertise concentration by technology criticality"
+      description: "Competency level, universality and expertise concentration by competency criticality"
       metric: "Metric"
       competence_level: "Competence Level"
       competence_level_hint: "Sum of all ratings across technologies"
       universality: "Universality"
-      universality_hint: "Number of technologies with proficiency"
+      universality_hint: "Number of competencies with proficiency"
       expertise_concentration: "Expertise Concentration"
-      expertise_concentration_hint: "Single experts per technology"
+      expertise_concentration_hint: "Single experts per competency"
       total: "Total"
       high: "High"
       normal: "Normal"
@@ -499,7 +499,7 @@ en:
       member: "Member"
       rating: "Rating"
       change: "Change"
-      no_data: "No ratings for this technology"
+      no_data: "No ratings for this competency"
       no_active_quarter:
         title: "No active quarter"
         message: "Please create a quarter in the admin panel."

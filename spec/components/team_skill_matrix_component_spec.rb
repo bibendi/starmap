@@ -180,7 +180,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       it "renders the table header" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("Technology")
+        expect(page).to have_text("Competency")
         expect(page).to have_text("Bus Factor")
         expect(page).to have_text("Coverage")
       end

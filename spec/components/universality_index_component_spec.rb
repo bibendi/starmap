@@ -78,11 +78,11 @@ RSpec.describe UniversalityIndexComponent, type: :component do
         create(:skill_rating, user: user1, technology: technology2, quarter: current_quarter, rating: 3, team: team)
       end
 
-      it "displays user name and technology count" do
+      it "displays user name and competency count" do
         component = described_class.new(team: team)
         render_inline(component)
         expect(page).to have_text(user1.full_name)
-        expect(page).to have_text("2 technologies")
+        expect(page).to have_text("2 competencies")
       end
     end
   end

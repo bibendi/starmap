@@ -60,9 +60,9 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
         create(:skill_rating, user: user1, technology: technology2, quarter: current_quarter, rating: 1, team: team)
       end
 
-      it "returns zero dynamics" do
+      it "excludes zero dynamics" do
         component = described_class.new(team: team)
-        expect(component.competency_dynamics[user1.id]).to eq(0)
+        expect(component.competency_dynamics).not_to have_key(user1.id)
       end
     end
 
@@ -153,10 +153,10 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
         create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
       end
 
-      it "displays zero change" do
+      it "displays empty state for zero dynamics" do
         component = described_class.new(team: team)
         render_inline(component)
-        expect(page).to have_text("0")
+        expect(page).to have_text("No competency dynamics data")
       end
     end
 

@@ -153,6 +153,16 @@ docker run -d \
   ghcr.io/bibendi/starmap:latest
 ```
 
+### Initial Setup
+
+After deploying for the first time, create the admin user:
+
+```bash
+docker exec -it <container> rails 'admin:create["admin@example.com"]'
+```
+
+This generates a random password and prints it to stdout. The task only works when no users exist in the database yet.
+
 ## Testing
 
 ### Ruby (RSpec)

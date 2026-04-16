@@ -210,7 +210,7 @@ active_quarter = Quarter.find_or_create_by!(
   quarter.description = "Quarter #{prev_q_num} #{prev_year}"
   quarter.is_current = true
   quarter.evaluation_start_date = prev_end
-  quarter.evaluation_end_date = prev_end + 14.days
+  quarter.evaluation_end_date = prev_end + 90.days
 end
 
 previous_quarter = Quarter.find_or_create_by!(

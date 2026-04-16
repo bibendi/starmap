@@ -132,7 +132,7 @@ ru:
       cancel: "Отмена"
       save: "Сохранить"
       attributes:
-        technology: "Технология"
+        technology: "Компетенция"
         criticality: "Критичность"
         target_experts: "Целевое кол-во экспертов"
         category: "Категория"
@@ -254,10 +254,10 @@ ru:
         many: "участников"
         other: "участников"
       technologies:
-        one: "технология"
-        few: "технологии"
-        many: "технологий"
-        other: "технологий"
+        one: "компетенция"
+        few: "компетенции"
+        many: "компетенций"
+        other: "компетенций"
       criticality:
         high: "Высокая"
         normal: "Обычная"
@@ -284,7 +284,7 @@ ru:
       title: "Оценки навыков"
       competency: "Компетенция"
       category: "Категория"
-      technology: "Технология"
+      technology: "Компетенция"
       criticality: "Критичность"
       target_experts: "Целевое количество экспертов"
       rating: "Оценка"
@@ -292,17 +292,17 @@ ru:
       status: "Статус"
       edit_button: "Редактировать"
       back_to_user: "Вернуться к профилю"
-      no_technologies: "У команды нет назначенных технологий"
+      no_technologies: "У команды нет назначенных компетенций"
     edit:
       title: "Редактирование оценок"
-      technology: "Технология"
+      technology: "Компетенция"
       criticality: "Критичность"
       rating: "Оценка"
       level: "Уровень владения"
       status: "Статус"
       save: "Сохранить"
       cancel: "Отмена"
-      no_technologies: "У команды нет назначенных технологий для редактирования"
+      no_technologies: "У команды нет назначенных компетенций для редактирования"
       back_to_show: "Вернуться к просмотру"
     update:
       success: "Оценки успешно сохранены"
@@ -373,13 +373,13 @@ ru:
   components:
     coverage_index:
       label: "Coverage Index"
-      description: "Показатель покрытия технологий"
+      description: "Показатель покрытия компетенций"
     maturity_index:
       label: "Maturity Index"
       description: "Уровень зрелости компетенций"
     red_zones_card:
       label: "Red Zones"
-      description: "Важные технологии без покрытия"
+      description: "Важные компетенции без покрытия"
     key_person_risks:
       label: "Key Person Risks"
       description: "Риски единоличной экспертизы"
@@ -390,7 +390,7 @@ ru:
       experts: "Эксперты"
     key_person_risks_details:
       title: "Key Person Risks"
-      description: "%{count} технологий с единственным экспертом"
+      description: "%{count} компетенций с единственным экспертом"
       no_data: "Риски единоличной экспертизы не обнаружены"
     competency_dynamics:
       title: "Динамика компетенций"
@@ -398,12 +398,12 @@ ru:
       no_data: "Нет данных о динамике компетенций"
     universality_index:
       title: "Индекс универсальности"
-      description: "Количество технологий с уровнем 2-3"
-      technologies: "технологий"
+      description: "Количество компетенций с уровнем 2-3"
+      technologies: "компетенций"
     team_skill_matrix:
       title: "Компетенции команды"
-      description: "Показатель покрытия технологий и уровень зрелости компетенций"
-      technology: "Технология"
+      description: "Показатель покрытия компетенций и уровень зрелости"
+      technology: "Компетенция"
       bus_factor: "Bus Factor"
       coverage: "Покрытие"
       criticality:
@@ -417,8 +417,8 @@ ru:
         none: "Не владеет"
       no_data: "Нет данных о навыках команды"
     unit_technology_treemap:
-      title: "Карта технологий"
-      description: "%{count} технологий с экспертами"
+      title: "Карта компетенций"
+      description: "%{count} компетенций с экспертами"
       experts: "экспертов"
       legend:
         expert: "Может учить других"
@@ -428,14 +428,14 @@ ru:
       no_data: "Нет данных о навыках команды"
     team_member_metrics:
       title: "Метрики участников команды"
-      description: "Показатель уровня компетенций, универсальности и концентрации экспертизы в разрезе критичности технологий"
+      description: "Показатель уровня компетенций, универсальности и концентрации экспертизы в разрезе критичности компетенций"
       metric: "Метрика"
       competence_level: "Уровень компетенций"
-      competence_level_hint: "Сумма всех оценок по технологиям"
+      competence_level_hint: "Сумма всех оценок по компетенциям"
       universality: "Универсальность"
-      universality_hint: "Количество технологий со свободным владением"
+      universality_hint: "Количество компетенций со свободным владением"
       expertise_concentration: "Концентрация экспертизы"
-      expertise_concentration_hint: "Единственные эксперты по технологиям"
+      expertise_concentration_hint: "Единственные эксперты по компетенциям"
       total: "Всего"
       high: "Высокая"
       normal: "Обычная"
@@ -484,7 +484,7 @@ ru:
       member: "Участник"
       rating: "Оценка"
       change: "Изменение"
-      no_data: "Нет оценок для этой технологии"
+      no_data: "Нет оценок для этой компетенции"
       no_active_quarter:
         title: "Нет активного квартала"
         message: "Пожалуйста, создайте квартал в админке."

@@ -30,7 +30,7 @@ RSpec.describe RedZonesCardComponent, type: :component do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
         create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
         create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 2, team: team)
         create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 3, team: team)
       end
@@ -96,7 +96,7 @@ RSpec.describe RedZonesCardComponent, type: :component do
         create(:team_technology, team: team2, technology: technology1, target_experts: 2, criticality: "high")
         create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
         create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 2, team: team2)
+        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 1, team: team2)
       end
 
       it "counts red zones per team-technology combination" do
@@ -121,7 +121,7 @@ RSpec.describe RedZonesCardComponent, type: :component do
         component = described_class.new(teams: [team])
         render_inline(component)
         expect(page).to have_text("Red Zones")
-        expect(page).to have_text("Critical technologies without coverage")
+        expect(page).to have_text("Critical competencies without coverage")
       end
     end
 
@@ -135,7 +135,7 @@ RSpec.describe RedZonesCardComponent, type: :component do
       it "displays count" do
         component = described_class.new(teams: [team])
         render_inline(component)
-        expect(page).to have_text("2")
+        expect(page).to have_text("1")
       end
     end
 

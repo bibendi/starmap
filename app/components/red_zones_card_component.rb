@@ -27,7 +27,7 @@ class RedZonesCardComponent < ViewComponent::Base
       .where(team_id: @teams.map(&:id))
       .joins("LEFT JOIN (#{expert_counts_subquery.to_sql}) expert_counts ON expert_counts.team_id = team_technologies.team_id AND expert_counts.technology_id = team_technologies.technology_id")
       .where(criticality: [:normal, :high])
-      .where("COALESCE(expert_counts.expert_count, 0) < team_technologies.target_experts")
+      .where("COALESCE(expert_counts.expert_count, 0) = 0")
       .count
   end
 end

@@ -82,7 +82,7 @@ class RedZonesDetailsComponent < ViewComponent::Base
       experts = experts_by_tech_team[key] || []
       expert_count = experts.size
 
-      if expert_count < team_tech.target_experts
+      if expert_count.zero?
         result << {
           technology: team_tech.technology,
           team: team_tech.team,
