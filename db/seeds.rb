@@ -184,40 +184,47 @@ if prev_q_num.zero?
   prev_year = current_year - 1
 end
 
+prevprev_q_num = prev_q_num - 1
+prevprev_year = prev_year
+if prevprev_q_num.zero?
+  prevprev_q_num = 4
+  prevprev_year = prev_year - 1
+end
+
 quarter_start_month = lambda { |q_num| (q_num - 1) * 3 + 1 }
 quarter_end_month = lambda { |q_num| q_num * 3 }
 
-current_start = Date.new(current_year, quarter_start_month.call(current_q_num), 1)
-current_end = Date.new(current_year, quarter_end_month.call(current_q_num), -1)
 prev_start = Date.new(prev_year, quarter_start_month.call(prev_q_num), 1)
 prev_end = Date.new(prev_year, quarter_end_month.call(prev_q_num), -1)
+prevprev_start = Date.new(prevprev_year, quarter_start_month.call(prevprev_q_num), 1)
+prevprev_end = Date.new(prevprev_year, quarter_end_month.call(prevprev_q_num), -1)
 
-current_quarter = Quarter.find_or_create_by!(
-  year: current_year,
-  quarter_number: current_q_num
-) do |quarter|
-  quarter.name = "Q#{current_q_num} #{current_year}"
-  quarter.start_date = current_start
-  quarter.end_date = current_end
-  quarter.status = "active"
-  quarter.description = "Quarter #{current_q_num} #{current_year}"
-  quarter.is_current = true
-  quarter.evaluation_start_date = current_end
-  quarter.evaluation_end_date = current_end + 14.days
-end
-
-previous_quarter = Quarter.find_or_create_by!(
+active_quarter = Quarter.find_or_create_by!(
   year: prev_year,
   quarter_number: prev_q_num
 ) do |quarter|
-  quarter.name = "Q#{prev_q_num} #{prev_year}"
+  quarter.name = "#{prev_year} Q#{prev_q_num}"
   quarter.start_date = prev_start
   quarter.end_date = prev_end
-  quarter.status = "closed"
+  quarter.status = "active"
   quarter.description = "Quarter #{prev_q_num} #{prev_year}"
-  quarter.is_current = false
+  quarter.is_current = true
   quarter.evaluation_start_date = prev_end
   quarter.evaluation_end_date = prev_end + 14.days
+end
+
+previous_quarter = Quarter.find_or_create_by!(
+  year: prevprev_year,
+  quarter_number: prevprev_q_num
+) do |quarter|
+  quarter.name = "#{prevprev_year} Q#{prevprev_q_num}"
+  quarter.start_date = prevprev_start
+  quarter.end_date = prevprev_end
+  quarter.status = "closed"
+  quarter.description = "Quarter #{prevprev_q_num} #{prevprev_year}"
+  quarter.is_current = false
+  quarter.evaluation_start_date = prevprev_end
+  quarter.evaluation_end_date = prevprev_end + 14.days
 end
 
 Rails.logger.debug "Creating test users..."
@@ -511,7 +518,7 @@ teamlead_skills.each do |user_id, skills|
     SkillRating.find_or_create_by!(
       user_id: user_id,
       technology_id: tech_id,
-      quarter_id: current_quarter.id
+      quarter_id: active_quarter.id
     ) do |rating|
       rating.rating = rating_level
       rating.status = "approved"
@@ -529,7 +536,7 @@ engineer_skills.each do |email, skills|
     SkillRating.find_or_create_by!(
       user_id: user.id,
       technology_id: tech_id,
-      quarter_id: current_quarter.id
+      quarter_id: active_quarter.id
     ) do |rating|
       rating.team_id = user.team_id
       rating.rating = rating_level
