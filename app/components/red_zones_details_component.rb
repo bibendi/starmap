@@ -62,12 +62,12 @@ class RedZonesDetailsComponent < ViewComponent::Base
 
     expert_ratings = SkillRating
       .preload(:user)
+      .visible_for_quarter(current_quarter)
       .where(
         quarter: current_quarter,
         technology_id: technology_ids,
         rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
-        team_id: team_ids,
-        status: :approved
+        team_id: team_ids
       )
 
     # Group experts by technology_id and team_id

@@ -19,8 +19,10 @@ class CompetencyDynamicsComponent < ViewComponent::Base
     return {} unless previous_quarter
 
     quarter_ids = [@current_quarter.id, previous_quarter.id]
+    quarters = [@current_quarter, previous_quarter]
     skill_ratings_by_user = SkillRating
-      .where(user_id: @team_members.map(&:id), quarter_id: quarter_ids, team_id: @team.id, status: :approved)
+      .visible_for_quarters(quarters)
+      .where(user_id: @team_members.map(&:id), quarter_id: quarter_ids, team_id: @team.id)
       .group_by(&:user_id)
 
     dynamics = {}

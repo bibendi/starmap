@@ -16,7 +16,7 @@ class MaturityIndexComponent < ViewComponent::Base
     current_quarter = Quarter.current
     return 0 unless current_quarter
 
-    ratings = SkillRating.where(team_id: @teams.map(&:id), quarter: current_quarter, status: :approved)
+    ratings = SkillRating.visible_for_quarter(current_quarter).where(team_id: @teams.map(&:id), quarter: current_quarter)
     ratings.average(:rating)&.round(1) || 0
   end
 end

@@ -19,7 +19,8 @@ class RedZonesCardComponent < ViewComponent::Base
     return 0 unless current_quarter
 
     expert_counts_subquery = SkillRating
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, status: :approved)
+      .visible_for_quarter(current_quarter)
+      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
       .group(:team_id, :technology_id)
       .select("team_id, technology_id, COUNT(*) as expert_count")
 

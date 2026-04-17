@@ -37,7 +37,8 @@ class KeyPersonRisksDetailsComponent < ViewComponent::Base
     return [] unless current_quarter
 
     tech_ids_with_single_expert = SkillRating
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, status: :approved)
+      .visible_for_quarter(current_quarter)
+      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
       .group(:technology_id)
       .having("COUNT(DISTINCT user_id) = 1")
       .pluck(:technology_id)
@@ -46,7 +47,8 @@ class KeyPersonRisksDetailsComponent < ViewComponent::Base
 
     SkillRating
       .preload(:technology, :user, :team)
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, technology_id: tech_ids_with_single_expert, status: :approved)
+      .visible_for_quarter(current_quarter)
+      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, technology_id: tech_ids_with_single_expert)
       .map do |rating|
         {
           technology: rating.technology,

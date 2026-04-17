@@ -47,10 +47,12 @@ class TeamMemberMetricsComponent < ViewComponent::Base
   def load_ratings_for_quarters(quarter_ids)
     return {} if quarter_ids.empty?
 
+    quarters = [@current_quarter, @current_quarter.previous_quarter].compact
     ratings = SkillRating
       .joins(:technology)
       .joins("LEFT JOIN team_technologies ON team_technologies.team_id = skill_ratings.team_id AND team_technologies.technology_id = skill_ratings.technology_id")
-      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: {active: true}, status: :approved)
+      .visible_for_quarters(quarters)
+      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: {active: true})
       .select(
         "skill_ratings.*",
         "COALESCE(team_technologies.criticality, technologies.criticality) as effective_criticality"

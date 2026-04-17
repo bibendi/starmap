@@ -68,7 +68,8 @@ class UnitTechnologyTreemapComponent < ViewComponent::Base
 
   def fetch_experts_by_tech_team(quarter, technology_ids, team_ids)
     SkillRating
-      .where(quarter: quarter, technology_id: technology_ids, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: team_ids, status: :approved)
+      .visible_for_quarter(quarter)
+      .where(quarter: quarter, technology_id: technology_ids, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, team_id: team_ids)
       .group(:technology_id, :team_id)
       .count
   end

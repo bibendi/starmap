@@ -76,12 +76,12 @@ class TeamSkillMatrixComponent < ViewComponent::Base
       quarters << @current_quarter.previous_quarter if @current_quarter.previous_quarter
 
       SkillRating
+        .visible_for_quarters(quarters)
         .where(
           quarter: quarters,
           rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
           team_id: @team.id,
-          technology_id: @technologies.map(&:id),
-          status: :approved
+          technology_id: @technologies.map(&:id)
         )
         .group(:technology_id, :quarter_id)
         .count
@@ -143,12 +143,12 @@ class TeamSkillMatrixComponent < ViewComponent::Base
 
   def load_skill_ratings
     SkillRating
+      .visible_for_quarter(@current_quarter)
       .where(
         quarter: @current_quarter,
         team_id: @team.id,
         technology_id: @technologies.map(&:id),
-        user_id: @team_members.map(&:id),
-        status: :approved
+        user_id: @team_members.map(&:id)
       )
       .pluck(:technology_id, :user_id, :rating)
       .each_with_object({}) { |(tech_id, user_id, rating), hash|
@@ -184,12 +184,12 @@ class TeamSkillMatrixComponent < ViewComponent::Base
 
   def load_ratings_by_quarter(previous_quarter)
     ratings = SkillRating
+      .visible_for_quarters([@current_quarter, previous_quarter])
       .where(
         quarter: [@current_quarter, previous_quarter],
         team_id: @team.id,
         technology_id: @technologies.map(&:id),
-        user_id: @team_members.map(&:id),
-        status: :approved
+        user_id: @team_members.map(&:id)
       )
       .pluck(:technology_id, :user_id, :quarter_id, :rating)
 
