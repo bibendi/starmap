@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+echo "Start preparing datebase"
 bin/rails db:prepare
 
+echo "Starting command: $@"
 exec "$@"
