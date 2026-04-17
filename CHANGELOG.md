@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.0] - 2026-04-17
+
+### Changed
+
+- Metrics components now show all rating statuses for the current quarter (draft, submitted, approved, rejected); only approved ratings are shown for past quarters
+- Extracted `visible_for_quarter` / `visible_for_quarters` scopes and status constants into `SkillRating` model to centralize filtering logic
+
 ## [0.1.0] - 2026-04-16
 
 First release of Starmap — a corporate web application for managing technical team competencies, employee development, and reducing bus-factor risks.
