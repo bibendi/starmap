@@ -88,7 +88,7 @@ RSpec.describe QuarterStatusService, type: :service do
 
   describe "#close" do
     context "when quarter is in active status" do
-      let(:active_quarter) { create(:quarter, status: :active, is_current: true) }
+      let(:active_quarter) { create(:quarter, status: :active, is_current: true, year: 2097, quarter_number: 2) }
 
       it "transitions quarter to closed status" do
         service = described_class.new(active_quarter, admin)
