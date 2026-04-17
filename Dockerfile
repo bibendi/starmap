@@ -13,7 +13,7 @@ ENV RAILS_ENV=production \
     BUNDLE_DEPLOYMENT=1 \
     RAILS_LOG_TO_STDOUT=1
 
-WORKDIR /rails
+WORKDIR /app
 
 FROM base AS build
 
@@ -45,14 +45,12 @@ RUN SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile
 FROM base
 
 COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+COPY --from=build /app /app
 
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails /rails
+    chown -R rails:rails /app
 USER rails
 
 EXPOSE 3000
 
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD ["/app/bin/docker-entrypoint", "bundle", "exec", "puma", "-C", "config/puma.rb"]
