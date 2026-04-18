@@ -1,6 +1,4 @@
 class TeamTechnologiesController < ApplicationController
-  include ExpertConstants
-
   before_action :authenticate_user!
   before_action :set_team_and_technology
 
@@ -66,7 +64,7 @@ class TeamTechnologiesController < ApplicationController
 
   def calculate_expert_count
     SkillRating
-      .where(quarter: @current_quarter, team_id: @team.id, technology_id: @technology.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, status: :approved)
+      .where(quarter: @current_quarter, team_id: @team.id, technology_id: @technology.id, rating: SkillRating::EXPERT_MIN_RATING..SkillRating::EXPERT_MAX_RATING, status: :approved)
       .select(:user_id)
       .distinct
       .count
@@ -77,7 +75,7 @@ class TeamTechnologiesController < ApplicationController
     return 0 unless previous_quarter
 
     SkillRating
-      .where(quarter: previous_quarter, team_id: @team.id, technology_id: @technology.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, status: :approved)
+      .where(quarter: previous_quarter, team_id: @team.id, technology_id: @technology.id, rating: SkillRating::EXPERT_MIN_RATING..SkillRating::EXPERT_MAX_RATING, status: :approved)
       .select(:user_id)
       .distinct
       .count
