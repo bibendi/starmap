@@ -37,6 +37,12 @@ gem "audited"
 # Email handling
 gem "letter_opener", group: :development
 
+# Monitoring and metrics
+gem "yabeda-prometheus"
+gem "yabeda-rails"
+gem "yabeda-activerecord"
+gem "yabeda-puma-plugin"
+
 # Utilities
 gem "kaminari"
 gem "view_component"

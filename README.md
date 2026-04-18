@@ -163,6 +163,44 @@ docker exec -it <container> rails 'admin:create["admin@example.com"]'
 
 This generates a random password and prints it to stdout. The task only works when no users exist in the database yet.
 
+## Monitoring
+
+Starmap exposes infrastructure metrics in Prometheus format via [Yabeda](https://github.com/yabeda-rb/yabeda). Metrics are available on a separate port to avoid exposing them publicly.
+
+### Endpoints
+
+| Endpoint | Default | Description |
+|----------|---------|-------------|
+| Prometheus metrics | `http://0.0.0.0:9394/metrics` | All application and server metrics |
+
+Port and path are configurable via environment variables: `PROMETHEUS_EXPORTER_PORT`, `PROMETHEUS_EXPORTER_PATH`, or `PROMETHEUS_EXPORTER_URL`.
+
+### Collected Metrics
+
+| Plugin | Description |
+|--------|-------------|
+| [yabeda-rails](https://github.com/yabeda-rb/yabeda-rails) | Request counts, duration, view and DB runtime |
+| [yabeda-activerecord](https://github.com/yabeda-rb/yabeda-activerecord) | SQL query performance, connection pool stats |
+| [yabeda-puma-plugin](https://github.com/yabeda-rb/yabeda-puma-plugin) | Puma workers, threads, backlog, pool capacity |
+
+### Adding Custom Metrics
+
+Define custom metrics in `config/initializers/yabeda.rb`:
+
+```ruby
+Yabeda.configure do
+  group :starmap do
+    counter :quarter_activations_total,
+            comment: "Total number of quarter activations",
+            tags: [:unit_id]
+
+    gauge :skill_ratings_pending,
+          comment: "Number of ratings awaiting approval",
+          tags: [:team_id]
+  end
+end
+```
+
 ## Testing
 
 ### Ruby (RSpec)

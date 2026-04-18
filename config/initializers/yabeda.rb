@@ -1,0 +1,2 @@
+Yabeda.configure do
+end
