@@ -69,6 +69,27 @@ RSpec.describe TeamSkillMatrixQuery do
     end
   end
 
+  describe "#raw_ratings" do
+    context "with no ratings" do
+      it "returns empty hash for technology" do
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).raw_ratings
+        expect(result[technology1.id]).to be_nil
+      end
+    end
+
+    context "with partial ratings" do
+      before do
+        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+      end
+
+      it "returns sparse hash without defaults for unrated users" do
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).raw_ratings
+        expect(result[technology1.id][user1.id]).to eq(2)
+        expect(result[technology1.id]).not_to be_key(user2.id)
+      end
+    end
+  end
+
   describe "#skill_matrix" do
     context "with no ratings" do
       it "returns zeroed matrix" do

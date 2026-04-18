@@ -13,13 +13,21 @@ class TeamTechnologiesController < ApplicationController
     end
 
     @team_members = sorted_team_members
-    @skill_ratings = load_skill_ratings(@current_quarter)
-    @previous_ratings = load_previous_ratings
     @team_technology = TeamTechnology.find_by(team: @team, technology: @technology)
-    @expert_count = calculate_expert_count
-    @previous_expert_count = calculate_previous_expert_count
-    @bus_factor_risk_level = bus_factor_risk_level
-    @bus_factor_change = @expert_count - @previous_expert_count
+
+    query = TeamSkillMatrixQuery.new(
+      team: @team,
+      technologies: [@technology],
+      user_ids: @team_members.map(&:id),
+      quarter: @current_quarter
+    )
+
+    bus_factor = query.bus_factor[@technology.id]
+    @expert_count = bus_factor[:count]
+    @bus_factor_risk_level = bus_factor[:risk_level]
+    @bus_factor_change = bus_factor[:change] || 0
+    @skill_ratings = query.raw_ratings[@technology.id] || {}
+    @rating_dynamics = query.rating_dynamics[@technology.id] || {}
     @coverage = coverage_percentage
   end
 
@@ -43,49 +51,6 @@ class TeamTechnologiesController < ApplicationController
       .sort_by { |u| u.full_name.downcase }
 
     team_lead ? [team_lead] + other_members : other_members
-  end
-
-  def load_skill_ratings(quarter)
-    SkillRating
-      .where(quarter: quarter, team_id: @team.id, technology_id: @technology.id, status: :approved)
-      .pluck(:user_id, :rating)
-      .to_h
-  end
-
-  def load_previous_ratings
-    previous_quarter = @current_quarter.previous_quarter
-    return {} unless previous_quarter
-
-    SkillRating
-      .where(quarter: previous_quarter, team_id: @team.id, technology_id: @technology.id, status: :approved)
-      .pluck(:user_id, :rating)
-      .to_h
-  end
-
-  def calculate_expert_count
-    SkillRating
-      .where(quarter: @current_quarter, team_id: @team.id, technology_id: @technology.id, rating: SkillRating::EXPERT_MIN_RATING..SkillRating::EXPERT_MAX_RATING, status: :approved)
-      .select(:user_id)
-      .distinct
-      .count
-  end
-
-  def calculate_previous_expert_count
-    previous_quarter = @current_quarter.previous_quarter
-    return 0 unless previous_quarter
-
-    SkillRating
-      .where(quarter: previous_quarter, team_id: @team.id, technology_id: @technology.id, rating: SkillRating::EXPERT_MIN_RATING..SkillRating::EXPERT_MAX_RATING, status: :approved)
-      .select(:user_id)
-      .distinct
-      .count
-  end
-
-  def bus_factor_risk_level
-    target = @team_technology&.target_experts || 0
-    return "high" if @expert_count == 0
-    return "medium" if @expert_count < target
-    "low"
   end
 
   def coverage_percentage

@@ -79,8 +79,7 @@
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <% @team_members.each do |member| %>
                   <% rating = @skill_ratings[member.id] %>
-                  <% previous_rating = @previous_ratings[member.id] || 0 %>
-                  <% change = rating.nil? ? nil : rating - previous_rating %>
+                  <% change = rating.nil? ? nil : @rating_dynamics[member.id] %>
                   <tr class="table__row">
                     <td class="table__cell table__cell--heading">
                       <%= link_to member.full_name, user_path(member), class: "text-heading hover:underline hover:text-indigo-600 dark:hover:text-indigo-400" %>

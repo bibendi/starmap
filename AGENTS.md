@@ -364,7 +364,7 @@ bundle exec brakeman
 ### Query Objects (`app/queries/`)
 **Location**: `app/queries/`
 **Purpose**: Encapsulate complex database queries (multi-table JOINs, subqueries, aggregations) outside of models and components
-**Example**: `RedZonesQuery` (count and details for red zone metrics)
+**Example**: `RedZonesQuery` (count and details for red zone metrics), `TeamSkillMatrixQuery` (bus factor, skill matrix, raw ratings, rating dynamics — reusable for both team matrix and technology detail pages)
 **Naming**: PascalCase with `Query` suffix (e.g., `RedZonesQuery`, `KeyPersonRisksQuery`)
 **Convention**:
 - Accept parameters via `initialize` (e.g., `teams:`, `quarter:`)
@@ -498,6 +498,21 @@ Components and controllers MUST NOT contain complex database queries. Follow thi
 **Data flow**: Controller → Query Object → DB → instance variable → View → Component (render only).
 
 **Why**: Query Objects are independently testable, reusable across controllers, and keep component rendering specs fast (pass pre-computed data, no DB hits).
+
+### Query Object Naming: Domain-Oriented vs Action-Oriented
+
+**NEVER** name query objects after controller actions. Action-oriented names like `TeamTechnologyShowQuery` are tightly coupled to a single page, impossible to reuse, and become maintenance baggage.
+
+Instead, name query objects after the **domain concept** they serve. A domain query encapsulates a business question that multiple pages or contexts might need answered.
+
+| Pattern | Example | Reusability |
+|---|---|---|
+| **Action-oriented** (bad) | `TeamTechnologyShowQuery` | Zero — bound to one controller action |
+| **Domain-oriented** (good) | `TeamSkillMatrixQuery` | High — same query powers team skill matrix AND individual technology detail pages |
+
+**How to find the right domain query**: Before creating a new query object, check if an existing one already answers the question. Controllers with multiple similar queries often just need the same domain query with different parameters (e.g., passing a single technology instead of the full list).
+
+**Example**: `TeamSkillMatrixQuery` provides `#bus_factor`, `#skill_matrix`, `#raw_ratings`, and `#rating_dynamics` — all keyed by technology. It powers both the team skill matrix page (all technologies) and the technology detail page (single technology) by accepting different `technologies:` parameters.
 
 ## Code Organization Principles
 

@@ -45,10 +45,10 @@ class TeamSkillMatrixQuery
     end
   end
 
-  def skill_matrix
+  def raw_ratings
     return {} if @quarter.nil?
 
-    ratings = SkillRating
+    SkillRating
       .visible_for_quarter(@quarter)
       .where(
         quarter: @quarter,
@@ -61,6 +61,12 @@ class TeamSkillMatrixQuery
         hash[tech_id] ||= {}
         hash[tech_id][user_id] = rating
       }
+  end
+
+  def skill_matrix
+    return {} if @quarter.nil?
+
+    ratings = raw_ratings
 
     @technologies.each do |tech|
       ratings[tech.id] ||= {}
