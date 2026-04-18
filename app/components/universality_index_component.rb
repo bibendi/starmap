@@ -1,23 +1,10 @@
 # frozen_string_literal: true
 
 class UniversalityIndexComponent < ViewComponent::Base
-  include ExpertConstants
+  attr_reader :universality_index, :team_members
 
-  def initialize(team:)
-    @team = team
-    @universality_index = calculate
-  end
-
-  private
-
-  def calculate
-    current_quarter = Quarter.current
-    return {} unless current_quarter
-
-    SkillRating
-      .visible_for_quarter(current_quarter)
-      .where(quarter: current_quarter, team_id: @team.id, rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
-      .group(:user_id)
-      .count
+  def initialize(universality_index:, team_members:)
+    @universality_index = universality_index
+    @team_members = team_members
   end
 end

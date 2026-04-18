@@ -1,29 +1,11 @@
 # frozen_string_literal: true
 
 class KeyPersonRisksComponent < ViewComponent::Base
-  include ExpertConstants
-
   attr_reader :key_person_risks_count, :label, :description
 
-  def initialize(teams:, label: nil, description: nil)
-    @teams = teams
+  def initialize(key_person_risks_count:, label: nil, description: nil)
+    @key_person_risks_count = key_person_risks_count
     @label = label || I18n.t("components.key_person_risks.label")
     @description = description || I18n.t("components.key_person_risks.description")
-    @key_person_risks_count = calculate
-  end
-
-  private
-
-  def calculate
-    current_quarter = Quarter.current
-    return 0 unless current_quarter
-
-    SkillRating
-      .visible_for_quarter(current_quarter)
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
-      .group(:technology_id)
-      .having("COUNT(DISTINCT user_id) = 1")
-      .count
-      .size
   end
 end

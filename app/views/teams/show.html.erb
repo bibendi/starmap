@@ -58,12 +58,12 @@
           </div>
         </div>
 
-         <div class="flex flex-wrap gap-6 mb-8">
-           <%= render CoverageIndexComponent.new(teams: [@team]) %>
-           <%= render MaturityIndexComponent.new(teams: [@team]) %>
-            <%= render RedZonesCardComponent.new(red_zones_count: @red_zones_count) %>
-           <%= render KeyPersonRisksComponent.new(teams: [@team]) %>
-         </div>
+          <div class="flex flex-wrap gap-6 mb-8">
+            <%= render CoverageIndexComponent.new(coverage_index: @coverage_index) %>
+            <%= render MaturityIndexComponent.new(maturity_index: @maturity_index) %>
+             <%= render RedZonesCardComponent.new(red_zones_count: @red_zones_count) %>
+            <%= render KeyPersonRisksComponent.new(key_person_risks_count: @key_person_risks_count) %>
+          </div>
 
           <% if @team_members.any? %>
             <% lead_member = @team_members.find { |m| m.id == @team.team_lead_id } %>
@@ -144,13 +144,13 @@
 
          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
            <%= render RedZonesDetailsComponent.new(teams: [@team], red_zones_data: @red_zones_data) %>
-           <%= render KeyPersonRisksDetailsComponent.new(teams: [@team]) %>
+            <%= render KeyPersonRisksDetailsComponent.new(teams: [@team], risks_data: @key_person_risks_data) %>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <%= render CompetencyDynamicsComponent.new(team: @team) %>
-          <%= render UniversalityIndexComponent.new(team: @team) %>
-        </div>
+         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+           <%= render CompetencyDynamicsComponent.new(competency_dynamics: @competency_dynamics, team_members: @team_members) %>
+           <%= render UniversalityIndexComponent.new(universality_index: @universality_index, team_members: @team_members) %>
+         </div>
 
         <%= render TeamSkillMatrixComponent.new(team: @team, team_members: @team_members, technologies: @technologies, bus_factor: @bus_factor, skill_matrix: @skill_matrix, rating_dynamics: @rating_dynamics, show_technology_links: policy(TeamTechnology.new(team: @team)).show?) %>
 

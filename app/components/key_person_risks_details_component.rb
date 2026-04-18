@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 class KeyPersonRisksDetailsComponent < ViewComponent::Base
-  include ExpertConstants
-
   attr_reader :risks_data, :teams
 
-  def initialize(teams:)
+  def initialize(teams:, risks_data:)
     @teams = teams
-    @risks_data = calculate
+    @risks_data = risks_data
   end
 
   def any_risks?
@@ -28,34 +26,5 @@ class KeyPersonRisksDetailsComponent < ViewComponent::Base
 
   def has_pagination?
     risks_count > 5
-  end
-
-  private
-
-  def calculate
-    current_quarter = Quarter.current
-    return [] unless current_quarter
-
-    tech_ids_with_single_expert = SkillRating
-      .visible_for_quarter(current_quarter)
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING)
-      .group(:technology_id)
-      .having("COUNT(DISTINCT user_id) = 1")
-      .pluck(:technology_id)
-
-    return [] if tech_ids_with_single_expert.empty?
-
-    SkillRating
-      .preload(:technology, :user, :team)
-      .visible_for_quarter(current_quarter)
-      .where(quarter: current_quarter, team_id: @teams.map(&:id), rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING, technology_id: tech_ids_with_single_expert)
-      .map do |rating|
-        {
-          technology: rating.technology,
-          team: rating.team,
-          user: rating.user
-        }
-      end
-      .sort_by { |risk| risk[:technology]&.name || "" }
   end
 end

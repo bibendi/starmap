@@ -44,20 +44,20 @@
              </div>
            </div>
 
-          <div class="flex flex-wrap gap-6 mb-8">
-            <%= render CoverageIndexComponent.new(teams: @teams) %>
-            <%= render MaturityIndexComponent.new(teams: @teams) %>
-             <%= render RedZonesCardComponent.new(red_zones_count: @red_zones_count) %>
-            <%= render KeyPersonRisksComponent.new(teams: @teams) %>
-          </div>
+           <div class="flex flex-wrap gap-6 mb-8">
+             <%= render CoverageIndexComponent.new(coverage_index: @coverage_index) %>
+             <%= render MaturityIndexComponent.new(maturity_index: @maturity_index) %>
+              <%= render RedZonesCardComponent.new(red_zones_count: @red_zones_count) %>
+             <%= render KeyPersonRisksComponent.new(key_person_risks_count: @key_person_risks_count) %>
+           </div>
 
            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               <%= render RedZonesDetailsComponent.new(teams: @teams, red_zones_data: @red_zones_data) %>
-             <%= render KeyPersonRisksDetailsComponent.new(teams: @teams) %>
+              <%= render KeyPersonRisksDetailsComponent.new(teams: @teams, risks_data: @key_person_risks_data) %>
            </div>
 
            <div class="mb-8">
-             <%= render UnitTechnologyTreemapComponent.new(teams: @teams) %>
+              <%= render UnitTechnologyTreemapComponent.new(teams: @teams, technologies_data: @technologies_data) %>
            </div>
         <% else %>
          <div class="alert alert--warning">

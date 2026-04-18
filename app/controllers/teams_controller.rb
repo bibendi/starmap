@@ -18,6 +18,19 @@ class TeamsController < ApplicationController
     @red_zones_count = red_zones_query.count
     @red_zones_data = red_zones_query.details
 
+    @coverage_index = CoverageIndexQuery.new(teams: [@team], quarter: @current_quarter).percentage
+    @maturity_index = MaturityIndexQuery.new(teams: [@team], quarter: @current_quarter).value
+
+    key_person_risks_query = KeyPersonRisksQuery.new(teams: [@team], quarter: @current_quarter)
+    @key_person_risks_count = key_person_risks_query.count
+    @key_person_risks_data = key_person_risks_query.details
+
+    @competency_dynamics = CompetencyDynamicsQuery.new(
+      team: @team, user_ids: @team_members.map(&:id), quarter: @current_quarter
+    ).data
+
+    @universality_index = UniversalityIndexQuery.new(team: @team, quarter: @current_quarter).data
+
     @team_member_metrics = TeamMemberMetricsQuery.new(
       team: @team, user_ids: @team_members.map(&:id), quarter: @current_quarter
     ).metrics

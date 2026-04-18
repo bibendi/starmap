@@ -3,20 +3,9 @@
 class MaturityIndexComponent < ViewComponent::Base
   attr_reader :maturity_index, :label, :description
 
-  def initialize(teams:, label: nil, description: nil)
-    @teams = teams
+  def initialize(maturity_index:, label: nil, description: nil)
+    @maturity_index = maturity_index
     @label = label || I18n.t("components.maturity_index.label")
     @description = description || I18n.t("components.maturity_index.description")
-    @maturity_index = calculate
-  end
-
-  private
-
-  def calculate
-    current_quarter = Quarter.current
-    return 0 unless current_quarter
-
-    ratings = SkillRating.visible_for_quarter(current_quarter).where(team_id: @teams.map(&:id), quarter: current_quarter)
-    ratings.average(:rating)&.round(1) || 0
   end
 end

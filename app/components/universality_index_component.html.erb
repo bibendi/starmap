@@ -6,7 +6,7 @@
   <div class="card__body">
     <div class="space-y-3">
       <% @universality_index.each do |user_id, count| %>
-        <% user = @team.users.find { |u| u.id == user_id } %>
+        <% user = team_members.find { |u| u.id == user_id } %>
           <div class="card-item">
             <div class="content-card">
               <span class="text-heading"><%= user&.full_name %></span>
