@@ -13,9 +13,21 @@ class TeamsController < ApplicationController
   def show
     @technologies = @team.technologies.order(:name)
     @technology_counts = technology_counts_by_criticality
+
     red_zones_query = RedZonesQuery.new(teams: [@team], quarter: @current_quarter)
     @red_zones_count = red_zones_query.count
     @red_zones_data = red_zones_query.details
+
+    @team_member_metrics = TeamMemberMetricsQuery.new(
+      team: @team, user_ids: @team_members.map(&:id), quarter: @current_quarter
+    ).metrics
+
+    skill_matrix_query = TeamSkillMatrixQuery.new(
+      team: @team, technologies: @technologies, user_ids: @team_members.map(&:id), quarter: @current_quarter
+    )
+    @bus_factor = skill_matrix_query.bus_factor
+    @skill_matrix = skill_matrix_query.skill_matrix
+    @rating_dynamics = skill_matrix_query.rating_dynamics
   end
 
   private
