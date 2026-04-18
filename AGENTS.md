@@ -361,6 +361,18 @@ bundle exec brakeman
 **Purpose**: Pundit authorization rules - role-based and record-level access
 **Example**: `SkillRatingPolicy` (edit own ratings in active quarters), `DashboardPolicy` (role-based dashboard access)
 
+### Query Objects (`app/queries/`)
+**Location**: `app/queries/`
+**Purpose**: Encapsulate complex database queries (multi-table JOINs, subqueries, aggregations) outside of models and components
+**Example**: `RedZonesQuery` (count and details for red zone metrics)
+**Naming**: PascalCase with `Query` suffix (e.g., `RedZonesQuery`, `KeyPersonRisksQuery`)
+**Convention**:
+- Accept parameters via `initialize` (e.g., `teams:`, `quarter:`)
+- Expose one or more public methods that return data (e.g., `#count`, `#details`)
+- Use model scopes for reusable filtering; keep multi-query orchestration in the query object
+- Every Query Object MUST include an N+1 test (tagged `:n_plus_one`) for each public method, verifying constant query count as data scales
+- Tests go in `spec/queries/`
+
 ### Jobs (`app/jobs/`)
 **Location**: `app/jobs/`
 **Purpose**: Solid Queue background job classes
@@ -448,6 +460,44 @@ All Devise `button_to` calls (sign out, OIDC authorize) MUST include `data: { tu
 
 ### OIDC Discovery with HTTP
 Gem `swd` (dependency of `openid_connect`) defaults to `URI::HTTPS` for discovery. For HTTP-based OIDC providers (dev Keycloak), set `SWD.url_builder = URI::HTTP` before mounting OmniAuth middleware. Without it, discovery silently fails with SSL errors.
+
+### ActiveRecord Query Separation
+Components and controllers MUST NOT contain complex database queries. Follow this layering:
+
+1. **Reusable scopes on models** — simple filtering conditions used across multiple contexts:
+   ```ruby
+   # app/models/skill_rating.rb
+   scope :expert_ratings, -> { where(rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING) }
+   ```
+2. **Query Objects** — complex queries with JOINs, subqueries, or multi-step aggregation live in `app/queries/`:
+   ```ruby
+   # app/queries/red_zones_query.rb
+   class RedZonesQuery
+     def initialize(teams:, quarter: Quarter.current)
+     def count    # single aggregate result
+     def details  # structured data for rendering
+   end
+   ```
+3. **Controllers** — call Query Objects and pass results to views as instance variables:
+   ```ruby
+   # app/controllers/teams_controller.rb
+   def show
+     @red_zones_count = RedZonesQuery.new(teams: [@team], quarter: @current_quarter).count
+     @red_zones_data = RedZonesQuery.new(teams: [@team], quarter: @current_quarter).details
+   end
+   ```
+4. **Components** — purely presentational. Accept pre-computed data via required `initialize` parameters, contain NO database queries:
+   ```ruby
+   # app/components/red_zones_card_component.rb
+   def initialize(red_zones_count:, label: nil, description: nil)
+     @red_zones_count = red_zones_count
+   end
+   ```
+5. **Views** — NEVER call model classes directly (no `Model.where(...)`, `Model.pluck(...)`, `Model.includes(...)` in templates)
+
+**Data flow**: Controller → Query Object → DB → instance variable → View → Component (render only).
+
+**Why**: Query Objects are independently testable, reusable across controllers, and keep component rendering specs fast (pass pre-computed data, no DB hits).
 
 ## Code Organization Principles
 

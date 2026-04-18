@@ -47,12 +47,12 @@
           <div class="flex flex-wrap gap-6 mb-8">
             <%= render CoverageIndexComponent.new(teams: @teams) %>
             <%= render MaturityIndexComponent.new(teams: @teams) %>
-            <%= render RedZonesCardComponent.new(teams: @teams) %>
+             <%= render RedZonesCardComponent.new(red_zones_count: @red_zones_count) %>
             <%= render KeyPersonRisksComponent.new(teams: @teams) %>
           </div>
 
            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-             <%= render RedZonesDetailsComponent.new(teams: @teams) %>
+              <%= render RedZonesDetailsComponent.new(teams: @teams, red_zones_data: @red_zones_data) %>
              <%= render KeyPersonRisksDetailsComponent.new(teams: @teams) %>
            </div>
 

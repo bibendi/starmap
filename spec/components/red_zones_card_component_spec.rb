@@ -3,113 +3,12 @@
 require "rails_helper"
 
 RSpec.describe RedZonesCardComponent, type: :component do
-  let_it_be(:current_quarter) { create(:quarter, status: :active) }
   let_it_be(:team) { create(:team) }
-  let_it_be(:user) { create(:user, team: team) }
-  let_it_be(:technology1) { create(:technology) }
-  let_it_be(:technology2) { create(:technology) }
-
-  describe "#calculate" do
-    context "when technologies have sufficient experts" do
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "returns 0 red zones" do
-        component = described_class.new(teams: [team])
-        expect(component.red_zones_count).to eq(0)
-      end
-    end
-
-    context "when technologies have insufficient experts" do
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 3, team: team)
-      end
-
-      it "returns 1 red zone" do
-        component = described_class.new(teams: [team])
-        expect(component.red_zones_count).to eq(1)
-      end
-    end
-
-    context "when team has no technologies" do
-      let(:empty_team) { create(:team) }
-
-      it "returns 0 red zones" do
-        component = described_class.new(teams: [empty_team])
-        expect(component.red_zones_count).to eq(0)
-      end
-    end
-
-    context "when technology has low criticality" do
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "low")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
-      it "does not count low criticality technologies" do
-        component = described_class.new(teams: [team])
-        expect(component.red_zones_count).to eq(0)
-      end
-    end
-
-    context "when there is no current quarter" do
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        Quarter.destroy_all
-      end
-
-      it "returns 0 red zones" do
-        component = described_class.new(teams: [team])
-        expect(component.red_zones_count).to eq(0)
-      end
-    end
-
-    context "with custom target_experts" do
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 1)
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-      end
-
-      it "calculates based on custom target" do
-        component = described_class.new(teams: [team])
-        expect(component.red_zones_count).to eq(1)
-      end
-    end
-
-    context "when multiple teams are provided" do
-      let_it_be(:team2) { create(:team) }
-      let_it_be(:user2) { create(:user, team: team2) }
-
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
-        create(:team_technology, team: team2, technology: technology1, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 1, team: team2)
-      end
-
-      it "counts red zones per team-technology combination" do
-        component = described_class.new(teams: [team, team2])
-        expect(component.red_zones_count).to eq(1)
-      end
-    end
-  end
 
   describe "rendering" do
     context "with custom label and description" do
       it "renders custom text" do
-        component = described_class.new(teams: [team], label: "Custom Label", description: "Custom Description")
+        component = described_class.new(red_zones_count: 0, label: "Custom Label", description: "Custom Description")
         render_inline(component)
         expect(page).to have_text("Custom Label")
         expect(page).to have_text("Custom Description")
@@ -118,7 +17,7 @@ RSpec.describe RedZonesCardComponent, type: :component do
 
     context "with default label and description" do
       it "renders default text" do
-        component = described_class.new(teams: [team])
+        component = described_class.new(red_zones_count: 0)
         render_inline(component)
         expect(page).to have_text("Red Zones")
         expect(page).to have_text("Critical competencies without coverage")
@@ -126,14 +25,8 @@ RSpec.describe RedZonesCardComponent, type: :component do
     end
 
     context "red zones count display" do
-      before do
-        create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-      end
-
       it "displays count" do
-        component = described_class.new(teams: [team])
+        component = described_class.new(red_zones_count: 1)
         render_inline(component)
         expect(page).to have_text("1")
       end
@@ -141,44 +34,10 @@ RSpec.describe RedZonesCardComponent, type: :component do
 
     context "when count is 0" do
       it "displays 0" do
-        component = described_class.new(teams: [team])
+        component = described_class.new(red_zones_count: 0)
         render_inline(component)
         expect(page).to have_text("0")
       end
-    end
-  end
-
-  describe "N+1 queries", :n_plus_one do
-    let_it_be(:technologies) { create_list(:technology, 3) }
-
-    before do
-      technologies.each do |tech|
-        create(:team_technology, team: team, technology: tech,
-          criticality: [:normal, :high].sample, target_experts: 2)
-      end
-    end
-
-    populate do |n|
-      ActiveRecord::Base.connection.clear_query_cache
-      team.reload
-      team.users.reset
-
-      users = create_list(:user, n, team: team)
-
-      users.each do |user|
-        technologies.each do |tech|
-          create(:skill_rating,
-            user: user,
-            technology: tech,
-            quarter: current_quarter,
-            rating: rand(1..3),
-            team: team)
-        end
-      end
-    end
-
-    specify do
-      expect { render_inline(described_class.new(teams: [team])) }.to perform_constant_number_of_queries
     end
   end
 end

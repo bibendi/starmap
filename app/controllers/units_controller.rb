@@ -10,6 +10,9 @@ class UnitsController < ApplicationController
   end
 
   def show
+    red_zones_query = RedZonesQuery.new(teams: @teams, quarter: @current_quarter)
+    @red_zones_count = red_zones_query.count
+    @red_zones_data = red_zones_query.details
   end
 
   private

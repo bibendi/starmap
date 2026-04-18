@@ -19,8 +19,12 @@ class SkillRating < ApplicationRecord
 
   before_validation :set_team_from_user, if: -> { team_id.nil? && user_id.present? }
 
+  EXPERT_MIN_RATING = 2
+  EXPERT_MAX_RATING = 3
+
   scope :by_quarter, ->(quarter) { where(quarter: quarter) }
   scope :by_user, ->(user) { where(user: user) }
+  scope :expert_ratings, -> { where(rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING) }
   scope :visible_for_quarter, ->(quarter) { where(status: statuses_visible_for(quarter)) }
   scope :visible_for_quarters, ->(quarters) {
     return none if quarters.blank?

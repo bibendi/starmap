@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 class RedZonesDetailsComponent < ViewComponent::Base
-  include ExpertConstants
-
   attr_reader :red_zones_data, :teams
 
-  def initialize(teams:)
+  def initialize(teams:, red_zones_data:)
     @teams = teams
-    @red_zones_data = calculate
+    @red_zones_data = red_zones_data
   end
 
   def any_red_zones?
@@ -37,7 +35,6 @@ class RedZonesDetailsComponent < ViewComponent::Base
         }
       end
     else
-      # Group by technology for single team (though usually one technology per red_zone)
       red_zones_data.group_by { |rz| rz[:technology] }.map do |technology, red_zones|
         {
           technology: technology,
@@ -45,55 +42,5 @@ class RedZonesDetailsComponent < ViewComponent::Base
         }
       end
     end
-  end
-
-  private
-
-  def calculate
-    current_quarter = Quarter.current
-    return [] unless current_quarter
-
-    team_technologies = TeamTechnology
-      .includes(:technology, :team)
-      .where(team_id: @teams.map(&:id), criticality: [:normal, :high])
-
-    technology_ids = team_technologies.map(&:technology_id)
-    team_ids = @teams.map(&:id)
-
-    expert_ratings = SkillRating
-      .preload(:user)
-      .visible_for_quarter(current_quarter)
-      .where(
-        quarter: current_quarter,
-        technology_id: technology_ids,
-        rating: EXPERT_MIN_RATING..EXPERT_MAX_RATING,
-        team_id: team_ids
-      )
-
-    # Group experts by technology_id and team_id
-    experts_by_tech_team = expert_ratings.each_with_object({}) do |rating, hash|
-      key = [rating.technology_id, rating.team_id]
-      hash[key] ||= []
-      hash[key] << rating.user
-    end
-
-    red_zones = team_technologies.each_with_object([]) do |team_tech, result|
-      key = [team_tech.technology_id, team_tech.team_id]
-      experts = experts_by_tech_team[key] || []
-      expert_count = experts.size
-
-      if expert_count.zero?
-        result << {
-          technology: team_tech.technology,
-          team: team_tech.team,
-          expert_count: expert_count,
-          target_experts: team_tech.target_experts,
-          deficit: team_tech.target_experts - expert_count,
-          experts: experts
-        }
-      end
-    end
-
-    red_zones.sort_by { |red_zone| red_zone[:technology]&.name || "" }
   end
 end

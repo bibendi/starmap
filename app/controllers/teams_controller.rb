@@ -1,6 +1,4 @@
 class TeamsController < ApplicationController
-  include ExpertConstants
-
   before_action :authenticate_user!
   before_action :set_team, :set_team_context, only: [:show]
 
@@ -15,6 +13,9 @@ class TeamsController < ApplicationController
   def show
     @technologies = @team.technologies.order(:name)
     @technology_counts = technology_counts_by_criticality
+    red_zones_query = RedZonesQuery.new(teams: [@team], quarter: @current_quarter)
+    @red_zones_count = red_zones_query.count
+    @red_zones_data = red_zones_query.details
   end
 
   private
