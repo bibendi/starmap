@@ -107,13 +107,14 @@ RSpec.describe KeyPersonRisksQuery do
 
       users = create_list(:user, n, team: team)
 
-      users.each do |user|
+      users.each_with_index do |user, index|
         technologies.each do |tech|
+          rating = (index == 0) ? [2, 3].sample : 1
           create(:skill_rating,
             user: user,
             technology: tech,
             quarter: current_quarter,
-            rating: rand(0..3),
+            rating: rating,
             team: team)
         end
       end
