@@ -18,7 +18,9 @@ class QuarterDataCopier
   private
 
   def copy_skill_ratings
-    @previous_quarter.skill_ratings.find_each do |rating|
+    @previous_quarter.skill_ratings.includes(:user).find_each do |rating|
+      next unless rating.user.team_id == rating.team_id
+
       @new_quarter.skill_ratings.create!(
         user: rating.user,
         team: rating.team,
