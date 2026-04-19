@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-04-20
+
+### Changed
+
+- Upgrade Rails 8.1.1 → 8.1.3 and Devise 4.9.4 → 5.0.3
+
+### Removed
+
+- Unused Redis service from docker-compose (project uses Solid Queue with PostgreSQL)
+
+## [0.4.0] - 2026-04-18
+
+### Changed
+
+- Extract component SQL into domain-oriented query objects (RedZones, TeamMemberMetrics, SkillMatrix)
+- Remove ExpertConstants initializer, use SkillRating constants instead
+- Reuse TeamSkillMatrixQuery in TeamTechnologiesController
+
+### Fixed
+
+- Make key person risks N+1 test data deterministic
+
 ## [0.3.0] - 2026-04-18
 
 ### Added
