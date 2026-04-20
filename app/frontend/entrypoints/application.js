@@ -13,6 +13,7 @@ import SortableController from '../controllers/sortable_controller.js'
 import TeamMembersController from '../controllers/team_members_controller.js'
 import ThemeController from '../controllers/theme_controller.js'
 import TreemapChartController from '../controllers/treemap_chart_controller.js'
+import SkillRatingLevelController from '../controllers/skill_rating_level_controller.js'
 import VerticalPaginationController from '../controllers/vertical_pagination_controller.js'
 
 // Register Stimulus controllers
@@ -21,6 +22,7 @@ application.register('sortable', SortableController)
 application.register('team-members', TeamMembersController)
 application.register('theme', ThemeController)
 application.register('treemap-chart', TreemapChartController)
+application.register('skill-rating-level', SkillRatingLevelController)
 application.register('vertical-pagination', VerticalPaginationController)
 
 // Custom application JavaScript

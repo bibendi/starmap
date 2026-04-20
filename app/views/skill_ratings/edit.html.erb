@@ -33,7 +33,13 @@
                     <% @skill_ratings_data.each do |data| %>
                       <% team_tech = data[:team_technology] %>
                       <% skill_rating = data[:skill_rating] %>
-                      <tr>
+                      <tr data-controller="skill-rating-level"
+                          data-skill-rating-level-levels-value="<%= {
+                            "0" => t("skill_ratings.levels.zero"),
+                            "1" => t("skill_ratings.levels.one"),
+                            "2" => t("skill_ratings.levels.two"),
+                            "3" => t("skill_ratings.levels.three")
+                          }.to_json %>">
                         <td class="table__cell table__cell--heading">
                           <%= team_tech.technology.name %>
                         </td>
@@ -62,7 +68,7 @@
                                     rating_value,
                                     skill_rating.rating == rating_value,
                                     class: "sr-only peer",
-                                    data: { rating: rating_value },
+                                    data: { rating: rating_value, action: "skill-rating-level#change" },
                                     disabled: rating_disabled %>
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg border-2 font-semibold transition-colors
                                   <%= case rating_value
@@ -80,7 +86,7 @@
                             <% end %>
                           </div>
                         </td>
-                        <td class="table__cell text-gray-700 dark:text-gray-300">
+                        <td class="table__cell text-gray-700 dark:text-gray-300" data-skill-rating-level-target="levelText">
                           <%= t("skill_ratings.levels.#{%w[zero one two three][skill_rating.rating] || 'zero'}") %>
                         </td>
                         <td class="table__cell table__cell--center">
