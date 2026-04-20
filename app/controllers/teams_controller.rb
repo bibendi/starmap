@@ -11,7 +11,11 @@ class TeamsController < ApplicationController
   end
 
   def show
-    @technologies = @team.technologies.order(:name)
+    @technologies = @team.team_technologies
+      .active
+      .includes(:technology)
+      .map(&:technology)
+      .sort_by(&:name)
     @technology_counts = technology_counts_by_criticality
 
     red_zones_query = RedZonesQuery.new(teams: [@team], quarter: @current_quarter)
@@ -75,6 +79,7 @@ class TeamsController < ApplicationController
 
   def technology_counts_by_criticality
     @team.team_technologies
+      .active
       .group(:criticality)
       .count
       .transform_keys(&:to_sym)

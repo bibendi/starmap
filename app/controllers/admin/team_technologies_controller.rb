@@ -44,13 +44,16 @@ module Admin
       @team_technology = @team.team_technologies.find(params[:id])
       authorize [:admin, @team_technology]
 
-      if SkillRating.exists?(team: @team, technology: @team_technology.technology)
-        redirect_to admin_team_path(@team), alert: t("admin.team_technologies.cannot_delete_with_ratings")
-      elsif @team_technology.destroy
-        redirect_to admin_team_path(@team), notice: t("admin.team_technologies.destroyed")
-      else
-        redirect_to admin_team_path(@team), alert: t("admin.team_technologies.cannot_delete_with_ratings")
-      end
+      @team_technology.archived!
+      redirect_to admin_team_path(@team), notice: t("admin.team_technologies.archived")
+    end
+
+    def restore
+      @team_technology = @team.team_technologies.find(params[:id])
+      authorize [:admin, @team_technology]
+
+      @team_technology.active!
+      redirect_to admin_team_path(@team), notice: t("admin.team_technologies.restored")
     end
 
     private

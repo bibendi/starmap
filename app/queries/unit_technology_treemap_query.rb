@@ -9,7 +9,7 @@ class UnitTechnologyTreemapQuery
   def data
     return [] unless @quarter
 
-    team_technologies = TeamTechnology.includes(:technology).where(team_id: team_ids)
+    team_technologies = TeamTechnology.includes(:technology).active.where(team_id: team_ids)
     technology_ids = team_technologies.pluck(:technology_id).uniq
 
     return [] if technology_ids.empty?

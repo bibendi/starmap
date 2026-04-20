@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_20_095631) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,11 +102,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_190000) do
   create_table "team_technologies", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "criticality", default: "normal", null: false
+    t.string "status", default: "active", null: false
     t.integer "target_experts", default: 2, null: false
     t.bigint "team_id", null: false
     t.bigint "technology_id", null: false
     t.datetime "updated_at", null: false
     t.index ["criticality"], name: "index_team_technologies_on_criticality"
+    t.index ["status"], name: "index_team_technologies_on_status"
     t.index ["team_id", "technology_id"], name: "index_team_technologies_on_team_and_tech", unique: true
     t.index ["team_id"], name: "index_team_technologies_on_team_id"
     t.index ["technology_id"], name: "index_team_technologies_on_technology_id"

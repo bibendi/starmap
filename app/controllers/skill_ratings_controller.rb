@@ -145,6 +145,7 @@ class SkillRatingsController < ApplicationController
     return unless @target_user.team
 
     @team_technologies = @target_user.team.team_technologies
+      .active
       .includes(:technology)
       .joins(:technology)
       .where(technologies: {active: true})

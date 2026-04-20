@@ -37,7 +37,7 @@ class TeamTechnologiesController < ApplicationController
     @team = Team.find(params[:team_id])
     @technology = Technology.find(params[:id])
 
-    unless TeamTechnology.exists?(team_id: @team.id, technology_id: @technology.id)
+    unless TeamTechnology.active.exists?(team_id: @team.id, technology_id: @technology.id)
       raise ActiveRecord::RecordNotFound
     end
 

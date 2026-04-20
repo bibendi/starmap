@@ -7,7 +7,7 @@ class CoverageIndexQuery
   end
 
   def percentage
-    team_technologies = TeamTechnology.includes(:technology).where(team_id: team_ids)
+    team_technologies = TeamTechnology.includes(:technology).active.where(team_id: team_ids)
     return 0 if team_technologies.empty?
     return 0 unless @quarter
 

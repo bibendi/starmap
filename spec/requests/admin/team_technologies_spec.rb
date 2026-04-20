@@ -285,24 +285,26 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
     context "when user is admin" do
       before { sign_in admin, scope: :user }
 
-      it "destroys team technology and redirects with notice" do
+      it "archives team technology and redirects with notice" do
         tt = create(:team_technology, team: team, technology: technology)
         expect {
           delete admin_team_team_technology_path(team, tt)
-        }.to change(TeamTechnology, :count).by(-1)
+        }.not_to change(TeamTechnology, :count)
 
+        tt.reload
+        expect(tt).to be_archived
         expect(response).to redirect_to(admin_team_path(team))
-        expect(flash[:notice]).to eq(I18n.t("admin.team_technologies.destroyed"))
+        expect(flash[:notice]).to eq(I18n.t("admin.team_technologies.archived"))
       end
 
-      it "technology no longer appears in list" do
+      it "technology no longer appears in active list" do
         tt = create(:team_technology, team: team, technology: technology)
         delete admin_team_team_technology_path(team, tt)
         follow_redirect!
-        expect(response.body).not_to include("Ruby")
+        expect(response.body).to include(I18n.t("admin.team_technologies.archived_title"))
       end
 
-      it "prevents destroy when skill ratings exist" do
+      it "archives technology even when skill ratings exist" do
         tt = create(:team_technology, team: team, technology: technology)
         create(:skill_rating, team: team, technology: technology, user: create(:engineer, team: team), quarter: create(:quarter))
 
@@ -310,8 +312,10 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
           delete admin_team_team_technology_path(team, tt)
         }.not_to change(TeamTechnology, :count)
 
+        tt.reload
+        expect(tt).to be_archived
         expect(response).to redirect_to(admin_team_path(team))
-        expect(flash[:alert]).to eq(I18n.t("admin.team_technologies.cannot_delete_with_ratings"))
+        expect(flash[:notice]).to eq(I18n.t("admin.team_technologies.archived"))
       end
     end
 
@@ -321,11 +325,14 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
         sign_in unit_lead, scope: :user
       end
 
-      it "destroys team technology" do
+      it "archives team technology" do
         tt = create(:team_technology, team: team, technology: technology)
         expect {
           delete admin_team_team_technology_path(team, tt)
-        }.to change(TeamTechnology, :count).by(-1)
+        }.not_to change(TeamTechnology, :count)
+
+        tt.reload
+        expect(tt).to be_archived
       end
     end
 
@@ -339,6 +346,59 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
         other_tt = create(:team_technology, team: other_team)
         expect {
           delete admin_team_team_technology_path(other_team, other_tt)
+        }.to raise_error(Pundit::NotAuthorizedError)
+      end
+    end
+  end
+
+  describe "PATCH /admin/teams/:id/team_technologies/:id/restore" do
+    context "when user is admin" do
+      before { sign_in admin, scope: :user }
+
+      it "restores archived team technology" do
+        tt = create(:team_technology, :archived, team: team, technology: technology)
+        expect {
+          patch restore_admin_team_team_technology_path(team, tt)
+        }.not_to change(TeamTechnology, :count)
+
+        tt.reload
+        expect(tt).to be_active
+        expect(response).to redirect_to(admin_team_path(team))
+        expect(flash[:notice]).to eq(I18n.t("admin.team_technologies.restored"))
+      end
+
+      it "technology appears in active list after restore" do
+        tt = create(:team_technology, :archived, team: team, technology: technology)
+        patch restore_admin_team_team_technology_path(team, tt)
+        follow_redirect!
+        expect(response.body).to include("Ruby")
+      end
+    end
+
+    context "when user is unit lead for their unit" do
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "restores archived team technology" do
+        tt = create(:team_technology, :archived, team: team, technology: technology)
+        patch restore_admin_team_team_technology_path(team, tt)
+        tt.reload
+        expect(tt).to be_active
+      end
+    end
+
+    context "when user is unit lead for another unit" do
+      before do
+        unit.update!(unit_lead: unit_lead)
+        sign_in unit_lead, scope: :user
+      end
+
+      it "denies access" do
+        other_tt = create(:team_technology, :archived, team: other_team)
+        expect {
+          patch restore_admin_team_team_technology_path(other_team, other_tt)
         }.to raise_error(Pundit::NotAuthorizedError)
       end
     end

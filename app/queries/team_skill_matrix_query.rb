@@ -11,7 +11,7 @@ class TeamSkillMatrixQuery
   def bus_factor
     return {} if @quarter.nil?
 
-    team_technologies_by_id = @team.team_technologies.index_by(&:technology_id)
+    team_technologies_by_id = @team.team_technologies.active.index_by(&:technology_id)
     expert_counts = expert_counts_by_technology_and_quarter
     previous_quarter = @quarter.previous_quarter
 

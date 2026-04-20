@@ -7,6 +7,10 @@ class Admin::TeamTechnologyPolicy < Admin::BasePolicy
     can_manage? && (admin? || unit_lead_owns_record?)
   end
 
+  def restore?
+    can_manage? && (admin? || unit_lead_owns_record?)
+  end
+
   def permitted_attributes
     [:technology_id, :criticality, :target_experts]
   end

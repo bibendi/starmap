@@ -5,6 +5,7 @@ FactoryBot.define do
     technology { create(:technology) }
     criticality { "normal" }
     target_experts { 2 }
+    status { "active" }
 
     trait :high_criticality do
       criticality { "high" }
@@ -14,6 +15,10 @@ FactoryBot.define do
     trait :low_criticality do
       criticality { "low" }
       target_experts { 1 }
+    end
+
+    trait :archived do
+      status { "archived" }
     end
   end
 end

@@ -1,5 +1,5 @@
 <%= turbo_frame_tag dom_id(team_technology) do %>
-  <tr>
+  <tr class="<%= "opacity-50" if defined?(archived) && archived %>">
     <td class="table__cell">
       <%= team_technology.technology.name %>
     </td>
@@ -15,9 +15,23 @@
       <%= team_technology.target_experts %>
     </td>
     <td class="table__cell">
-      <%= link_to t("admin.team_technologies.edit"),
-          edit_admin_team_team_technology_path(team_technology.team, team_technology),
-          class: "btn btn--small btn--secondary" %>
+      <% if defined?(archived) && archived %>
+        <%= button_to t("admin.team_technologies.restore"),
+            restore_admin_team_team_technology_path(team_technology.team, team_technology),
+            method: :patch,
+            class: "btn btn--small btn--secondary" %>
+      <% else %>
+        <div class="flex gap-2">
+          <%= link_to t("admin.team_technologies.edit"),
+              edit_admin_team_team_technology_path(team_technology.team, team_technology),
+              class: "btn btn--small btn--secondary" %>
+          <%= button_to t("admin.team_technologies.remove"),
+              admin_team_team_technology_path(team_technology.team, team_technology),
+              method: :delete,
+              class: "btn btn--small btn--danger",
+              data: { turbo_confirm: t("admin.team_technologies.confirm_destroy") } %>
+        </div>
+      <% end %>
     </td>
   </tr>
 <% end %>

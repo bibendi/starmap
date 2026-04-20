@@ -17,6 +17,7 @@ class RedZonesQuery
       .select("team_id, technology_id, COUNT(*) as expert_count")
 
     TeamTechnology
+      .active
       .where(team_id: team_ids)
       .critical
       .joins("LEFT JOIN (#{expert_counts_subquery.to_sql}) expert_counts ON expert_counts.team_id = team_technologies.team_id AND expert_counts.technology_id = team_technologies.technology_id")
@@ -28,6 +29,7 @@ class RedZonesQuery
     return [] unless @quarter
 
     team_technologies = TeamTechnology
+      .active
       .includes(:technology, :team)
       .critical
       .where(team_id: team_ids)

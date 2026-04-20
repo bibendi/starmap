@@ -78,7 +78,8 @@
             class: "btn btn--primary" %>
       </div>
 
-      <% if @team.team_technologies.exists? %>
+      <% active_technologies = @team.team_technologies.active.includes(:technology) %>
+      <% if active_technologies.exists? %>
         <div class="overflow-x-auto">
           <table class="table">
             <thead>
@@ -91,7 +92,7 @@
               </tr>
             </thead>
             <tbody>
-              <% @team.team_technologies.includes(:technology).each do |tt| %>
+              <% active_technologies.each do |tt| %>
                 <%= render "admin/team_technologies/row", team_technology: tt %>
               <% end %>
             </tbody>
@@ -100,6 +101,31 @@
       <% else %>
         <div class="empty-state">
           <p><%= t("admin.team_technologies.empty_state") %></p>
+        </div>
+      <% end %>
+
+      <% archived_technologies = @team.team_technologies.archived.includes(:technology) %>
+      <% if archived_technologies.exists? %>
+        <div class="mt-6 pt-6 border-t">
+          <h3 class="text-sm font-semibold text-muted mb-3"><%= t("admin.team_technologies.archived_title") %></h3>
+          <div class="overflow-x-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="table__header-cell"><%= t("admin.team_technologies.attributes.technology") %></th>
+                  <th class="table__header-cell"><%= t("admin.team_technologies.attributes.category") %></th>
+                  <th class="table__header-cell"><%= t("admin.team_technologies.attributes.criticality") %></th>
+                  <th class="table__header-cell"><%= t("admin.team_technologies.attributes.target_experts") %></th>
+                  <th class="table__header-cell"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% archived_technologies.each do |tt| %>
+                  <%= render "admin/team_technologies/row", team_technology: tt, archived: true %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       <% end %>
     </div>
