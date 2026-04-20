@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import SkillRatingLevelController from '../../app/frontend/controllers/skill_rating_level_controller.js'
 import { renderController } from '../helpers/stimulus.js'
 import { getByTestId, userEvent } from '../helpers/testing-library.js'
@@ -8,10 +8,10 @@ describe('SkillRatingLevelController', () => {
   const user = userEvent()
 
   const levels = JSON.stringify({
-    "0": "No knowledge",
-    "1": "Basic understanding",
-    "2": "Proficient",
-    "3": "Can teach others"
+    0: 'No knowledge',
+    1: 'Basic understanding',
+    2: 'Proficient',
+    3: 'Can teach others'
   })
 
   function createRatingRowHTML() {

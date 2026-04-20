@@ -8,12 +8,12 @@ import { session } from '@hotwired/turbo'
 
 session.start()
 
+import SkillRatingLevelController from '../controllers/skill_rating_level_controller.js'
 // Import Stimulus controllers
 import SortableController from '../controllers/sortable_controller.js'
 import TeamMembersController from '../controllers/team_members_controller.js'
 import ThemeController from '../controllers/theme_controller.js'
 import TreemapChartController from '../controllers/treemap_chart_controller.js'
-import SkillRatingLevelController from '../controllers/skill_rating_level_controller.js'
 import VerticalPaginationController from '../controllers/vertical_pagination_controller.js'
 
 // Register Stimulus controllers
