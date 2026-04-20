@@ -160,6 +160,10 @@ class SkillRatingsController < ApplicationController
       .by_quarter(@current_quarter)
       .index_by(&:technology_id)
 
+    rating_changes = UserRatingChangesQuery
+      .new(user: @target_user, quarter: @current_quarter)
+      .changes_by_technology
+
     @skill_ratings_data = @team_technologies.map do |team_tech|
       technology = team_tech.technology
       rating = existing_ratings[technology.id]
@@ -174,7 +178,8 @@ class SkillRatingsController < ApplicationController
           rating: 0,
           status: "draft",
           team: @target_user.team
-        )
+        ),
+        rating_change: rating_changes[technology.id]
       }
     end
   end

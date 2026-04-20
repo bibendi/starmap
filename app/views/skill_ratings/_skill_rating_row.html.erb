@@ -26,15 +26,31 @@
     <% end %>
   </td>
   <td class="table__cell table__cell--center">
-    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold
-      <%= case skill_rating.rating
-        when 0 then "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
-        when 1 then "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-        when 2 then "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-        when 3 then "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
-        end %>">
-      <%= skill_rating.rating %>
-    </span>
+    <div class="relative-container">
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold
+        <%= case skill_rating.rating
+          when 0 then "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+          when 1 then "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+          when 2 then "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+          when 3 then "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+          end %>">
+        <%= skill_rating.rating %>
+      </span>
+      <% if local_assigns[:rating_change].present? && rating_change != 0 %>
+        <span class="change-indicator <%= rating_change > 0 ? 'change-indicator--positive' : 'change-indicator--negative' %>">
+          <% if rating_change > 0 %>
+            <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          <% else %>
+            <svg class="w-2 h-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          <% end %>
+          <%= rating_change > 0 ? '+' : '' %><%= rating_change %>
+        </span>
+      <% end %>
+    </div>
   </td>
   <td class="table__cell text-gray-700 dark:text-gray-300">
     <%= t("skill_ratings.levels.#{%w[zero one two three][skill_rating.rating] || 'zero'}") %>

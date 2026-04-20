@@ -57,7 +57,8 @@
                         skill_rating: data[:skill_rating],
                         team_technology: data[:team_technology],
                         can_approve: @can_approve_any && policy(data[:skill_rating]).approve?,
-                        target_user: @target_user %>
+                        target_user: @target_user,
+                        rating_change: data[:rating_change] %>
                   <% end %>
                 </tbody>
               </table>
