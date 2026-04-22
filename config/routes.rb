@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   post "theme/:theme", to: "themes#switch", as: :switch_theme
 
   get "coverage_index_history", to: "coverage_index_history#index"
+  get "maturity_index_history", to: "maturity_index_history#index"
 
   # Admin namespace
   namespace :admin do

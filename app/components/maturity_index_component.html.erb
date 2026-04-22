@@ -1,12 +1,53 @@
-<div class="metric-card metric-card--secondary">
-   <div class="content-row content-row--between spacing-sm">
-     <dt class="metric-card__label metric-card__label--secondary"><%= label %></dt>
-     <span class="badge badge--secondary">
-       <svg class="badge__icon badge__icon--secondary" viewBox="0 0 20 20" fill="currentColor">
-         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-       </svg>
-     </span>
+<div class="maturity-index-history"
+     data-controller="maturity-index-history"
+     <%= tag.attributes(
+       "data-maturity-index-history-team-ids-value": team_ids.to_json,
+       "data-maturity-index-history-axis-quarter-value": t('components.maturity_index.axis_quarter'),
+       "data-maturity-index-history-axis-maturity-value": t('components.maturity_index.axis_maturity')
+     ) %>
+     data-action="click->maturity-index-history#open keydown->maturity-index-history#open"
+     role="button"
+     tabindex="0"
+     aria-haspopup="dialog"
+     aria-label="<%= t('components.maturity_index.show_history') %>">
+  <div class="metric-card metric-card--secondary">
+     <div class="content-row content-row--between spacing-sm">
+       <dt class="metric-card__label metric-card__label--secondary"><%= label %></dt>
+        <span class="badge badge--secondary">
+          <svg class="badge__icon badge__icon--secondary" viewBox="0 0 20 20" fill="currentColor">
+           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+         </svg>
+       </span>
+    </div>
+     <dd class="metric-card__value"><%= "#{@maturity_index}/3.0" %></dd>
+     <div class="metric-card__description"><%= description %></div>
   </div>
-   <dd class="metric-card__value"><%= "#{@maturity_index}/3.0" %></dd>
-   <div class="metric-card__description"><%= description %></div>
+
+  <%= render DialogComponent.new(
+        stimulus_controller_name: "maturity-index-history",
+        title: t("components.maturity_index.history_title"),
+        close_label: t("components.maturity_index.close")
+      ) do |dialog| %>
+    <% dialog.with_body do %>
+      <div data-maturity-index-history-target="loading" class="dialog__body dialog__body--centered hidden">
+        <div class="dialog__spinner"></div>
+        <p class="dialog__message"><%= t('components.maturity_index.loading') %></p>
+      </div>
+
+      <div data-maturity-index-history-target="error" class="dialog__body dialog__body--centered dialog__body--error hidden">
+        <p class="dialog__message"><%= t('components.maturity_index.error') %></p>
+        <button type="button" class="dialog__retry" data-action="click->maturity-index-history#retry">
+          <%= t('components.maturity_index.retry') %>
+        </button>
+      </div>
+
+      <div data-maturity-index-history-target="empty" class="dialog__body dialog__body--centered hidden">
+        <p class="dialog__message"><%= t('components.maturity_index.no_data') %></p>
+      </div>
+
+      <div data-maturity-index-history-target="chartContainer" class="dialog__body maturity-index-history-chart hidden">
+        <canvas data-maturity-index-history-target="canvas"></canvas>
+      </div>
+    <% end %>
+  <% end %>
 </div>

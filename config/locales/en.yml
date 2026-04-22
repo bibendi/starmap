@@ -408,6 +408,15 @@ en:
     maturity_index:
       label: "Maturity Index"
       description: "Competency maturity level"
+      history_title: "Maturity Index History"
+      show_history: "Show maturity index history"
+      loading: "Loading history..."
+      error: "Failed to load data"
+      retry: "Retry"
+      no_data: "No historical data available"
+      close: "Close"
+      axis_quarter: "Quarter"
+      axis_maturity: "Maturity Index"
     red_zones_card:
       label: "Red Zones"
       description: "Critical competencies without coverage"
