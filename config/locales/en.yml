@@ -391,9 +391,20 @@ en:
       teams: "Teams"
       not_assigned: "Not assigned"
   components:
+    dialog:
+      close: "Close"
     coverage_index:
       label: "Coverage Index"
       description: "Competency coverage indicator"
+      history_title: "Coverage Index History"
+      show_history: "Show coverage index history"
+      loading: "Loading history..."
+      error: "Failed to load data"
+      retry: "Retry"
+      no_data: "No historical data available"
+      close: "Close"
+      axis_quarter: "Quarter"
+      axis_coverage: "Coverage Index"
     maturity_index:
       label: "Maturity Index"
       description: "Competency maturity level"

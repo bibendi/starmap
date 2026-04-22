@@ -374,9 +374,20 @@ ru:
       teams: "Команды"
       not_assigned: "Не назначен"
   components:
+    dialog:
+      close: "Закрыть"
     coverage_index:
       label: "Coverage Index"
       description: "Показатель покрытия компетенций"
+      history_title: "История Coverage Index"
+      show_history: "Показать историю Coverage Index"
+      loading: "Загрузка..."
+      error: "Не удалось загрузить данные"
+      retry: "Повторить"
+      no_data: "Нет исторических данных"
+      close: "Закрыть"
+      axis_quarter: "Квартал"
+      axis_coverage: "Coverage Index"
     maturity_index:
       label: "Maturity Index"
       description: "Уровень зрелости компетенций"

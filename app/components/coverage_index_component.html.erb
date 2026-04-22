@@ -1,12 +1,53 @@
-<div class="metric-card metric-card--primary">
-   <div class="content-row content-row--between spacing-sm">
-     <dt class="metric-card__label metric-card__label--primary"><%= label %></dt>
-      <span class="badge badge--primary">
-        <svg class="badge__icon badge__icon--primary" viewBox="0 0 20 20" fill="currentColor">
-         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-       </svg>
-     </span>
+<div class="coverage-index-history"
+     data-controller="coverage-index-history"
+     <%= tag.attributes(
+       "data-coverage-index-history-team-ids-value": team_ids.to_json,
+       "data-coverage-index-history-axis-quarter-value": t('components.coverage_index.axis_quarter'),
+       "data-coverage-index-history-axis-coverage-value": t('components.coverage_index.axis_coverage')
+     ) %>
+     data-action="click->coverage-index-history#open keydown->coverage-index-history#open"
+     role="button"
+     tabindex="0"
+     aria-haspopup="dialog"
+     aria-label="<%= t('components.coverage_index.show_history') %>">
+  <div class="metric-card metric-card--primary">
+     <div class="content-row content-row--between spacing-sm">
+       <dt class="metric-card__label metric-card__label--primary"><%= label %></dt>
+        <span class="badge badge--primary">
+          <svg class="badge__icon badge__icon--primary" viewBox="0 0 20 20" fill="currentColor">
+           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+         </svg>
+       </span>
+    </div>
+     <dd class="metric-card__value"><%= "#{@coverage_index}%" %></dd>
+     <div class="metric-card__description"><%= description %></div>
   </div>
-   <dd class="metric-card__value"><%= "#{@coverage_index}%" %></dd>
-   <div class="metric-card__description"><%= description %></div>
+
+  <%= render DialogComponent.new(
+        stimulus_controller_name: "coverage-index-history",
+        title: t("components.coverage_index.history_title"),
+        close_label: t("components.coverage_index.close")
+      ) do |dialog| %>
+    <% dialog.with_body do %>
+      <div data-coverage-index-history-target="loading" class="dialog__body dialog__body--centered hidden">
+        <div class="dialog__spinner"></div>
+        <p class="dialog__message"><%= t('components.coverage_index.loading') %></p>
+      </div>
+
+      <div data-coverage-index-history-target="error" class="dialog__body dialog__body--centered dialog__body--error hidden">
+        <p class="dialog__message"><%= t('components.coverage_index.error') %></p>
+        <button type="button" class="dialog__retry" data-action="click->coverage-index-history#retry">
+          <%= t('components.coverage_index.retry') %>
+        </button>
+      </div>
+
+      <div data-coverage-index-history-target="empty" class="dialog__body dialog__body--centered hidden">
+        <p class="dialog__message"><%= t('components.coverage_index.no_data') %></p>
+      </div>
+
+      <div data-coverage-index-history-target="chartContainer" class="dialog__body coverage-index-history-chart hidden">
+        <canvas data-coverage-index-history-target="canvas"></canvas>
+      </div>
+    <% end %>
+  <% end %>
 </div>

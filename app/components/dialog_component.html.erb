@@ -1,0 +1,15 @@
+<dialog data-<%= stimulus_controller_name %>-target="dialog"
+        data-action="click-><%= stimulus_controller_name %>#onBackdropClick"
+        class="dialog">
+  <div class="dialog__header">
+    <h3 class="dialog__title"><%= title %></h3>
+    <button type="button" class="dialog__close"
+            data-action="click-><%= stimulus_controller_name %>#close"
+            aria-label="<%= close_label %>">
+      <svg class="dialog__close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  <%= body %>
+</dialog>
