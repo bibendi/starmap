@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.0] - 2026-04-22
+
+### Added
+
+- Historical chart popup for Maturity Index — click the metric card on team/unit dashboards to view maturity index values for past quarters as a bar chart (0.0–3.0 scale)
+- Coverage Index historical chart popup — click the metric card to view coverage index trends across past quarters
+
+### Fixed
+
+- Correct Stimulus action syntax in DialogComponent
+
 ## [0.6.0] - 2026-04-20
 
 ### Added
