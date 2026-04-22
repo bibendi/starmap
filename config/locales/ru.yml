@@ -391,6 +391,15 @@ ru:
     maturity_index:
       label: "Maturity Index"
       description: "Уровень зрелости компетенций"
+      history_title: "История Maturity Index"
+      show_history: "Показать историю Maturity Index"
+      loading: "Загрузка..."
+      error: "Не удалось загрузить данные"
+      retry: "Повторить"
+      no_data: "Нет исторических данных"
+      close: "Закрыть"
+      axis_quarter: "Квартал"
+      axis_maturity: "Maturity Index"
     red_zones_card:
       label: "Red Zones"
       description: "Важные компетенции без покрытия"
