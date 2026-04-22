@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   # Theme switching
   post "theme/:theme", to: "themes#switch", as: :switch_theme
 
+  get "coverage_index_history", to: "coverage_index_history#index"
+
   # Admin namespace
   namespace :admin do
     root to: "dashboard#index"

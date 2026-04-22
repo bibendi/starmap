@@ -8,6 +8,8 @@ import { session } from '@hotwired/turbo'
 
 session.start()
 
+import CoverageIndexHistoryController from '../controllers/coverage_index_history_controller.js'
+import DialogController from '../controllers/dialog_controller.js'
 import SkillRatingLevelController from '../controllers/skill_rating_level_controller.js'
 // Import Stimulus controllers
 import SortableController from '../controllers/sortable_controller.js'
@@ -24,6 +26,8 @@ application.register('theme', ThemeController)
 application.register('treemap-chart', TreemapChartController)
 application.register('skill-rating-level', SkillRatingLevelController)
 application.register('vertical-pagination', VerticalPaginationController)
+application.register('coverage-index-history', CoverageIndexHistoryController)
+application.register('dialog', DialogController)
 
 // Custom application JavaScript
 document.addEventListener('DOMContentLoaded', () => {
