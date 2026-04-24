@@ -5,6 +5,13 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", :as => :rails_health_check
 
+  # MCP endpoint
+  post "/mcp", to: "mcp#create"
+
+  # OAuth Authorization Server Metadata (RFC 8414)
+  get "/.well-known/oauth-authorization-server", to: "well_known#oauth_authorization_server"
+  get "/.well-known/oauth-protected-resource", to: "well_known#oauth_protected_resource"
+
   # Devise authentication routes
   devise_options = {controllers: {}}
   devise_options[:controllers][:omniauth_callbacks] = "users/omniauth_callbacks" if OIDC_ENABLED

@@ -158,7 +158,7 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "starmap-secret",
-      "redirectUris": ["http://starmap.localhost:3000/*"],
+      "redirectUris": ["http://starmap.localhost:3000/*", "http://localhost:*", "http://127.0.0.1:*"],
       "webOrigins": ["http://starmap.localhost:3000"],
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,

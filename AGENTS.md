@@ -126,8 +126,12 @@ Status tracking of development plans linked to quarters and technologies.
 ## Key Libraries
 
 ### Authentication & Authorization
-- **Devise**: Authentication with database strategy, devise-i18n for localization
+- **Devise**: Authentication with database strategy + OIDC via OmniAuth, devise-i18n for localization
 - **Pundit**: Role-based and record-level authorization (Engineer, Team Lead, Unit Lead, Admin)
+- **OIDC**: Keycloak-based SSO for browser login and Bearer token auth for API/MCP
+- **MCP**: Model Context Protocol server via `mcp` gem — exposes team metrics as tools for AI assistants
+- **Warden**: Custom Bearer token strategy for API authentication (OIDC access tokens)
+- See `docs/auth.md` for full authentication architecture
 
 ### Data & Background Processing
 - **Solid Queue**: Native Rails 8 background job processing (no Redis required)
@@ -327,6 +331,8 @@ bundle exec brakeman
 
 **Quarterly Data Model**: Quarters created retrospectively after the period ends. Evaluation window opens after quarter's `end_date`. Ratings editable only during evaluation period of active quarters.
 
+**MCP Tools Pattern**: AI-accessible tools in `app/tools/` inheriting from `McpBaseTool`. Each tool implements `execute` — base class handles auth (`authorize`), errors (`not_found!`), and response formatting (`text_response`, `error_response`). Reuses existing Pundit policies and Query Objects. Auth via OIDC Bearer tokens through Warden strategy — see `docs/auth.md`.
+
 ---
 
 # Project Structure
@@ -377,6 +383,26 @@ bundle exec brakeman
 **Location**: `app/jobs/`
 **Purpose**: Solid Queue background job classes
 **Example**: Metric recalculation jobs after rating changes
+
+### MCP Tools (`app/tools/`)
+**Location**: `app/tools/`
+**Purpose**: Model Context Protocol tool classes exposed via `POST /mcp` for AI assistants
+**Example**: `TeamMetricsTool` (team health metrics), `McpBaseTool` (base class with auth and error helpers)
+**Convention**:
+- Inherit from `McpBaseTool`, implement `self.execute(**kwargs)` instead of `self.call`
+- Use `authorize(user, record, :show)` for Pundit checks, `not_found!("message")` for 404, `text_response(text)` / `error_response(msg)` for responses
+- `McpBaseTool` catches `NotFoundError` and `ForbiddenError` and converts them to `isError: true` MCP responses
+- Tests go in `spec/tools/`
+
+### Auth (`config/initializers/`, `lib/`)
+**Location**: `config/initializers/auth.rb` (OidcConfig module), `lib/warden/` (Warden strategies)
+**Purpose**: Centralized OIDC configuration and API authentication
+**Key files**:
+- `config/initializers/auth.rb` — `OidcConfig` module (single source of OIDC env vars), `OIDC_ENABLED`, `REGISTRATION_ENABLED` constants
+- `lib/warden/bearer_token_strategy.rb` — Warden strategy for Bearer token auth (OIDC access tokens)
+- `config/initializers/devise.rb` — registers Bearer strategy in Warden
+- `app/services/oidc_token_validator.rb` — JWT validation (JWKS, claims, user lookup)
+- See `docs/auth.md` for full architecture
 
 ### JavaScript (`app/frontend/`)
 **Location**: `app/frontend/`

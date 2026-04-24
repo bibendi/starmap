@@ -43,6 +43,9 @@ gem "yabeda-rails"
 gem "yabeda-activerecord"
 gem "yabeda-puma-plugin"
 
+# MCP (Model Context Protocol)
+gem "mcp"
+
 # Utilities
 gem "kaminari"
 gem "view_component"

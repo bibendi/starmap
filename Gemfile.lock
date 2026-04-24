@@ -179,6 +179,9 @@ GEM
       bindata
       faraday (~> 2.0)
       faraday-follow_redirects
+    json-schema (6.2.0)
+      addressable (~> 2.8)
+      bigdecimal (>= 3.1, < 5)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.2)
@@ -211,6 +214,8 @@ GEM
       net-smtp
     marcel (1.1.0)
     matrix (0.4.3)
+    mcp (0.13.0)
+      json-schema (>= 4.1)
     mini_mime (1.1.5)
     minitest (6.0.4)
       drb (~> 2.0)
@@ -538,6 +543,7 @@ DEPENDENCIES
   hotwire-rails
   kaminari
   letter_opener
+  mcp
   n_plus_one_control
   omniauth
   omniauth-rails_csrf_protection

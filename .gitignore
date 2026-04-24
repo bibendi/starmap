@@ -46,3 +46,4 @@ node_modules
 
 /spec/examples.txt
 /specs/
+/.specify/feature.json
