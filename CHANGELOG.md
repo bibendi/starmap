@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0] - 2026-05-11
+
+### Added
+
+- MCP endpoint (`POST /mcp`) with OIDC Bearer token authentication for AI assistants and automation tools
+- ApiClient machine identity for client_credentials token flow with permission-based authorization
+- MCP tool system: `TeamMetricsTool` exposes team health metrics via Model Context Protocol
+- ApiClient policy namespace (`ApiClient::TeamPolicy`) for scoped team access
+- OpenCode configuration example and well-known OAuth endpoints for automated client discovery
+
 ## [0.7.0] - 2026-04-22
 
 ### Added
