@@ -663,6 +663,20 @@ previous_engineer_skills.each do |email, skills|
   end
 end
 
+Rails.logger.debug "Creating API clients..."
+
+ApiClient.find_or_create_by!(oidc_client_id: "starmap-ci-agent") do |client|
+  client.name = "CI Pipeline Agent"
+  client.permissions = ["teams:read"]
+  client.team_ids = [teams[:backend].id, teams[:frontend].id, teams[:devops].id, teams[:mobile].id]
+  client.enabled = true
+end
+
+Rails.logger.debug "\n=== API Clients Created ==="
+Rails.logger.debug "CI Pipeline Agent: oidc_client_id=starmap-ci-agent, secret=starmap-ci-agent-secret"
+Rails.logger.debug "  Permissions: teams:read"
+Rails.logger.debug "  Teams: all"
+
 Rails.logger.debug "Seeding completed successfully!"
 
 Rails.logger.debug "\n=== Test Users Created ==="

@@ -20,11 +20,11 @@ class TeamMetricsTool < McpBaseTool
   )
 
   def self.execute(team_name:, server_context:, quarter: nil)
-    current_user = server_context[:current_user]
+    current_identity = server_context[:current_identity]
 
     team = Team.find_by(name: team_name)
     not_found!("Team '#{team_name}' not found") unless team
-    authorize current_user, team
+    authorize current_identity, team
 
     resolved_quarter = resolve_quarter(quarter)
     unless resolved_quarter

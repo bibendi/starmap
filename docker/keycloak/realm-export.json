@@ -163,6 +163,16 @@
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
       "publicClient": false
+    },
+    {
+      "clientId": "starmap-ci-agent",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "starmap-ci-agent-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "publicClient": false,
+      "serviceAccountsEnabled": true
     }
   ]
 }

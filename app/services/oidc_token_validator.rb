@@ -18,10 +18,27 @@ class OidcTokenValidator
 
     jwt = decode_jwt(token)
     verify_claims!(jwt)
-    find_user!(jwt[:email])
+    resolve_identity!(jwt)
   end
 
   private
+
+  def resolve_identity!(jwt)
+    return find_user!(jwt[:email]) if jwt[:email].present?
+    raise InvalidToken, "Unrecognized token type: missing email and azp claims" if jwt[:azp].blank?
+
+    find_api_client!(jwt[:azp])
+  end
+
+  def find_user!(email)
+    User.find_by(email: email) || raise(InvalidToken, "No user found for email from token")
+  end
+
+  def find_api_client!(azp)
+    client = ApiClient.enabled.find_by(oidc_client_id: azp)
+    raise InvalidToken, "No API client found" unless client
+    client
+  end
 
   def decode_jwt(token)
     kid = extract_kid(token)
@@ -45,13 +62,11 @@ class OidcTokenValidator
   def verify_claims!(jwt)
     raise TokenExpired, "Token has expired" if jwt[:exp].present? && Time.zone.at(jwt[:exp]) < Time.current
     raise InvalidIssuer, "Invalid issuer" if jwt[:iss] != issuer
-    if jwt[:aud].present? && Array(jwt[:aud]).exclude?(client_id)
-      raise InvalidToken, "Invalid audience: expected #{client_id}, got #{Array(jwt[:aud]).join(", ")}"
-    end
-  end
+    return if jwt[:aud].blank?
+    return if Array(jwt[:aud]).include?(client_id)
+    return if jwt[:email].blank? && jwt[:azp].present?
 
-  def find_user!(email)
-    User.find_by(email: email) || raise(InvalidToken, "No user found for email from token")
+    raise InvalidToken, "Invalid audience: expected #{client_id}, got #{Array(jwt[:aud]).join(", ")}"
   end
 
   def fetch_jwks

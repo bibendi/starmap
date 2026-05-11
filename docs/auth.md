@@ -1,12 +1,13 @@
 # Authentication Architecture
 
-Starmap supports three authentication mechanisms:
+Starmap supports four authentication mechanisms:
 
 1. **Email/Password** — session-based via Devise `database_authenticatable` (always available)
 2. **OIDC SSO** — session-based via Devise + OmniAuth (optional, when Keycloak configured)
-3. **API Bearer Token** — stateless via Warden strategy + `OidcTokenValidator` (optional, requires OIDC)
+3. **API Bearer Token (User)** — stateless via Warden strategy + `OidcTokenValidator` (optional, requires OIDC)
+4. **API Bearer Token (ApiClient)** — stateless via Warden strategy + `OidcTokenValidator` for machine-to-machine (optional, requires OIDC)
 
-All resolve to the same `User` record and reuse Devise helpers (`current_user`, `authenticate_user!`).
+All User-based mechanisms resolve to the same `User` record. ApiClient tokens resolve to an `ApiClient` record for machine identity.
 
 ## Overview
 
@@ -16,6 +17,7 @@ flowchart TB
         direction LR
         AC["Authorization Code Flow <br/> (browser redirect)"]
         AT["Access Token<br/>(Bearer header)"]
+        CT["Client Credentials Token<br/>(machine-to-machine)"]
     end
 
     subgraph Browser["Browser Authentication"]
@@ -28,8 +30,15 @@ flowchart TB
     subgraph API["API Authentication"]
         direction TB
         Bearer["Warden BearerTokenStrategy<br/>(lib/warden/)"]
-        Validator["OidcTokenValidator<br/>(JWT validation + User)"]
+        Validator["OidcTokenValidator<br/>(JWT validation + identity resolution)"]
         Bearer --> Validator
+    end
+
+    subgraph M2M["Machine-to-Machine Authentication"]
+        direction TB
+        ApiClientStrategy["Warden ApiClientStrategy<br/>(lib/warden/)"]
+        Validator2["OidcTokenValidator<br/>(JWT validation + identity resolution)"]
+        ApiClientStrategy --> Validator2
     end
 
     subgraph Local["Local Authentication"]
@@ -39,12 +48,15 @@ flowchart TB
 
     subgraph Result["Devise / Warden"]
         Helpers["current_user · authenticate_user!<br/>user_signed_in?"]
+        ApiHelpers["current_api_client · api_client_authenticated?<br/>(McpController)"]
     end
 
     KC -->|"OIDC SSO"| Omni
-    KC -->|"API token"| Bearer
+    KC -->|"API token (user)"| Bearer
+    KC -->|"Client credentials"| ApiClientStrategy
     Session --> Helpers
     Validator --> Helpers
+    Validator2 --> ApiHelpers
     DBAuth --> Helpers
 ```
 
@@ -93,35 +105,38 @@ Standard Devise `database_authenticatable` with session cookies:
 
 ## API Authentication (Bearer Token, optional)
 
-**Flow**: Stateless token validation
+**Flow**: Stateless token validation via explicit Warden strategy call
 
 1. Client obtains OIDC access token from Keycloak (e.g., via OAuth2 client credentials or authorization code)
 2. Client sends `Authorization: Bearer <token>` in request header
-3. Warden `BearerTokenStrategy` detects Bearer header, validates token
-4. `OidcTokenValidator` decodes JWT, verifies signature (JWKS), checks claims, finds User
-5. `success!(user)` — Devise/Warden recognize the user
+3. MCP controller's `try_bearer_auth` calls `warden.authenticate(:bearer_token, scope: :user)`
+4. `BearerTokenStrategy` validates token via `OidcTokenValidator`
+5. `OidcTokenValidator` decodes JWT, verifies signature (JWKS), checks claims, resolves identity
+6. If identity is `User` → `success!(user)` — Warden stores user in `:user` scope
+7. If identity is `ApiClient` → strategy returns silently (type guard), controller falls through to `api_client_token` strategy
 
 **Design decisions**:
 - **No session storage** — `store?` returns `false` in strategy. API clients don't get session cookies.
 - **No trackable updates** — `devise.skip_trackable` prevents `sign_in_count` increment on every API request.
-- **Request format** — MCP controller forces `request.format = :json` so Devise::FailureApp returns 401 (not redirect).
-
-**Configuration**: `config/initializers/devise.rb` — registers `:bearer_token` strategy in Warden.
+- **Explicit strategy calls** — strategies are invoked by name, not through `default_strategies`. This avoids a known Warden `Config#dup` issue where per-scope strategy lists are lost during proxy initialization.
+- **Type guard** — each strategy checks the identity type (`User` or `ApiClient`) and silently returns if the type doesn't match its scope, allowing the next strategy to try.
 
 **Key files**:
-- `lib/warden/bearer_token_strategy.rb` — Warden strategy
-- `app/services/oidc_token_validator.rb` — JWT validation (JWKS cache, claim verification, user lookup)
-- `app/controllers/mcp_controller.rb` — MCP endpoint using `authenticate_user!`
+- `lib/warden/bearer_token_strategy.rb` — Warden strategy for User Bearer tokens
+- `app/services/oidc_token_validator.rb` — JWT validation (JWKS cache, claim verification, identity resolution)
+- `app/controllers/mcp_controller.rb` — MCP endpoint with `authenticate_any!`
 
 ## OIDC Token Validator
 
-`OidcTokenValidator` validates OIDC access tokens (JWTs) issued by Keycloak:
+`OidcTokenValidator` validates OIDC access tokens (JWTs) issued by Keycloak and resolves the identity:
 
 1. Extract `kid` from JWT header
 2. Look up signing key from JWKS (cached 1 hour in `Rails.cache`)
 3. Decode JWT with public key (RS256)
 4. Verify claims: `exp` (not expired), `iss` (matches issuer), `aud` (matches client_id if present)
-5. Find `User` by `email` claim
+5. **Identity resolution**:
+   - If `email` claim present → find `User` by email (existing behavior)
+   - If `email` absent → find `ApiClient` by `azp` matching `oidc_client_id` where `enabled = true`
 
 JWKS URI is discovered from `issuer/.well-known/openid-configuration` and cached 24 hours.
 
@@ -147,41 +162,61 @@ Constants `OIDC_ENABLED` and `REGISTRATION_ENABLED` are derived from these value
 
 ## Warden Strategy: BearerTokenStrategy
 
-Registered as `:bearer_token` in Warden via `config/initializers/devise.rb`:
-
-```ruby
-config.warden do |manager|
-  manager.default_strategies(scope: :user).unshift :bearer_token
-end
-```
+Registered as `:bearer_token` in Warden (required from `config/initializers/devise.rb`). Called explicitly by the MCP controller via `warden.authenticate(:bearer_token, scope: :user)`.
 
 **Strategy behavior**:
 - `valid?` — returns `true` only if `Authorization` header starts with `Bearer `
-- `authenticate!` — validates token via `OidcTokenValidator`, calls `success!(user)`
+- `authenticate!` — validates token via `OidcTokenValidator`, checks identity is `User`, calls `success!(user)`. If identity is `ApiClient` or an incompatible type, returns silently (allowing the next strategy to try).
 - `store?` — returns `false` (no session serialization for API clients)
 - Sets `env["devise.skip_trackable"]` to prevent DB writes on each request
 
-**Strategy order**: `bearer_token` is prepended (first) in the strategy list. If no Bearer header is present, `valid?` returns `false` and Warden falls through to `database_authenticatable` (email/password session).
-
 ## MCP Endpoint
 
-`POST /mcp` — JSON-RPC endpoint for AI assistants (OpenCode, etc.).
+`POST /mcp` — JSON-RPC endpoint for AI assistants (OpenCode, etc.) and machine clients.
 
 **Auth flow**:
-1. `McpController` inherits `ApplicationController`, uses `authenticate_user!`
-2. `request.format = :json` is forced via `before_action` — ensures Devise returns 401 (not redirect) on auth failure
-3. Bearer strategy validates OIDC access token
-4. `current_user` is passed to MCP tools via `server_context`
+1. `McpController` tries session auth first (`user_signed_in?`), then Bearer token via explicit Warden strategy calls
+2. Bearer token authentication: calls `warden.authenticate(:bearer_token, scope: :user)` first (User), then `warden.authenticate(:api_client_token, scope: :api_client)` (ApiClient)
+3. `OidcTokenValidator` resolves identity — User or ApiClient — based on JWT claims (`email` present → User, `email` absent → ApiClient by `azp`)
+4. `current_identity` (User or ApiClient) is passed to MCP tools via `server_context[:current_identity]`
+
+**ApiClient policy routing**: `McpBaseTool#authorize` checks identity type — `ApiClient` routes to `ApiClient::TeamPolicy`, `User` routes to `TeamPolicy`.
 
 **OAuth discovery endpoints** (for automated client configuration):
 - `GET /.well-known/oauth-authorization-server` (RFC 8414) — proxies Keycloak OIDC metadata
 - `GET /.well-known/oauth-protected-resource` (RFC 9728) — MCP resource metadata
+
+## API Client Authentication (Machine-to-Machine)
+
+**Flow**: Client credentials grant → stateless token validation
+
+1. Admin creates `ApiClient` record via rails console with `oidc_client_id`, `permissions`, and `team_ids`
+2. Client obtains access token from Keycloak via `client_credentials` grant
+3. Client sends `Authorization: Bearer <token>` to MCP endpoint
+4. Controller calls `warden.authenticate(:api_client_token, scope: :api_client)` — runs `ApiClientStrategy`
+5. `OidcTokenValidator` decodes JWT — no `email` claim, resolves `ApiClient` by `azp` claim
+6. `success!(api_client)` — Warden stores identity in `:api_client` scope, available via `warden.user(:api_client)`
+
+**Design decisions**:
+- **Separate Warden scope** (`:api_client`) — no risk of mixing identity types with `:user` scope
+- **Explicit strategy calls** — strategies are called by name (`warden.authenticate(:api_client_token, ...)`) rather than relying on `default_strategies` config, avoiding a known Warden `Config#dup` issue where per-scope strategy lists are lost during proxy initialization
+- **No Devise mapping** — ApiClient has no Devise modules, uses non-bang `warden.authenticate`
+- **Manual 401** — controller handles unauthenticated response directly (no Devise FailureApp)
+- **Policy namespace** — `ApiClient::TeamPolicy` etc. under `app/policies/api_client/`
+
+**Configuration**: strategies are registered via `Warden::Strategies.add` in `lib/warden/` files (required from `config/initializers/devise.rb`). No `config.warden` scope config needed.
+
+**Key files**:
+- `app/models/api_client.rb` — machine identity model with permissions and team scoping
+- `lib/warden/api_client_strategy.rb` — Warden strategy for ApiClient Bearer tokens
+- `app/controllers/concerns/api_client_authenticatable.rb` — controller concern providing `current_api_client`
+- `app/policies/api_client/` — policy namespace for ApiClient authorization
 
 ## Future: Mobile App / Additional API Consumers
 
 The Warden Bearer strategy is designed to scale to additional API consumers:
 
 - **Mobile app**: Use standard OAuth2 Authorization Code Flow with PKCE → Keycloak issues access token → Bearer strategy validates it. Same `authenticate_user!` works for both browser and mobile.
-- **Backend service (machine-to-machine)**: `client_credentials` grant produces tokens without `email` claim — current `OidcTokenValidator` expects user context. This requires a separate strategy or token validator.
+- **Backend service (machine-to-machine)**: Now supported via `ApiClient` identity and `client_credentials` grant. See API Client Authentication section above.
 
 For new API namespaces, add `before_action -> { request.format = :json }` to the base controller so Devise returns 401 instead of redirect.

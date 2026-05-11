@@ -18,8 +18,8 @@ class McpBaseTool < MCP::Tool
       raise NotImplementedError
     end
 
-    def authorize(user, record, query = :show)
-      policy = Pundit.policy(user, record)
+    def authorize(identity, record, query = :show)
+      policy = resolve_policy(identity, record)
       return if policy.public_send("#{query}?")
 
       display_name = record.respond_to?(:name) ? record.name : record.id
@@ -36,6 +36,18 @@ class McpBaseTool < MCP::Tool
 
     def error_response(message)
       MCP::Tool::Response.new([{type: "text", text: message}], error: true)
+    end
+
+    def resolve_policy(identity, record)
+      policy = if identity.is_a?(ApiClient)
+        Pundit.policy(identity, [:api_client, record])
+      else
+        Pundit.policy(identity, record)
+      end
+
+      raise Pundit::NotDefinedError, "unable to find policy for `#{record.class.name}`" unless policy
+
+      policy
     end
   end
 end

@@ -331,7 +331,7 @@ bundle exec brakeman
 
 **Quarterly Data Model**: Quarters created retrospectively after the period ends. Evaluation window opens after quarter's `end_date`. Ratings editable only during evaluation period of active quarters.
 
-**MCP Tools Pattern**: AI-accessible tools in `app/tools/` inheriting from `McpBaseTool`. Each tool implements `execute` — base class handles auth (`authorize`), errors (`not_found!`), and response formatting (`text_response`, `error_response`). Reuses existing Pundit policies and Query Objects. Auth via OIDC Bearer tokens through Warden strategy — see `docs/auth.md`.
+**MCP Tools Pattern**: AI-accessible tools in `app/tools/` inheriting from `McpBaseTool`. Each tool implements `execute` — base class handles auth (`authorize`), errors (`not_found!`), and response formatting (`text_response`, `error_response`). `authorize` routes policy by identity type: `ApiClient` → `ApiClient::*Policy`, `User` → standard Pundit policies. Auth via OIDC Bearer tokens through Warden strategies — see `docs/auth.md`.
 
 ---
 
@@ -365,7 +365,7 @@ bundle exec brakeman
 ### Policies (`app/policies/`)
 **Location**: `app/policies/`
 **Purpose**: Pundit authorization rules - role-based and record-level access
-**Example**: `SkillRatingPolicy` (edit own ratings in active quarters), `DashboardPolicy` (role-based dashboard access)
+**Example**: `SkillRatingPolicy` (edit own ratings in active quarters), `DashboardPolicy` (role-based dashboard access), `ApiClient::TeamPolicy` (ApiClient-scoped team access)
 
 ### Query Objects (`app/queries/`)
 **Location**: `app/queries/`
@@ -396,12 +396,15 @@ bundle exec brakeman
 
 ### Auth (`config/initializers/`, `lib/`)
 **Location**: `config/initializers/auth.rb` (OidcConfig module), `lib/warden/` (Warden strategies)
-**Purpose**: Centralized OIDC configuration and API authentication
+**Purpose**: Centralized OIDC configuration, User and ApiClient authentication
 **Key files**:
 - `config/initializers/auth.rb` — `OidcConfig` module (single source of OIDC env vars), `OIDC_ENABLED`, `REGISTRATION_ENABLED` constants
-- `lib/warden/bearer_token_strategy.rb` — Warden strategy for Bearer token auth (OIDC access tokens)
-- `config/initializers/devise.rb` — registers Bearer strategy in Warden
-- `app/services/oidc_token_validator.rb` — JWT validation (JWKS, claims, user lookup)
+- `lib/warden/bearer_token_strategy.rb` — Warden strategy for User Bearer token auth (OIDC access tokens)
+- `lib/warden/api_client_strategy.rb` — Warden strategy for ApiClient Bearer token auth (client_credentials tokens)
+- `config/initializers/devise.rb` — registers both Bearer and ApiClient strategies in Warden
+- `app/services/oidc_token_validator.rb` — JWT validation (JWKS, claims, identity resolution for User and ApiClient)
+- `app/models/api_client.rb` — Machine identity for API access with permissions and team scoping
+- `app/controllers/concerns/api_client_authenticatable.rb` — Controller concern for `current_api_client`
 - See `docs/auth.md` for full architecture
 
 ### JavaScript (`app/frontend/`)

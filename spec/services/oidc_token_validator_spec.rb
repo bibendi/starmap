@@ -39,12 +39,44 @@ RSpec.describe OidcTokenValidator, type: :service do
       end
     end
 
-    it "returns user when all claims match" do
-      expect(validator.call(token: sign_jwt(valid_claims))).to eq(user)
+    context "when JWT has email (User token)" do
+      it "returns user when all claims match" do
+        expect(validator.call(token: sign_jwt(valid_claims))).to eq(user)
+      end
+
+      it "raises InvalidToken when user not found" do
+        expect { validator.call(token: sign_jwt(valid_claims(email: "unknown@example.com"))) }.to raise_error(OidcTokenValidator::InvalidToken, /No user found/)
+      end
+
+      it "returns User even when azp is also present" do
+        expect(validator.call(token: sign_jwt(valid_claims(azp: "some-client")))).to eq(user)
+      end
     end
 
-    it "raises InvalidToken when user not found" do
-      expect { validator.call(token: sign_jwt(valid_claims(email: "unknown@example.com"))) }.to raise_error(OidcTokenValidator::InvalidToken, /No user found/)
+    context "when JWT has no email (ApiClient token)" do
+      let_it_be(:api_client) { create(:api_client, oidc_client_id: "starmap-ci-agent", team_list: [create(:team)]) }
+
+      def api_client_claims(overrides = {})
+        {iss: issuer, aud: client_id, exp: 1.hour.from_now.to_i, azp: "starmap-ci-agent"}.merge(overrides)
+      end
+
+      it "returns ApiClient when azp matches oidc_client_id" do
+        expect(validator.call(token: sign_jwt(api_client_claims))).to eq(api_client)
+      end
+
+      it "raises InvalidToken when azp does not match any ApiClient" do
+        expect { validator.call(token: sign_jwt(api_client_claims(azp: "unknown-client"))) }.to raise_error(OidcTokenValidator::InvalidToken, /No API client found/)
+      end
+
+      it "raises InvalidToken when ApiClient is disabled" do
+        api_client.update!(enabled: false)
+
+        expect { validator.call(token: sign_jwt(api_client_claims)) }.to raise_error(OidcTokenValidator::InvalidToken, /No API client found/)
+      end
+
+      it "accepts aud=account from Keycloak service accounts" do
+        expect(validator.call(token: sign_jwt(api_client_claims(aud: "account")))).to eq(api_client)
+      end
     end
 
     it "raises TokenExpired when token is expired" do

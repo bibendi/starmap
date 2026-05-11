@@ -1,6 +1,7 @@
 # Devise configuration for Starmap
 require "devise"
 require "warden/bearer_token_strategy"
+require "warden/api_client_strategy"
 
 Devise.setup do |config|
   config.mailer_sender = "please-change-me@example.com"

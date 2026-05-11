@@ -7,7 +7,7 @@ RSpec.describe TeamMetricsTool, type: :service do
   let_it_be(:other_team) { create(:team, name: "Frontend") }
   let_it_be(:stranger) { create(:engineer, team: other_team) }
 
-  let(:server_context) { {current_user: user} }
+  let(:server_context) { {current_identity: user} }
 
   describe ".call" do
     context "when team exists and user has access" do
@@ -36,7 +36,7 @@ RSpec.describe TeamMetricsTool, type: :service do
 
     context "when user has no access to team" do
       it "returns error" do
-        result = described_class.call(team_name: "Backend", server_context: {current_user: stranger})
+        result = described_class.call(team_name: "Backend", server_context: {current_identity: stranger})
 
         expect(result.error?).to be true
         expect(result.content.first[:text]).to include("permission")
@@ -89,6 +89,27 @@ RSpec.describe TeamMetricsTool, type: :service do
         expect(data["maturity_index"].to_f).to be_a(Float)
         expect(data["red_zones_count"]).to be_a(Integer)
         expect(data["key_person_risks_count"]).to be_a(Integer)
+      end
+    end
+
+    context "when ApiClient is the identity" do
+      let_it_be(:api_client) { create(:api_client, team_list: [team]) }
+
+      let(:server_context) { {current_identity: api_client} }
+
+      it "returns metrics for team in team_ids" do
+        result = described_class.call(team_name: "Backend", server_context: server_context)
+
+        expect(result.error?).to be false
+        data = JSON.parse(result.content.first[:text])
+        expect(data["team"]).to eq("Backend")
+      end
+
+      it "returns forbidden error for team not in team_ids" do
+        result = described_class.call(team_name: "Frontend", server_context: server_context)
+
+        expect(result.error?).to be true
+        expect(result.content.first[:text]).to include("permission")
       end
     end
   end

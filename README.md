@@ -74,6 +74,54 @@ For local development, a pre-configured Keycloak instance is included in `docker
 docker compose up -d keycloak   # starts at http://localhost:5101
 ```
 
+### MCP (Model Context Protocol)
+
+When OIDC is enabled, Starmap exposes a [Model Context Protocol](https://modelcontextprotocol.io) endpoint at `POST /mcp` for AI assistants and automation tools.
+
+After `bin/rails db:seed`, a demo API client `starmap-ci-agent` is ready. Get a token:
+
+```bash
+bin/rails db:seed  # creates the client (check output for credentials)
+
+# or manually for a custom client:
+bin/rails runner '
+ApiClient.create!(
+  name: "OpenCode",
+  oidc_client_id: "starmap-opencode",
+  permissions: ["teams:read"],
+  team_ids: Team.pluck(:id),
+  enabled: true
+)
+'
+```
+
+Then configure your AI assistant (e.g. OpenCode):
+
+```json
+{
+  "mcp": {
+    "starmap": {
+      "enabled": true,
+      "type": "remote",
+      "url": "http://localhost:3000/mcp",
+      "oauth": {
+        "clientId": "starmap-ci-agent",
+        "clientSecret": "starmap-ci-agent-secret"
+      }
+    }
+  }
+}
+```
+
+**Client credentials flow**: the client must have `Service Accounts Enabled` in Keycloak. Tokens are stateless — the app validates them via JWKS. See [docs/auth.md](docs/auth.md) for the full authentication architecture.
+
+**Well-known endpoints** for automated client discovery:
+
+| Endpoint | RFC | Description |
+|----------|-----|-------------|
+| `/.well-known/oauth-authorization-server` | RFC 8414 | OAuth2 provider metadata |
+| `/.well-known/oauth-protected-resource` | RFC 9728 | MCP resource metadata |
+
 ## How It Works
 
 ### Competency Scale (0-3)
@@ -152,6 +200,8 @@ docker run -d \
   -e DATABASE_URL=postgres://user:pass@host:5432/starmap_production \
   ghcr.io/bibendi/starmap:latest
 ```
+
+For MCP access, also configure [OIDC environment variables](#authentication) — the endpoint requires an OIDC provider.
 
 ### Initial Setup
 
