@@ -8,6 +8,7 @@ if OIDC_ENABLED
       discovery: true,
       scope: [:openid, :email, :profile],
       response_type: :code,
+      pkce: true,
       client_options: {
         identifier: OidcConfig.client_id,
         secret: OidcConfig.client_secret,
