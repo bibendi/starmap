@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
   # Protect from forgery
   protect_from_forgery with: :exception
 
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   # Set current user for Pundit
   after_action :verify_authorized, unless: :devise_controller?
   after_action :verify_policy_scoped, unless: :devise_controller?
@@ -23,6 +25,15 @@ class ApplicationController < ActionController::Base
   helper_method :current_theme, :theme_class
 
   private
+
+  def user_not_authorized
+    if request.format.json?
+      head :forbidden
+    else
+      flash[:alert] = t("errors.not_authorized")
+      redirect_back_or_to root_path
+    end
+  end
 
   def set_locale
     I18n.locale = locale_from_cookies || locale_from_browser || I18n.default_locale

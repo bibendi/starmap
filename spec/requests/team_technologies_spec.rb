@@ -76,9 +76,9 @@ RSpec.describe "TeamTechnologies", type: :request do
       before { sign_in other_engineer, scope: :user }
 
       it "returns error" do
-        expect {
-          get team_technology_path(team, technology)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get team_technology_path(team, technology)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end

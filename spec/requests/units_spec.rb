@@ -28,9 +28,9 @@ RSpec.describe "Units", type: :request do
           let(:other_unit) { create(:unit) }
 
           it "denies access" do
-            expect {
-              get unit_path(other_unit)
-            }.to raise_error(Pundit::NotAuthorizedError)
+            get unit_path(other_unit)
+            expect(response).to redirect_to(root_path)
+            expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
           end
         end
       end
@@ -59,9 +59,9 @@ RSpec.describe "Units", type: :request do
         before { sign_in engineer, scope: :user }
 
         it "denies access" do
-          expect {
-            get unit_path(unit)
-          }.to raise_error(Pundit::NotAuthorizedError)
+          get unit_path(unit)
+          expect(response).to redirect_to(root_path)
+          expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
         end
       end
 
@@ -69,9 +69,9 @@ RSpec.describe "Units", type: :request do
         before { sign_in team_lead, scope: :user }
 
         it "denies access" do
-          expect {
-            get unit_path(unit)
-          }.to raise_error(Pundit::NotAuthorizedError)
+          get unit_path(unit)
+          expect(response).to redirect_to(root_path)
+          expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
         end
       end
     end

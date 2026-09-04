@@ -64,9 +64,9 @@ RSpec.describe "Admin::Units", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get admin_units_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_units_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -100,9 +100,9 @@ RSpec.describe "Admin::Units", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get admin_unit_path(unit)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_unit_path(unit)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -127,9 +127,9 @@ RSpec.describe "Admin::Units", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get new_admin_unit_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get new_admin_unit_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -183,9 +183,9 @@ RSpec.describe "Admin::Units", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post admin_units_path, params: valid_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post admin_units_path, params: valid_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -209,9 +209,9 @@ RSpec.describe "Admin::Units", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get edit_admin_unit_path(unit)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_unit_path(unit)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -252,9 +252,9 @@ RSpec.describe "Admin::Units", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          patch admin_unit_path(unit), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch admin_unit_path(unit), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -302,9 +302,9 @@ RSpec.describe "Admin::Units", type: :request do
 
       it "denies access" do
         unit_without_teams = create(:unit, name: "Empty Unit")
-        expect {
-          delete admin_unit_path(unit_without_teams)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        delete admin_unit_path(unit_without_teams)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
