@@ -65,9 +65,9 @@ RSpec.describe "CoverageIndexHistory", type: :request do
       before { sign_in engineer }
 
       it "raises NotAuthorizedError" do
-        expect {
-          get coverage_index_history_path, params: {team_ids: [team.id]}
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get coverage_index_history_path, params: {team_ids: [team.id]}
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end

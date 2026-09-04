@@ -66,9 +66,9 @@ RSpec.describe "Teams", type: :request do
         before { sign_in engineer, scope: :user }
 
         it "denies access" do
-          expect {
-            get team_path(other_team)
-          }.to raise_error(Pundit::NotAuthorizedError)
+          get team_path(other_team)
+          expect(response).to redirect_to(root_path)
+          expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
         end
       end
 

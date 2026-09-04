@@ -32,9 +32,9 @@ RSpec.describe "SkillRatings", type: :request do
       end
 
       it "denies access to other team's ratings" do
-        expect {
-          get user_skill_ratings_path(other_engineer)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get user_skill_ratings_path(other_engineer)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "redirects when user has no team" do
@@ -53,9 +53,9 @@ RSpec.describe "SkillRatings", type: :request do
       end
 
       it "denies access to other team's ratings" do
-        expect {
-          get user_skill_ratings_path(other_engineer)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get user_skill_ratings_path(other_engineer)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -122,16 +122,16 @@ RSpec.describe "SkillRatings", type: :request do
 
       it "denies team lead access to team member's ratings" do
         sign_in team_lead, scope: :user
-        expect {
-          get edit_user_skill_ratings_path(engineer)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_user_skill_ratings_path(engineer)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "denies team lead access to other team's ratings" do
         sign_in team_lead, scope: :user
-        expect {
-          get edit_user_skill_ratings_path(other_engineer)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_user_skill_ratings_path(other_engineer)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -158,6 +158,81 @@ RSpec.describe "SkillRatings", type: :request do
         get edit_user_skill_ratings_path(engineer_without_team)
         expect(response).to redirect_to(user_path(engineer_without_team))
         expect(flash[:alert]).to eq(I18n.t("skill_ratings.errors.no_team"))
+      end
+    end
+  end
+
+  describe "POST /users/:user_id/skill_ratings/submit" do
+    let_it_be(:new_technology) { create(:technology, sort_order: 2) }
+    let_it_be(:new_team_technology) { create(:team_technology, team: team, technology: new_technology) }
+    let_it_be(:submit_submitted_rating) { create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 2) }
+    let_it_be(:submit_draft_rating) { create(:skill_rating, :draft, user: engineer, technology: new_technology, quarter: quarter, team: team, rating: 1) }
+    let_it_be(:other_team_technology) { create(:team_technology, team: other_team, technology: technology) }
+    let_it_be(:other_submitted_rating) { create(:skill_rating, :submitted, user: other_engineer, technology: technology, quarter: quarter, team: other_team, rating: 2) }
+    let_it_be(:rejected_engineer) { create(:engineer, team: team) }
+    let_it_be(:rejected_rating) { create(:skill_rating, :rejected, user: rejected_engineer, technology: technology, quarter: quarter, team: team, rating: 1) }
+    let_it_be(:rejected_engineer_draft) { create(:skill_rating, :draft, user: rejected_engineer, technology: new_technology, quarter: quarter, team: team, rating: 1) }
+
+    context "when starmap has submitted and draft ratings" do
+      before do
+        allow(Date).to receive(:current).and_return(quarter.evaluation_start_date + 1.day)
+        sign_in engineer, scope: :user
+      end
+
+      it "submits only draft ratings" do
+        post submit_user_skill_ratings_path(engineer)
+
+        expect(response).to redirect_to(user_skill_ratings_path(engineer))
+        expect(flash[:notice]).to eq(I18n.t("skill_ratings.submit.success"))
+        expect(submit_draft_rating.reload).to be_submitted
+        expect(submit_submitted_rating.reload).to be_submitted
+      end
+    end
+
+    context "when there are no draft ratings" do
+      before do
+        allow(Date).to receive(:current).and_return(quarter.evaluation_start_date + 1.day)
+        sign_in other_engineer, scope: :user
+      end
+
+      it "redirects with alert and keeps ratings submitted" do
+        post submit_user_skill_ratings_path(other_engineer)
+
+        expect(response).to redirect_to(user_skill_ratings_path(other_engineer))
+        expect(flash[:alert]).to eq(I18n.t("skill_ratings.submit.no_drafts"))
+        expect(other_submitted_rating.reload).to be_submitted
+      end
+    end
+
+    context "when there is a rejected rating" do
+      before do
+        allow(Date).to receive(:current).and_return(quarter.evaluation_start_date + 1.day)
+        sign_in rejected_engineer, scope: :user
+      end
+
+      it "redirects with alert and changes nothing" do
+        post submit_user_skill_ratings_path(rejected_engineer)
+
+        expect(response).to redirect_to(user_skill_ratings_path(rejected_engineer))
+        expect(flash[:alert]).to eq(I18n.t("skill_ratings.submit.has_rejected"))
+        expect(rejected_rating.reload).to be_rejected
+        expect(rejected_engineer_draft.reload).to be_draft
+      end
+    end
+
+    context "when engineer submits for another user" do
+      before do
+        allow(Date).to receive(:current).and_return(quarter.evaluation_start_date + 1.day)
+        sign_in other_engineer, scope: :user
+      end
+
+      it "denies access" do
+        post submit_user_skill_ratings_path(engineer)
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
+        expect(submit_draft_rating.reload).to be_draft
+        expect(submit_submitted_rating.reload).to be_submitted
       end
     end
   end
@@ -195,9 +270,9 @@ RSpec.describe "SkillRatings", type: :request do
       before { sign_in unit_lead, scope: :user }
 
       it "denies approving engineer rating" do
-        expect {
-          post approve_user_skill_rating_path(engineer, submitted_rating)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post approve_user_skill_rating_path(engineer, submitted_rating)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "approves team lead rating" do
@@ -212,9 +287,9 @@ RSpec.describe "SkillRatings", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post approve_user_skill_rating_path(engineer, submitted_rating)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post approve_user_skill_rating_path(engineer, submitted_rating)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -258,9 +333,9 @@ RSpec.describe "SkillRatings", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post reject_user_skill_rating_path(engineer, submitted_rating)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post reject_user_skill_rating_path(engineer, submitted_rating)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -312,9 +387,9 @@ RSpec.describe "SkillRatings", type: :request do
       it "does not approve engineer ratings" do
         create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
 
-        expect {
-          post approve_all_user_skill_ratings_path(engineer)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post approve_all_user_skill_ratings_path(engineer)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -324,9 +399,9 @@ RSpec.describe "SkillRatings", type: :request do
       it "denies access" do
         create(:skill_rating, :submitted, user: engineer, technology: technology, quarter: quarter, team: team, rating: 1)
 
-        expect {
-          post approve_all_user_skill_ratings_path(engineer)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post approve_all_user_skill_ratings_path(engineer)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -415,15 +490,15 @@ RSpec.describe "SkillRatings", type: :request do
       end
 
       it "denies access to team member" do
-        expect {
-          patch user_skill_ratings_path(engineer), params: valid_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch user_skill_ratings_path(engineer), params: valid_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "denies access to other team" do
-        expect {
-          patch user_skill_ratings_path(other_engineer), params: valid_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch user_skill_ratings_path(other_engineer), params: valid_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 

@@ -50,9 +50,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_quarters_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_quarters_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -83,9 +83,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post activate_admin_quarter_path(draft_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post activate_admin_quarter_path(draft_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -110,9 +110,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post close_admin_quarter_path(active_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post close_admin_quarter_path(active_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -137,9 +137,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post archive_admin_quarter_path(closed_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post archive_admin_quarter_path(closed_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -171,9 +171,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get new_admin_quarter_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get new_admin_quarter_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -262,9 +262,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post admin_quarters_path, params: valid_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post admin_quarters_path, params: valid_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -323,9 +323,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get admin_quarter_path(draft_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_quarter_path(draft_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -353,15 +353,15 @@ RSpec.describe "Admin::Quarters", type: :request do
       end
 
       it "denies edit for active quarter" do
-        expect {
-          get edit_admin_quarter_path(active_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_quarter_path(active_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "denies edit for closed quarter" do
-        expect {
-          get edit_admin_quarter_path(closed_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_quarter_path(closed_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "returns 404 for non-existent quarter" do
@@ -375,9 +375,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get edit_admin_quarter_path(draft_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_quarter_path(draft_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -424,42 +424,34 @@ RSpec.describe "Admin::Quarters", type: :request do
       end
 
       it "denies update for active quarter with authorization error" do
-        expect {
-          put admin_quarter_path(active_quarter), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        put admin_quarter_path(active_quarter), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "does not change active quarter data" do
         original_description = active_quarter.description
-        begin
-          put admin_quarter_path(active_quarter), params: valid_update_params
-        rescue Pundit::NotAuthorizedError
-          # expected
-        end
+        put admin_quarter_path(active_quarter), params: valid_update_params
         expect(active_quarter.reload.description).to eq(original_description)
       end
 
       it "denies update for closed quarter with authorization error" do
-        expect {
-          put admin_quarter_path(closed_quarter), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        put admin_quarter_path(closed_quarter), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "does not change closed quarter data" do
         original_description = closed_quarter.description
-        begin
-          put admin_quarter_path(closed_quarter), params: valid_update_params
-        rescue Pundit::NotAuthorizedError
-          # expected
-        end
+        put admin_quarter_path(closed_quarter), params: valid_update_params
         expect(closed_quarter.reload.description).to eq(original_description)
       end
 
       it "denies update for archived quarter with authorization error" do
         archived_quarter = create(:quarter, status: :archived)
-        expect {
-          put admin_quarter_path(archived_quarter), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        put admin_quarter_path(archived_quarter), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
 
       it "returns 404 for non-existent quarter" do
@@ -473,9 +465,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          put admin_quarter_path(draft_quarter), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        put admin_quarter_path(draft_quarter), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -497,9 +489,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       end
 
       it "denies destroy for active quarter" do
-        expect {
-          delete admin_quarter_path(active_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        delete admin_quarter_path(active_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -507,9 +499,9 @@ RSpec.describe "Admin::Quarters", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          delete admin_quarter_path(draft_quarter)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        delete admin_quarter_path(draft_quarter)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end

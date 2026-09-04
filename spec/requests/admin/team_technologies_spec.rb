@@ -46,9 +46,9 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
       end
 
       it "denies access for team in another unit" do
-        expect {
-          get admin_team_path(other_team)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_team_path(other_team)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -56,9 +56,9 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get admin_team_path(team)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_team_path(team)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -92,9 +92,9 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
       end
 
       it "denies access" do
-        expect {
-          get new_admin_team_team_technology_path(other_team)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get new_admin_team_team_technology_path(other_team)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -155,11 +155,11 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
       end
 
       it "denies access" do
-        expect {
-          post admin_team_team_technologies_path(other_team), params: {
-            team_technology: {technology_id: technology.id}
-          }
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post admin_team_team_technologies_path(other_team), params: {
+          team_technology: {technology_id: technology.id}
+        }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -167,11 +167,11 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post admin_team_team_technologies_path(team), params: {
-            team_technology: {technology_id: technology.id}
-          }
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post admin_team_team_technologies_path(team), params: {
+          team_technology: {technology_id: technology.id}
+        }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -208,9 +208,9 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
 
       it "denies access" do
         other_tt = create(:team_technology, team: other_team)
-        expect {
-          get edit_admin_team_team_technology_path(other_team, other_tt)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_team_team_technology_path(other_team, other_tt)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -272,11 +272,11 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
 
       it "denies access" do
         other_tt = create(:team_technology, team: other_team)
-        expect {
-          patch admin_team_team_technology_path(other_team, other_tt), params: {
-            team_technology: {criticality: "high", target_experts: 5}
-          }
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch admin_team_team_technology_path(other_team, other_tt), params: {
+          team_technology: {criticality: "high", target_experts: 5}
+        }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -344,9 +344,9 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
 
       it "denies access" do
         other_tt = create(:team_technology, team: other_team)
-        expect {
-          delete admin_team_team_technology_path(other_team, other_tt)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        delete admin_team_team_technology_path(other_team, other_tt)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -397,9 +397,9 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
 
       it "denies access" do
         other_tt = create(:team_technology, :archived, team: other_team)
-        expect {
-          patch restore_admin_team_team_technology_path(other_team, other_tt)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch restore_admin_team_team_technology_path(other_team, other_tt)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end

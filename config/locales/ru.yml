@@ -1,4 +1,6 @@
 ru:
+  errors:
+    not_authorized: "Недостаточно прав для выполнения этого действия"
   admin:
     sidebar:
       sections:

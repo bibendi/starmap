@@ -48,9 +48,9 @@ RSpec.describe "Users", type: :request do
           before { sign_in engineer, scope: :user }
 
           it "denies access to other engineer's profile" do
-            expect {
-              get user_path(other_engineer)
-            }.to raise_error(Pundit::NotAuthorizedError)
+            get user_path(other_engineer)
+            expect(response).to redirect_to(root_path)
+            expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
           end
 
           it "allows access to own profile" do
@@ -68,9 +68,9 @@ RSpec.describe "Users", type: :request do
           end
 
           it "denies access to other team's engineer" do
-            expect {
-              get user_path(other_engineer)
-            }.to raise_error(Pundit::NotAuthorizedError)
+            get user_path(other_engineer)
+            expect(response).to redirect_to(root_path)
+            expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
           end
         end
 

@@ -72,9 +72,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_technologies_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_technologies_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -108,9 +108,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_technology_path(technology)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_technology_path(technology)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -135,9 +135,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get new_admin_technology_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get new_admin_technology_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -190,9 +190,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post admin_technologies_path, params: valid_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post admin_technologies_path, params: valid_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -216,9 +216,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get edit_admin_technology_path(technology)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_technology_path(technology)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -259,9 +259,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          patch admin_technology_path(technology), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch admin_technology_path(technology), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -307,9 +307,9 @@ RSpec.describe "Admin::Technologies", type: :request do
 
       it "denies access" do
         tech = create(:technology, name: "To Delete")
-        expect {
-          delete admin_technology_path(tech)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        delete admin_technology_path(tech)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -341,9 +341,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          get reorder_admin_technologies_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get reorder_admin_technologies_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -378,9 +378,9 @@ RSpec.describe "Admin::Technologies", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          patch reorder_admin_technologies_path, params: {ids: [1, 2]}
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch reorder_admin_technologies_path, params: {ids: [1, 2]}
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end

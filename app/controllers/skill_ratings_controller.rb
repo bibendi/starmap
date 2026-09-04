@@ -37,23 +37,22 @@ class SkillRatingsController < ApplicationController
   end
 
   def submit
-    authorize_skill_ratings
+    authorize_skill_ratings(:submit?)
 
     if @skill_ratings_data.any? { |d| d[:skill_rating].rejected? }
       return redirect_to user_skill_ratings_path(@target_user),
         alert: t("skill_ratings.submit.has_rejected")
     end
 
-    draft_ratings = @skill_ratings_data
-      .map { |d| d[:skill_rating] }
-      .select { |r| r.persisted? && r.draft? }
+    draft_ratings = submittable_draft_ratings
 
     if draft_ratings.empty?
       return redirect_to user_skill_ratings_path(@target_user),
         alert: t("skill_ratings.submit.no_drafts")
     end
 
-    draft_ratings.each { |r| r.submit_for_approval }
+    draft_ratings.each { |rating| authorize rating, :submit? }
+    draft_ratings.each { |rating| rating.submit_for_approval }
 
     redirect_to user_skill_ratings_path(@target_user),
       notice: t("skill_ratings.submit.success")
@@ -184,12 +183,18 @@ class SkillRatingsController < ApplicationController
     end
   end
 
-  def authorize_skill_ratings
+  def authorize_skill_ratings(action = nil)
     rating = @skill_ratings_data
       .map { |d| d[:skill_rating] }
-      .find { |r| policy(r).update? } ||
+      .find { |r| policy(r).public_send(action || :update?) } ||
       SkillRating.new(user: @target_user, quarter: @current_quarter)
-    authorize rating
+    authorize rating, action
+  end
+
+  def submittable_draft_ratings
+    @skill_ratings_data
+      .map { |d| d[:skill_rating] }
+      .select { |r| r.persisted? && r.draft? }
   end
 
   def update_skill_ratings

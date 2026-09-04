@@ -109,9 +109,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_users_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_users_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -119,9 +119,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in team_lead, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_users_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_users_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -129,9 +129,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in unit_lead, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_users_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_users_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -197,9 +197,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_user_path(active_user)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_user_path(active_user)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -207,9 +207,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in team_lead, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_user_path(active_user)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_user_path(active_user)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
 
@@ -217,9 +217,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in unit_lead, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get admin_user_path(active_user)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get admin_user_path(active_user)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -253,9 +253,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get new_admin_user_path
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get new_admin_user_path
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -316,9 +316,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          post admin_users_path, params: valid_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        post admin_users_path, params: valid_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -344,9 +344,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access with 403" do
-        expect {
-          get edit_admin_user_path(active_user)
-        }.to raise_error(Pundit::NotAuthorizedError)
+        get edit_admin_user_path(active_user)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
@@ -389,9 +389,9 @@ RSpec.describe "Admin::Users", type: :request do
       before { sign_in engineer, scope: :user }
 
       it "denies access" do
-        expect {
-          patch admin_user_path(active_user), params: valid_update_params
-        }.to raise_error(Pundit::NotAuthorizedError)
+        patch admin_user_path(active_user), params: valid_update_params
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq(I18n.t("errors.not_authorized"))
       end
     end
   end
