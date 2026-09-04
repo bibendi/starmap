@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.2] - 2026-09-04
+
+### Fixed
+
+- Prevent 500 error when submitting skill ratings for approval while the starmap contains non-draft ratings (e.g. resubmitting after edits or when new technologies were added to the team after the quarter opened)
+- Handle Pundit authorization failures gracefully: redirect with an alert for HTML requests and return 403 for JSON requests instead of an unhandled 500
+
 ## [0.8.1] - 2026-05-27
 
 ### Fixed
