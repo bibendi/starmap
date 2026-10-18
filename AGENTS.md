@@ -399,8 +399,8 @@ bundle exec brakeman
 **Purpose**: Centralized OIDC configuration, User and ApiClient authentication
 **Key files**:
 - `config/initializers/auth.rb` — `OidcConfig` module (single source of OIDC env vars), `OIDC_ENABLED`, `REGISTRATION_ENABLED` constants
-- `lib/warden/bearer_token_strategy.rb` — Warden strategy for User Bearer token auth (OIDC access tokens)
-- `lib/warden/api_client_strategy.rb` — Warden strategy for ApiClient Bearer token auth (client_credentials tokens)
+- `lib/warden/user_token_strategy.rb` — Warden strategy for User Bearer token auth (OIDC access tokens)
+- `lib/warden/api_client_token_strategy.rb` — Warden strategy for ApiClient Bearer token auth (client_credentials tokens)
 - `config/initializers/devise.rb` — registers both Bearer and ApiClient strategies in Warden
 - `app/services/oidc_token_validator.rb` — JWT validation (JWKS, claims, identity resolution for User and ApiClient)
 - `app/models/api_client.rb` — Machine identity for API access with permissions and team scoping

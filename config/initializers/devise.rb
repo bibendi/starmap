@@ -1,7 +1,7 @@
 # Devise configuration for Starmap
 require "devise"
-require "warden/bearer_token_strategy"
-require "warden/api_client_strategy"
+require "warden/user_token_strategy"
+require "warden/api_client_token_strategy"
 
 Devise.setup do |config|
   config.mailer_sender = "please-change-me@example.com"
@@ -15,7 +15,7 @@ Devise.setup do |config|
   config.timeout_in = 30.minutes
 
   config.warden do |manager|
-    manager.default_strategies(scope: :user).unshift :bearer_token
+    manager.default_strategies(scope: :user).unshift :user_token
   end
 
   if Rails.env.test?

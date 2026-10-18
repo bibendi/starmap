@@ -26,7 +26,7 @@ class McpController < ApplicationController
   def try_bearer_auth
     return false unless request.authorization.to_s.start_with?("Bearer ")
 
-    warden.authenticate(:bearer_token, scope: :user) ||
+    warden.authenticate(:user_token, scope: :user) ||
       warden.authenticate(:api_client_token, scope: :api_client)
   end
 
