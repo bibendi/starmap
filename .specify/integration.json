@@ -1,4 +1,20 @@
 {
+  "version": "1.2.1",
+  "integration_state_schema": 1,
+  "installed_integrations": [
+    "opencode",
+    "codex"
+  ],
+  "integration_settings": {
+    "opencode": {
+      "script": "sh",
+      "invoke_separator": "."
+    },
+    "codex": {
+      "script": "sh",
+      "invoke_separator": "-"
+    }
+  },
   "integration": "opencode",
-  "version": "0.7.5.dev0"
+  "default_integration": "opencode"
 }
