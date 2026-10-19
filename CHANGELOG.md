@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Replace fixed quarterly cycles with monthly, quarterly, semiannual, annual, and custom assessment periods in a single non-overlapping timeline
+- Preserve existing quarter data, rating workflows, lifecycle, and metric formulas while ordering periods and comparing snapshots by their dates
+- Replace `/admin/quarters` with `/admin/assessment_periods` and the MCP `quarter` selector and response field with `period_id` and `period_name`; old interfaces are no longer supported
+- Validate legacy data inside the migration automatically during deployment
+
+### Fixed
+
+- Roll back period activation and partially copied ratings if copying fails
+
 ## [0.8.2] - 2026-09-04
 
 ### Fixed
