@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 class RedZonesQuery
-  def initialize(teams:, quarter: Quarter.current)
+  def initialize(teams:, assessment_period: AssessmentPeriod.current)
     @teams = teams
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def count
-    return 0 unless @quarter
+    return 0 unless @assessment_period
 
     expert_counts_subquery = SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, team_id: team_ids)
+      .where(assessment_period: @assessment_period, team_id: team_ids)
       .group(:team_id, :technology_id)
       .select("team_id, technology_id, COUNT(*) as expert_count")
 
@@ -26,7 +26,7 @@ class RedZonesQuery
   end
 
   def details
-    return [] unless @quarter
+    return [] unless @assessment_period
 
     team_technologies = TeamTechnology
       .active
@@ -36,10 +36,10 @@ class RedZonesQuery
 
     expert_ratings = SkillRating
       .preload(:user)
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
       .where(
-        quarter: @quarter,
+        assessment_period: @assessment_period,
         technology_id: team_technologies.map(&:technology_id),
         team_id: team_ids
       )

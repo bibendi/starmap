@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe UnitTechnologyTreemapQuery do
-  let_it_be(:current_quarter) { create(:quarter, status: :active) }
+  let_it_be(:current_assessment_period) { create(:assessment_period, status: :active) }
   let_it_be(:team) { create(:team) }
   let_it_be(:user) { create(:user, team: team) }
   let_it_be(:technology1) { create(:technology) }
@@ -17,18 +17,18 @@ RSpec.describe UnitTechnologyTreemapQuery do
         create(:team_technology, team: team, technology: technology2, target_experts: 2)
         create(:team_technology, team: team, technology: technology3, target_experts: 3)
 
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
 
-        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user, technology: technology2, assessment_period: current_assessment_period, rating: 3, team: team)
 
-        create(:skill_rating, user: user, technology: technology3, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology3, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology3, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology3, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology3, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology3, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "returns technologies sorted by expert count descending" do
-        result = described_class.new(teams: [team], quarter: current_quarter).data
+        result = described_class.new(teams: [team], assessment_period: current_assessment_period).data
         expect(result.size).to eq(3)
         expect(result[0][:expert_count]).to eq(3)
         expect(result[1][:expert_count]).to eq(2)
@@ -36,14 +36,14 @@ RSpec.describe UnitTechnologyTreemapQuery do
       end
 
       it "marks technologies as all_teams_in_target when target is met" do
-        result = described_class.new(teams: [team], quarter: current_quarter).data
+        result = described_class.new(teams: [team], assessment_period: current_assessment_period).data
         expect(result[0][:all_teams_in_target]).to be true
         expect(result[1][:all_teams_in_target]).to be true
         expect(result[2][:all_teams_in_target]).to be false
       end
 
       it "calculates deficit for technologies below target" do
-        result = described_class.new(teams: [team], quarter: current_quarter).data
+        result = described_class.new(teams: [team], assessment_period: current_assessment_period).data
         expect(result[0][:deficit]).to eq(0)
         expect(result[1][:deficit]).to eq(0)
         expect(result[2][:deficit]).to eq(1)
@@ -56,13 +56,13 @@ RSpec.describe UnitTechnologyTreemapQuery do
       end
 
       it "excludes technologies with zero experts" do
-        expect(described_class.new(teams: [team], quarter: current_quarter).data).to be_empty
+        expect(described_class.new(teams: [team], assessment_period: current_assessment_period).data).to be_empty
       end
     end
 
-    context "when there is no current quarter" do
+    context "when there is no current assessment_period" do
       it "returns empty array" do
-        expect(described_class.new(teams: [team], quarter: nil).data).to be_empty
+        expect(described_class.new(teams: [team], assessment_period: nil).data).to be_empty
       end
     end
   end
@@ -86,7 +86,7 @@ RSpec.describe UnitTechnologyTreemapQuery do
           create(:skill_rating,
             user: user,
             technology: tech,
-            quarter: current_quarter,
+            assessment_period: current_assessment_period,
             rating: rand(1..3),
             team: team)
         end
@@ -94,7 +94,7 @@ RSpec.describe UnitTechnologyTreemapQuery do
     end
 
     specify "#data performs constant number of queries" do
-      expect { described_class.new(teams: [team], quarter: current_quarter).data }.to perform_constant_number_of_queries
+      expect { described_class.new(teams: [team], assessment_period: current_assessment_period).data }.to perform_constant_number_of_queries
     end
   end
 end

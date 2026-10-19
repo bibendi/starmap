@@ -100,7 +100,7 @@ RSpec.describe TeamMemberMetricsComponent, type: :component do
       end
     end
 
-    context "when there are changes from previous quarter" do
+    context "when there are changes from previous assessment_period" do
       let(:metrics_with_changes) do
         {
           user1.id => {

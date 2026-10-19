@@ -7,7 +7,7 @@ RSpec.describe "Teams", type: :request do
   let_it_be(:team_lead) { create(:team_lead, team: team) }
   let_it_be(:unit_lead) { create(:unit_lead) }
   let_it_be(:admin) { create(:admin) }
-  let_it_be(:current_quarter) { create(:quarter, :current) }
+  let_it_be(:current_assessment_period) { create(:assessment_period, :current) }
   let_it_be(:unit_for_unit_lead) { create(:unit, unit_lead: unit_lead) }
   let_it_be(:unit_lead_team) { create(:team, unit: unit_for_unit_lead) }
 

@@ -4,25 +4,25 @@ class TeamMemberMetricsQuery
   METRIC_TYPES = [:competence_level, :universality, :expertise_concentration].freeze
   CRITICALITY_LEVELS = [:total, :high, :normal, :low].freeze
 
-  def initialize(team:, user_ids:, quarter: Quarter.current)
+  def initialize(team:, user_ids:, assessment_period: AssessmentPeriod.current)
     @team = team
     @user_ids = user_ids
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def metrics
-    return {} if @quarter.nil? || @user_ids.empty?
+    return {} if @assessment_period.nil? || @user_ids.empty?
 
-    previous_quarter = @quarter.previous_quarter
-    quarter_ids = [@quarter.id, previous_quarter&.id].compact
+    previous_assessment_period = @assessment_period.previous_assessment_period
+    assessment_period_ids = [@assessment_period.id, previous_assessment_period&.id].compact
 
-    ratings_by_quarter = load_ratings_for_quarters(quarter_ids)
+    ratings_by_assessment_period = load_ratings_for_assessment_periods(assessment_period_ids)
 
-    current_ratings = ratings_by_quarter[@quarter.id] || []
-    previous_ratings = previous_quarter ? ratings_by_quarter[previous_quarter.id] || [] : []
+    current_ratings = ratings_by_assessment_period[@assessment_period.id] || []
+    previous_ratings = previous_assessment_period ? ratings_by_assessment_period[previous_assessment_period.id] || [] : []
 
     current_metrics = calculate_metrics_for_ratings(current_ratings)
-    previous_metrics = previous_quarter ? calculate_metrics_for_ratings(previous_ratings) : {}
+    previous_metrics = previous_assessment_period ? calculate_metrics_for_ratings(previous_ratings) : {}
 
     add_changes(current_metrics, previous_metrics)
 
@@ -31,22 +31,22 @@ class TeamMemberMetricsQuery
 
   private
 
-  def load_ratings_for_quarters(quarter_ids)
-    return {} if quarter_ids.empty?
+  def load_ratings_for_assessment_periods(assessment_period_ids)
+    return {} if assessment_period_ids.empty?
 
-    quarters = [@quarter, @quarter.previous_quarter].compact
+    assessment_periods = [@assessment_period, @assessment_period.previous_assessment_period].compact
 
     ratings = SkillRating
       .joins(:technology)
       .joins("LEFT JOIN team_technologies ON team_technologies.team_id = skill_ratings.team_id AND team_technologies.technology_id = skill_ratings.technology_id")
-      .visible_for_quarters(quarters)
-      .where(team_id: @team.id, quarter_id: quarter_ids, technologies: {active: true})
+      .visible_for_assessment_periods(assessment_periods)
+      .where(team_id: @team.id, assessment_period_id: assessment_period_ids, technologies: {active: true})
       .select(
         "skill_ratings.*",
         "COALESCE(team_technologies.criticality, technologies.criticality) as effective_criticality"
       )
 
-    ratings.group_by(&:quarter_id)
+    ratings.group_by(&:assessment_period_id)
   end
 
   def initialize_metrics

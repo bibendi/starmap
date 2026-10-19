@@ -3,21 +3,52 @@ require "rails_helper"
 RSpec.describe TeamMetricsTool, type: :service do
   let_it_be(:team) { create(:team, name: "Backend") }
   let_it_be(:user) { create(:engineer, team: team) }
-  let_it_be(:quarter) { create(:quarter, :current) }
+  let_it_be(:assessment_period) { create(:assessment_period, :current) }
   let_it_be(:other_team) { create(:team, name: "Frontend") }
   let_it_be(:stranger) { create(:engineer, team: other_team) }
 
   let(:server_context) { {current_identity: user} }
 
+  %w[monthly quarterly semiannual annual custom].each_with_index do |kind, index|
+    it "selects #{kind} by id with the same response contract" do
+      year = 2100 + index
+      start_date = Date.new(year, 1, 1)
+      months = {"monthly" => 1, "quarterly" => 3, "semiannual" => 6, "annual" => 12, "custom" => 2}.fetch(kind)
+      period = create(:assessment_period, period_kind: kind, start_date: start_date, end_date: start_date.advance(months: months) - 1.day)
+      result = described_class.call(team_name: "Backend", period_id: period.id, server_context: server_context)
+      expect(result.error?).to be false
+      data = JSON.parse(result.content.first[:text])
+      expect(data).to include("period_id" => period.id, "period_name" => period.full_name)
+      expect(data).not_to have_key("quarter")
+      AssessmentPeriod.where(is_current: true).update_all(is_current: false)
+      period.update!(is_current: true)
+      default = described_class.call(team_name: "Backend", server_context: server_context)
+      expect(JSON.parse(default.content.first[:text])).to eq(data)
+    end
+  end
+
+  it "exposes only the period selector in the input schema" do
+    properties = described_class.input_schema.to_h.fetch(:properties)
+    expect(properties).to have_key(:period_id)
+    expect(properties).not_to have_key(:quarter)
+  end
+
+  it "rejects invalid period ids without silently selecting current" do
+    ["bad", "1", 0, -1, 1.5].each do |id|
+      result = described_class.call(team_name: "Backend", period_id: id, server_context: server_context)
+      expect(result.error?).to be true
+    end
+  end
+
   describe ".call" do
     context "when team exists and user has access" do
-      it "returns metrics for current quarter" do
+      it "returns metrics for current assessment_period" do
         result = described_class.call(team_name: "Backend", server_context: server_context)
 
         expect(result.error?).to be false
         data = JSON.parse(result.content.first[:text])
         expect(data["team"]).to eq("Backend")
-        expect(data["quarter"]).to eq(quarter.full_name)
+        expect(data["period_name"]).to eq(assessment_period.full_name)
         expect(data).to have_key("coverage_index")
         expect(data).to have_key("maturity_index")
         expect(data).to have_key("red_zones_count")
@@ -43,30 +74,30 @@ RSpec.describe TeamMetricsTool, type: :service do
       end
     end
 
-    context "when no active quarter" do
-      before { quarter.update!(is_current: false) }
+    context "when no active assessment_period" do
+      before { assessment_period.update!(is_current: false) }
 
       it "returns error" do
         result = described_class.call(team_name: "Backend", server_context: server_context)
 
         expect(result.error?).to be true
-        expect(result.content.first[:text]).to include("No active quarter")
+        expect(result.content.first[:text]).to include("No current assessment period")
       end
     end
 
-    context "when specific quarter provided" do
-      let_it_be(:past_quarter) { create(:quarter, status: :closed, is_current: false) }
+    context "when specific assessment_period provided" do
+      let_it_be(:past_assessment_period) { create(:assessment_period, status: :closed, is_current: false) }
 
-      it "returns metrics for specified quarter" do
-        result = described_class.call(team_name: "Backend", quarter: past_quarter.full_name, server_context: server_context)
+      it "returns metrics for specified assessment_period" do
+        result = described_class.call(team_name: "Backend", period_id: past_assessment_period.id, server_context: server_context)
 
         expect(result.error?).to be false
         data = JSON.parse(result.content.first[:text])
-        expect(data["quarter"]).to eq(past_quarter.full_name)
+        expect(data["period_name"]).to eq(past_assessment_period.full_name)
       end
 
-      it "returns error for unknown quarter" do
-        result = described_class.call(team_name: "Backend", quarter: "2020 Q1", server_context: server_context)
+      it "returns error for unknown assessment_period" do
+        result = described_class.call(team_name: "Backend", period_id: 99999999, server_context: server_context)
 
         expect(result.error?).to be true
         expect(result.content.first[:text]).to include("not found")
@@ -78,7 +109,7 @@ RSpec.describe TeamMetricsTool, type: :service do
       let_it_be(:team_technology) { create(:team_technology, team: team, technology: technology) }
 
       before do
-        create(:skill_rating, user: user, team: team, technology: technology, quarter: quarter, rating: 3, status: :approved, approved_by: user, approved_at: Time.current)
+        create(:skill_rating, user: user, team: team, technology: technology, assessment_period: assessment_period, rating: 3, status: :approved, approved_by: user, approved_at: Time.current)
       end
 
       it "returns computed metrics" do

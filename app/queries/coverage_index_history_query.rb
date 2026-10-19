@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 
 class CoverageIndexHistoryQuery
-  MAX_QUARTERS = 10
+  MAX_PERIODS = 10
 
   def initialize(teams:)
     @teams = teams
   end
 
   def data
-    quarters.map do |quarter|
+    assessment_periods.map do |assessment_period|
       {
-        quarter_name: quarter.full_name,
-        coverage_index: CoverageIndexQuery.new(teams: @teams, quarter: quarter).percentage
+        period_name: assessment_period.full_name,
+        coverage_index: CoverageIndexQuery.new(teams: @teams, assessment_period: assessment_period).percentage
       }
     end
   end
 
   private
 
-  def quarters
-    Quarter.where.not(status: :draft).ordered.last(MAX_QUARTERS)
+  def assessment_periods
+    AssessmentPeriod.where.not(status: :draft).ordered.last(MAX_PERIODS)
   end
 end

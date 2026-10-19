@@ -169,7 +169,7 @@ RSpec.describe TeamSkillMatrixComponent, type: :component do
       end
     end
 
-    context "when there are no changes from previous quarter" do
+    context "when there are no changes from previous assessment_period" do
       it "does not render change indicators" do
         matrix = {technology1.id => {user1.id => 2, user2.id => 0}}
         component = build_component(skill_matrix: matrix)

@@ -1,18 +1,18 @@
 # Starmap Product Overview
 
-Starmap is a corporate web application for managing technical team competencies, employee development, and reducing bus-factor risks. The system automates collection, validation, and analysis of engineering team competencies through quarterly cycles.
+Starmap is a corporate web application for managing technical team competencies, employee development, and reducing bus-factor risks. The system automates collection, validation, and analysis of engineering team competencies through assessment cycles.
 
 ## Core Value Proposition
 
 - **Proactive Risk Management**: Identify knowledge silos and single points of failure before they become critical
 - **Objective Assessment**: Standardized 0-3 competency scale eliminates subjective evaluations
-- **Transparent Development**: Clear growth paths with measurable progress by quarters
+- **Transparent Development**: Clear growth paths with measurable progress by periods
 - **Strategic Planning**: Data-driven decisions on hiring, training, and team composition
 
 ## User Roles & Responsibilities
 
 ### Engineer
-- **Tasks**: Self-assessment of competencies in active quarters, initiating Action Plans
+- **Tasks**: Self-assessment of competencies in active periods, initiating Action Plans
 - **Tools**: Personal dashboard, self-assessment forms, rating history, development plans
 - **Contributions**: Provides data for Coverage Index and Key Person Risk metrics
 - **Focus**: Personal progress, career navigation, motivation
@@ -25,14 +25,14 @@ Starmap is a corporate web application for managing technical team competencies,
 
 ### Unit Lead
 - **Tasks**: Unit metrics overview, redistribution expertise decisions, training investments
-- **Tools**: Overview dashboard, risk reports, quarterly dynamics analysis
+- **Tools**: Overview dashboard, risk reports, period dynamics analysis
 - **Contributions**: Controls Coverage Index, reduces Red Zones, strategic development
 - **Focus**: Unit-level strategy, critical technology alignment
 
 ### Admin / HR
-- **Tasks**: Maintain technology catalog and criticality, user role management, quarter cycle control
+- **Tasks**: Maintain technology catalog and criticality, user role management, period cycle control
 - **Tools**: Admin panel, Solid Queue settings, audit via Audited gem
-- **Contributions**: Data integrity, timely quarter/background processes
+- **Contributions**: Data integrity, timely period/background processes
 - **Focus**: Process improvement, security and access management
 
 ## Core Capabilities
@@ -40,15 +40,17 @@ Starmap is a corporate web application for managing technical team competencies,
 **Competency Management System**
 - 0-3 rating scale with clear level descriptions
 - Self-assessment → Team Lead approval workflow
-- Historical tracking of competency development by quarters
-- Role-based validation and Quarter state constraints
+- Historical tracking of competency development by periods
+- Role-based validation and AssessmentPeriod state constraints
 
-**Quarterly Cycles**
-- Quarters are created **retrospectively**, after the evaluated period has ended
-- Previous quarter's ratings are copied as a starting point when a quarter is activated
+**Assessment Periods**
+- Supported types: monthly, quarterly, semiannual, annual, custom. All measured intervals form one non-overlapping timeline; gaps are allowed.
+- Standard types use calendar boundaries; custom periods use explicit dates. Evaluation windows are independent of measured intervals.
+- Periods are created **retrospectively**, after the evaluated period has ended
+- Previous period's ratings are copied as a starting point when a period is activated
 - Status workflow: draft → active → closed → archived
-- Evaluation window (`evaluation_start_date`..`evaluation_end_date`) opens **after** the quarter's `end_date`
-- Editing restrictions based on quarter state and evaluation period ensure data integrity
+- Evaluation window (`evaluation_start_date`..`evaluation_end_date`) opens **after** the period's `end_date`
+- Editing restrictions based on period state and evaluation period ensure data integrity
 
 **Analytics Dashboards**
 - **Overview Dashboard**: Unit-level metrics and risks for leadership
@@ -58,7 +60,7 @@ Starmap is a corporate web application for managing technical team competencies,
 **Development Planning (Action Plans)**
 - Created based on identified competency gaps
 - Progress tracking: active → completed/paused
-- Linked to target quarters, technologies, and users
+- Linked to target periods, technologies, and users
 
 ## Business Metrics
 
@@ -75,21 +77,21 @@ Critical technologies (high criticality) with insufficient coverage (<2 experts)
 Technologies where a single employee is the only expert.
 
 ### Action Plan Progress
-Status tracking of development plans linked to quarters and technologies.
+Status tracking of development plans linked to periods and technologies.
 
 ## Role Interactions
 
 1. **Data Collection**: Engineer updates self-ratings → Team Lead validates and approves → data flows to metrics
-2. **Quarterly Cycle**: Admin creates quarter retrospectively after period ends, activates it (copies past ratings as starting point), notifications sent
+2. **Assessment Cycle**: Admin creates period retrospectively after period ends, activates it (copies past ratings as starting point), notifications sent
 3. **Analytics**: Unit Lead tracks Coverage/Maturity/Red Zones, Team Lead monitors team competencies, Engineer tracks personal progress
 4. **Risk Management**: Metrics signal gaps; Team Lead and Unit Lead plan expertise exchange
-5. **Development**: Action Plans link development goals to quarters, technologies, and employees
+5. **Development**: Action Plans link development goals to periods, technologies, and employees
 
 ## Key Principles
 
 - **Transparency**: Each role sees detail level matching their responsibility (Pundit authorization)
 - **Stability**: Focus on even expertise distribution and bus-factor reduction
-- **Intentional Development**: Goals captured in Action Plans, progress tracked quarterly
+- **Intentional Development**: Goals captured in Action Plans, progress tracked by assessment period
 
 ---
 
@@ -177,13 +179,13 @@ Status tracking of development plans linked to quarters and technologies.
 **User**: Accounts with roles (engineer, team_lead, unit_lead, admin), team associations
 **Team**: User groups with Team Lead management
 **Technology**: Technologies with category, criticality level, target expert count
-**Quarter**: Quarterly cycles with status (draft → active → closed → archived)
-**SkillRating**: Competency ratings (0-3), approval status, quarter linkage
-**ActionPlan**: Development plans linking users, technologies, and target quarters
+**AssessmentPeriod**: Assessment periods with status (draft → active → closed → archived)
+**SkillRating**: Competency ratings (0-3), approval status, period linkage
+**ActionPlan**: Development plans linking users, technologies, and target periods
 
 ### Business Logic Patterns
 
-**Quarter State Machine**: All ratings tied to Quarter status. Editing restricted by state.
+**Assessment Period State Machine**: All ratings tied to AssessmentPeriod status. Editing restricted by state.
 
 **Authorization Pattern**: Pundit policies enforce role-based access. Controllers check policies before actions.
 
@@ -257,7 +259,7 @@ RSpec.describe MyComponent, type: :component do
 
   context "scenario A" do
     before do
-      create(:skill_rating, user: user, technology: tech, quarter: quarter)
+      create(:skill_rating, user: user, technology: tech, assessment_period: period)
     end
     # ...
   end
@@ -329,7 +331,7 @@ bundle exec brakeman
 
 **Role-based Authorization**: Four distinct roles with Pundit policies enforcing granular permissions.
 
-**Quarterly Data Model**: Quarters created retrospectively after the period ends. Evaluation window opens after quarter's `end_date`. Ratings editable only during evaluation period of active quarters.
+**Assessment Period Data Model**: Periods created retrospectively after the period ends. Evaluation window opens after period's `end_date`. Ratings editable only during evaluation period of active periods.
 
 **MCP Tools Pattern**: AI-accessible tools in `app/tools/` inheriting from `McpBaseTool`. Each tool implements `execute` — base class handles auth (`authorize`), errors (`not_found!`), and response formatting (`text_response`, `error_response`). `authorize` routes policy by identity type: `ApiClient` → `ApiClient::*Policy`, `User` → standard Pundit policies. Auth via OIDC Bearer tokens through Warden strategies — see `docs/auth.md`.
 
@@ -343,7 +345,7 @@ bundle exec brakeman
 
 ## Organization Philosophy
 
-**Standard Rails MVC** with domain-driven organization. Core entities (User, Team, Technology, Quarter) drive folder structure. Features organized by domain concern rather than technical layer.
+**Standard Rails MVC** with domain-driven organization. Core entities (User, Team, Technology, AssessmentPeriod) drive folder structure. Features organized by domain concern rather than technical layer.
 
 ## Directory Patterns
 
@@ -365,7 +367,7 @@ bundle exec brakeman
 ### Policies (`app/policies/`)
 **Location**: `app/policies/`
 **Purpose**: Pundit authorization rules - role-based and record-level access
-**Example**: `SkillRatingPolicy` (edit own ratings in active quarters), `DashboardPolicy` (role-based dashboard access), `ApiClient::TeamPolicy` (ApiClient-scoped team access)
+**Example**: `SkillRatingPolicy` (edit own ratings in active periods), `DashboardPolicy` (role-based dashboard access), `ApiClient::TeamPolicy` (ApiClient-scoped team access)
 
 ### Query Objects (`app/queries/`)
 **Location**: `app/queries/`
@@ -373,7 +375,7 @@ bundle exec brakeman
 **Example**: `RedZonesQuery` (count and details for red zone metrics), `TeamSkillMatrixQuery` (bus factor, skill matrix, raw ratings, rating dynamics — reusable for both team matrix and technology detail pages)
 **Naming**: PascalCase with `Query` suffix (e.g., `RedZonesQuery`, `KeyPersonRisksQuery`)
 **Convention**:
-- Accept parameters via `initialize` (e.g., `teams:`, `quarter:`)
+- Accept parameters via `initialize` (e.g., `teams:`, `assessment_period:`)
 - Expose one or more public methods that return data (e.g., `#count`, `#details`)
 - Use model scopes for reusable filtering; keep multi-query orchestration in the query object
 - Every Query Object MUST include an N+1 test (tagged `:n_plus_one`) for each public method, verifying constant query count as data scales
@@ -502,7 +504,7 @@ Components and controllers MUST NOT contain complex database queries. Follow thi
    ```ruby
    # app/queries/red_zones_query.rb
    class RedZonesQuery
-     def initialize(teams:, quarter: Quarter.current)
+     def initialize(teams:, assessment_period: AssessmentPeriod.current)
      def count    # single aggregate result
      def details  # structured data for rendering
    end
@@ -511,8 +513,8 @@ Components and controllers MUST NOT contain complex database queries. Follow thi
    ```ruby
    # app/controllers/teams_controller.rb
    def show
-     @red_zones_count = RedZonesQuery.new(teams: [@team], quarter: @current_quarter).count
-     @red_zones_data = RedZonesQuery.new(teams: [@team], quarter: @current_quarter).details
+     @red_zones_count = RedZonesQuery.new(teams: [@team], assessment_period: @current_assessment_period).count
+     @red_zones_data = RedZonesQuery.new(teams: [@team], assessment_period: @current_assessment_period).details
    end
    ```
 4. **Components** — purely presentational. Accept pre-computed data via required `initialize` parameters, contain NO database queries:
@@ -549,7 +551,7 @@ Instead, name query objects after the **domain concept** they serve. A domain qu
 
 **Policy Enforcement**: All controller actions check Pundit policies. Policies encapsulate role logic (Engineer, Team Lead, Unit Lead, Admin).
 
-**Quarter State Machine**: All ratings tied to Quarter with statuses (draft → active → closed → archived). Business logic respects quarter state for edit permissions.
+**Assessment Period State Machine**: All ratings tied to AssessmentPeriod with statuses (draft → active → closed → archived). Business logic respects period state for edit permissions.
 
 **Component Reusability**: Dashboard cards and metrics as ViewComponents. Components accept data objects, render HTML, contain no business logic.
 

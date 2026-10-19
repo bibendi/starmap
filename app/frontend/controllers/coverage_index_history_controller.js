@@ -1,14 +1,14 @@
 import { Chart } from 'chart.js/auto'
 import DialogController from './dialog_controller'
 
-const MAX_QUARTERS = 10
+const MAX_PERIODS = 10
 const FETCH_TIMEOUT = 10000
 
 export default class extends DialogController {
   static values = {
     teamIds: Array,
     url: { type: String, default: '/coverage_index_history' },
-    axisQuarter: { type: String, default: 'Quarter' },
+    axisPeriod: { type: String, default: 'Period' },
     axisCoverage: { type: String, default: 'Coverage Index' }
   }
 
@@ -95,7 +95,7 @@ export default class extends DialogController {
   }
 
   showChart(history) {
-    const visible = history.slice(-MAX_QUARTERS)
+    const visible = history.slice(-MAX_PERIODS)
 
     this.hideAll()
     this.chartContainerTarget.classList.remove('hidden')
@@ -106,7 +106,7 @@ export default class extends DialogController {
     this.chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: visible.map((d) => d.quarter_name),
+        labels: visible.map((d) => d.period_name),
         datasets: [
           {
             label: 'Coverage Index',
@@ -132,7 +132,7 @@ export default class extends DialogController {
         },
         scales: {
           x: {
-            title: { display: true, text: this.axisQuarterValue },
+            title: { display: true, text: this.axisPeriodValue },
             grid: { display: false }
           },
           y: {

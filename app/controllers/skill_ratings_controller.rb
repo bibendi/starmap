@@ -5,7 +5,7 @@
 class SkillRatingsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_target_user
-  before_action :set_current_quarter
+  before_action :set_current_assessment_period
   before_action :ensure_evaluation_period, only: [:edit, :update, :submit]
   before_action :ensure_team_assignment
   before_action :set_team_technologies, only: [:show, :edit, :update, :submit, :approve, :reject]
@@ -89,7 +89,7 @@ class SkillRatingsController < ApplicationController
   end
 
   def approve_all
-    authorize SkillRating.new(user: @target_user, quarter: @current_quarter), :approve?
+    authorize SkillRating.new(user: @target_user, assessment_period: @current_assessment_period), :approve?
 
     submitted_ratings = find_submitted_ratings
 
@@ -122,12 +122,12 @@ class SkillRatingsController < ApplicationController
     end
   end
 
-  def set_current_quarter
-    @current_quarter = Quarter.current
+  def set_current_assessment_period
+    @current_assessment_period = AssessmentPeriod.current
   end
 
   def ensure_evaluation_period
-    return if @current_quarter&.evaluation_period?
+    return if @current_assessment_period&.evaluation_period?
 
     redirect_to user_path(@target_user),
       alert: t("skill_ratings.errors.not_evaluation_period")
@@ -153,14 +153,14 @@ class SkillRatingsController < ApplicationController
 
   def set_skill_ratings
     @skill_ratings_data = []
-    return unless @current_quarter && @team_technologies
+    return unless @current_assessment_period && @team_technologies
 
     existing_ratings = SkillRating.by_user(@target_user)
-      .by_quarter(@current_quarter)
+      .by_assessment_period(@current_assessment_period)
       .index_by(&:technology_id)
 
     rating_changes = UserRatingChangesQuery
-      .new(user: @target_user, quarter: @current_quarter)
+      .new(user: @target_user, assessment_period: @current_assessment_period)
       .changes_by_technology
 
     @skill_ratings_data = @team_technologies.map do |team_tech|
@@ -173,7 +173,7 @@ class SkillRatingsController < ApplicationController
         skill_rating: rating || SkillRating.new(
           user: @target_user,
           technology: technology,
-          quarter: @current_quarter,
+          assessment_period: @current_assessment_period,
           rating: 0,
           status: "draft",
           team: @target_user.team
@@ -187,7 +187,7 @@ class SkillRatingsController < ApplicationController
     rating = @skill_ratings_data
       .map { |d| d[:skill_rating] }
       .find { |r| policy(r).public_send(action || :update?) } ||
-      SkillRating.new(user: @target_user, quarter: @current_quarter)
+      SkillRating.new(user: @target_user, assessment_period: @current_assessment_period)
     authorize rating, action
   end
 
@@ -218,7 +218,7 @@ class SkillRatingsController < ApplicationController
     skill_rating = SkillRating.find_or_initialize_by(
       user: @target_user,
       technology: technology,
-      quarter: @current_quarter
+      assessment_period: @current_assessment_period
     )
 
     # Only set created_by and team_id for new records to preserve history
@@ -253,10 +253,10 @@ class SkillRatingsController < ApplicationController
   end
 
   def find_submitted_ratings
-    return [] unless @current_quarter
+    return [] unless @current_assessment_period
 
     SkillRating.by_user(@target_user)
-      .by_quarter(@current_quarter)
+      .by_assessment_period(@current_assessment_period)
       .submitted
   end
 end

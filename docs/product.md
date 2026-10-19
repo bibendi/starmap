@@ -25,8 +25,8 @@ Starmap is a corporate web application designed to automate the collection, anal
 
 ## Key Features
 
-1. **Competency management**: 0-3 rating scale, team lead approval, quarterly history
-2. **Quarterly cycles**: Automatic creation of new cycles with copied previous ratings
+1. **Competency management**: 0-3 rating scale, team lead approval, period history
+2. **Assessment periods**: Manual creation and activation of periods with copied previous ratings
 3. **Three types of dashboards**:
    - Overview: summary risk map and team metrics
    - Team: detailed competency analysis for team leads

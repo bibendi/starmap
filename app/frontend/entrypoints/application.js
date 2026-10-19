@@ -8,6 +8,7 @@ import { session } from '@hotwired/turbo'
 
 session.start()
 
+import AssessmentPeriodFormController from '../controllers/assessment_period_form_controller.js'
 import CoverageIndexHistoryController from '../controllers/coverage_index_history_controller.js'
 import DialogController from '../controllers/dialog_controller.js'
 import MaturityIndexHistoryController from '../controllers/maturity_index_history_controller.js'
@@ -21,6 +22,7 @@ import VerticalPaginationController from '../controllers/vertical_pagination_con
 
 // Register Stimulus controllers
 const application = Application.start()
+application.register('assessment-period-form', AssessmentPeriodFormController)
 application.register('sortable', SortableController)
 application.register('team-members', TeamMembersController)
 application.register('theme', ThemeController)

@@ -5,10 +5,10 @@ class TeamTechnologiesController < ApplicationController
   skip_after_action :verify_policy_scoped
 
   def show
-    @current_quarter = Quarter.current
+    @current_assessment_period = AssessmentPeriod.current
 
-    unless @current_quarter
-      redirect_to team_path(@team), alert: t("team_technologies.show.no_active_quarter.message")
+    unless @current_assessment_period
+      redirect_to team_path(@team), alert: t("team_technologies.show.no_active_assessment_period.message")
       return
     end
 
@@ -19,7 +19,7 @@ class TeamTechnologiesController < ApplicationController
       team: @team,
       technologies: [@technology],
       user_ids: @team_members.map(&:id),
-      quarter: @current_quarter
+      assessment_period: @current_assessment_period
     )
 
     bus_factor = query.bus_factor[@technology.id]

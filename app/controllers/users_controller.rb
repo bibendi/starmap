@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_user
-  before_action :set_current_quarter
+  before_action :set_current_assessment_period
   skip_after_action :verify_policy_scoped
 
   def show
@@ -15,8 +15,8 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
-  def set_current_quarter
-    @current_quarter = Quarter.current
+  def set_current_assessment_period
+    @current_assessment_period = AssessmentPeriod.current
   end
 
   def load_pending_users

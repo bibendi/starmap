@@ -3,7 +3,7 @@ module Admin
     skip_after_action :verify_authorized
 
     def index
-      redirect_to admin_quarters_path
+      redirect_to admin_assessment_periods_path
     end
   end
 end

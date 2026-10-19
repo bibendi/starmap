@@ -70,7 +70,7 @@ Rails.application.routes.draw do
       end
     end
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
-    resources :quarters do
+    resources :assessment_periods do
       member do
         post :activate
         post :close

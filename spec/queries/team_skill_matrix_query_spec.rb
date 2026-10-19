@@ -3,8 +3,8 @@
 require "rails_helper"
 
 RSpec.describe TeamSkillMatrixQuery do
-  let_it_be(:current_quarter) { create(:quarter, status: :active, is_current: true) }
-  let_it_be(:previous_quarter) { create(:quarter, :previous, :closed, relative_to: current_quarter) }
+  let_it_be(:current_assessment_period) { create(:assessment_period, status: :active, is_current: true) }
+  let_it_be(:previous_assessment_period) { create(:assessment_period, :previous, :closed, relative_to: current_assessment_period) }
   let_it_be(:team) { create(:team) }
   let_it_be(:user1) { create(:user, team: team) }
   let_it_be(:user2) { create(:user, team: team) }
@@ -24,7 +24,7 @@ RSpec.describe TeamSkillMatrixQuery do
   describe "#bus_factor" do
     context "when technology has no experts" do
       it "returns high risk level" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).bus_factor
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).bus_factor
         expect(result[technology1.id][:risk_level]).to eq("high")
         expect(result[technology1.id][:count]).to eq(0)
       end
@@ -32,11 +32,11 @@ RSpec.describe TeamSkillMatrixQuery do
 
     context "when technology has insufficient experts" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "returns medium risk level" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).bus_factor
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).bus_factor
         expect(result[technology1.id][:risk_level]).to eq("medium")
         expect(result[technology1.id][:count]).to eq(1)
       end
@@ -44,26 +44,26 @@ RSpec.describe TeamSkillMatrixQuery do
 
     context "when technology has sufficient experts" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
       end
 
       it "returns low risk level" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).bus_factor
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).bus_factor
         expect(result[technology1.id][:risk_level]).to eq("low")
         expect(result[technology1.id][:count]).to eq(2)
       end
     end
 
-    context "when there is a change from previous quarter" do
+    context "when there is a change from previous assessment_period" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: previous_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "returns the change in expert count" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).bus_factor
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).bus_factor
         expect(result[technology1.id][:change]).to eq(1)
       end
     end
@@ -72,18 +72,18 @@ RSpec.describe TeamSkillMatrixQuery do
   describe "#raw_ratings" do
     context "with no ratings" do
       it "returns empty hash for technology" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).raw_ratings
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).raw_ratings
         expect(result[technology1.id]).to be_nil
       end
     end
 
     context "with partial ratings" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "returns sparse hash without defaults for unrated users" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).raw_ratings
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).raw_ratings
         expect(result[technology1.id][user1.id]).to eq(2)
         expect(result[technology1.id]).not_to be_key(user2.id)
       end
@@ -93,7 +93,7 @@ RSpec.describe TeamSkillMatrixQuery do
   describe "#skill_matrix" do
     context "with no ratings" do
       it "returns zeroed matrix" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).skill_matrix
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).skill_matrix
         expect(result[technology1.id][user1.id]).to eq(0)
         expect(result[technology1.id][user2.id]).to eq(0)
       end
@@ -101,12 +101,12 @@ RSpec.describe TeamSkillMatrixQuery do
 
     context "with ratings" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
       end
 
       it "returns ratings by technology and user" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).skill_matrix
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).skill_matrix
         expect(result[technology1.id][user1.id]).to eq(2)
         expect(result[technology1.id][user2.id]).to eq(3)
       end
@@ -114,34 +114,34 @@ RSpec.describe TeamSkillMatrixQuery do
   end
 
   describe "#rating_dynamics" do
-    context "with no previous quarter" do
+    context "with no previous assessment_period" do
       it "returns empty hash" do
-        allow(current_quarter).to receive(:previous_quarter).and_return(nil)
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).rating_dynamics
+        allow(current_assessment_period).to receive(:previous_assessment_period).and_return(nil)
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).rating_dynamics
         expect(result).to be_empty
       end
     end
 
-    context "with changes between quarters" do
+    context "with changes between assessment_periods" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: previous_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
       end
 
       it "calculates rating differences" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).rating_dynamics
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).rating_dynamics
         expect(result[technology1.id][user1.id]).to eq(1)
       end
     end
 
-    context "with no changes between quarters" do
+    context "with no changes between assessment_periods" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: previous_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "does not include unchanged ratings" do
-        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, quarter: current_quarter).rating_dynamics
+        result = described_class.new(team: team, technologies: technologies, user_ids: user_ids, assessment_period: current_assessment_period).rating_dynamics
         expect(result).to be_empty
       end
     end
@@ -168,7 +168,7 @@ RSpec.describe TeamSkillMatrixQuery do
           create(:skill_rating,
             user: user,
             technology: tech,
-            quarter: current_quarter,
+            assessment_period: current_assessment_period,
             rating: rand(1..3),
             team: team)
         end
@@ -177,17 +177,22 @@ RSpec.describe TeamSkillMatrixQuery do
 
     specify "#bus_factor performs constant number of queries" do
       ids = team.user_ids
-      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, quarter: current_quarter).bus_factor }.to perform_constant_number_of_queries
+      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, assessment_period: current_assessment_period).bus_factor }.to perform_constant_number_of_queries
+    end
+
+    specify "#raw_ratings performs constant number of queries" do
+      ids = team.user_ids
+      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, assessment_period: current_assessment_period).raw_ratings }.to perform_constant_number_of_queries
     end
 
     specify "#skill_matrix performs constant number of queries" do
       ids = team.user_ids
-      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, quarter: current_quarter).skill_matrix }.to perform_constant_number_of_queries
+      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, assessment_period: current_assessment_period).skill_matrix }.to perform_constant_number_of_queries
     end
 
     specify "#rating_dynamics performs constant number of queries" do
       ids = team.user_ids
-      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, quarter: current_quarter).rating_dynamics }.to perform_constant_number_of_queries
+      expect { described_class.new(team: team, technologies: n_plus_one_technologies, user_ids: ids, assessment_period: current_assessment_period).rating_dynamics }.to perform_constant_number_of_queries
     end
   end
 end

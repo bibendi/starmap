@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class UnitTechnologyTreemapQuery
-  def initialize(teams:, quarter: Quarter.current)
+  def initialize(teams:, assessment_period: AssessmentPeriod.current)
     @teams = teams
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def data
-    return [] unless @quarter
+    return [] unless @assessment_period
 
     team_technologies = TeamTechnology.includes(:technology).active.where(team_id: team_ids)
     technology_ids = team_technologies.pluck(:technology_id).uniq
@@ -15,9 +15,9 @@ class UnitTechnologyTreemapQuery
     return [] if technology_ids.empty?
 
     experts_by_tech_team = SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, technology_id: technology_ids, team_id: team_ids)
+      .where(assessment_period: @assessment_period, technology_id: technology_ids, team_id: team_ids)
       .group(:technology_id, :team_id)
       .count
 

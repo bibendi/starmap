@@ -3,7 +3,7 @@ FactoryBot.define do
   factory :skill_rating do
     user
     technology
-    quarter
+    assessment_period
     rating { rand(0..3) }
     status { "approved" }
     approved_at { Time.current }

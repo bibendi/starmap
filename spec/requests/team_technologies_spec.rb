@@ -5,7 +5,7 @@ RSpec.describe "TeamTechnologies", type: :request do
   let_it_be(:technology) { create(:technology, name: "Ruby") }
   let_it_be(:unrelated_technology) { create(:technology, name: "Go") }
   let_it_be(:team_technology) { create(:team_technology, team: team, technology: technology, target_experts: 2) }
-  let_it_be(:current_quarter) { create(:quarter, :current) }
+  let_it_be(:current_assessment_period) { create(:assessment_period, :current) }
   let_it_be(:engineer) { create(:engineer, team: team) }
   let_it_be(:team_lead) { create(:team_lead, team: team) }
   let_it_be(:unit_lead) { create(:unit_lead) }
@@ -60,9 +60,9 @@ RSpec.describe "TeamTechnologies", type: :request do
       end
     end
 
-    context "when no current quarter" do
+    context "when no current assessment_period" do
       before do
-        Quarter.where(is_current: true).update_all(is_current: false)
+        AssessmentPeriod.where(is_current: true).update_all(is_current: false)
         sign_in team_lead, scope: :user
       end
 

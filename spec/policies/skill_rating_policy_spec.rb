@@ -15,15 +15,15 @@ RSpec.describe SkillRatingPolicy, type: :policy do
   # Create test data
   let_it_be(:technology) { create(:technology) }
   let_it_be(:other_technology) { create(:technology) }
-  let_it_be(:quarter) { create(:quarter) }
+  let_it_be(:assessment_period) { create(:assessment_period) }
   let_it_be(:other_team) { create(:team) }
 
   # Create skill ratings for different scenarios
-  let_it_be(:own_rating) { create(:skill_rating, :draft, user: engineer, technology: technology, quarter: quarter) }
-  let_it_be(:team_lead_rating) { create(:skill_rating, user: team_lead, technology: other_technology, quarter: quarter) }
+  let_it_be(:own_rating) { create(:skill_rating, :draft, user: engineer, technology: technology, assessment_period: assessment_period) }
+  let_it_be(:team_lead_rating) { create(:skill_rating, user: team_lead, technology: other_technology, assessment_period: assessment_period) }
   let_it_be(:other_team_user) { create(:engineer, team: other_team) }
-  let_it_be(:other_team_rating) { create(:skill_rating, user: other_team_user, technology: technology, quarter: quarter) }
-  let_it_be(:approved_rating) { create(:skill_rating, :approved, user: admin, technology: technology, quarter: quarter) }
+  let_it_be(:other_team_rating) { create(:skill_rating, user: other_team_user, technology: technology, assessment_period: assessment_period) }
+  let_it_be(:approved_rating) { create(:skill_rating, :approved, user: admin, technology: technology, assessment_period: assessment_period) }
 
   # Context: User is nil (unauthenticated)
   describe "when user is nil" do
@@ -341,7 +341,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
     context "when user has no team assigned" do
       let(:user) { build(:engineer, team: nil) }
-      let(:record) { build(:skill_rating, :draft, user: user, technology: technology, quarter: quarter) }
+      let(:record) { build(:skill_rating, :draft, user: user, technology: technology, assessment_period: assessment_period) }
 
       permissions :show?, :update?, :edit? do
         it "grants access for own rating" do
@@ -358,7 +358,7 @@ RSpec.describe SkillRatingPolicy, type: :policy do
 
     context "when team_lead is accessing team member rating" do
       let(:user) { team_lead }
-      let(:record) { build(:skill_rating, user: build(:engineer, team: team_lead.team), technology: technology, quarter: quarter) }
+      let(:record) { build(:skill_rating, user: build(:engineer, team: team_lead.team), technology: technology, assessment_period: assessment_period) }
 
       permissions :show?, :approve?, :reject? do
         it "grants access" do

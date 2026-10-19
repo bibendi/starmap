@@ -17,10 +17,10 @@ RSpec.describe "MaturityIndexHistory", type: :request do
       before { sign_in admin }
 
       context "with valid team_ids" do
-        let(:quarter) { create(:quarter, status: :active) }
+        let(:assessment_period) { create(:assessment_period, status: :active) }
 
         before do
-          create(:skill_rating, user: create(:user, team: team), technology: technology, quarter: quarter, rating: 2, team: team)
+          create(:skill_rating, user: create(:user, team: team), technology: technology, assessment_period: assessment_period, rating: 2, team: team)
         end
 
         it "returns 200 with history data" do
@@ -30,7 +30,7 @@ RSpec.describe "MaturityIndexHistory", type: :request do
           json = response.parsed_body
           expect(json).to have_key("history")
           expect(json["history"]).to be_an(Array)
-          expect(json["history"].first).to include("quarter_name" => quarter.full_name, "maturity_index" => a_kind_of(Numeric))
+          expect(json["history"].first).to include("period_name" => assessment_period.full_name, "maturity_index" => a_kind_of(Numeric))
         end
       end
 

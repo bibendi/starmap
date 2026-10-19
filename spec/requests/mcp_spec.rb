@@ -55,7 +55,7 @@ RSpec.describe "Mcp", type: :request do
       end
 
       it "calls team_metrics tool" do
-        create(:quarter, :current)
+        create(:assessment_period, :current)
 
         post "/mcp", params: mcp_request(method: "tools/call", id: 3, params: {name: "team_metrics", arguments: {team_name: team.name}}), headers: mcp_headers
 
@@ -83,7 +83,7 @@ RSpec.describe "Mcp", type: :request do
       end
 
       it "authenticates and calls team_metrics for authorized team" do
-        create(:quarter, :current)
+        create(:assessment_period, :current)
 
         post "/mcp", params: mcp_request(method: "tools/call", id: 5, params: {name: "team_metrics", arguments: {team_name: team.name}}), headers: mcp_headers(token: "api-client-token")
 
@@ -119,7 +119,7 @@ RSpec.describe "Mcp", type: :request do
       end
 
       it "still works" do
-        create(:quarter, :current)
+        create(:assessment_period, :current)
 
         post "/mcp", params: mcp_request(method: "tools/call", id: 8, params: {name: "team_metrics", arguments: {team_name: team.name}}), headers: mcp_headers(token: "user-token")
 
