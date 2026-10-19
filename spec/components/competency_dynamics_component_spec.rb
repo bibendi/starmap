@@ -41,7 +41,7 @@ RSpec.describe CompetencyDynamicsComponent, type: :component do
         component = described_class.new(competency_dynamics: {}, team_members: [])
         render_inline(component)
         expect(page).to have_text("Competency Dynamics")
-        expect(page).to have_text("Skill changes compared to previous quarter")
+        expect(page).to have_text("Skill changes compared to previous period")
       end
     end
   end

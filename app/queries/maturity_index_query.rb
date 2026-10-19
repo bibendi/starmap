@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class MaturityIndexQuery
-  def initialize(teams:, quarter: Quarter.current)
+  def initialize(teams:, assessment_period: AssessmentPeriod.current)
     @teams = teams
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def value
-    return 0 unless @quarter
+    return 0 unless @assessment_period
 
-    ratings = SkillRating.visible_for_quarter(@quarter).where(team_id: team_ids, quarter: @quarter)
+    ratings = SkillRating.visible_for_assessment_period(@assessment_period).where(team_id: team_ids, assessment_period: @assessment_period)
     ratings.average(:rating)&.round(1) || 0
   end
 

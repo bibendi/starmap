@@ -5,7 +5,7 @@ ru:
     sidebar:
       sections:
         management: "Управление"
-      quarters: "Кварталы"
+      assessment_periods: "Периоды"
       technologies: "Компетенции"
       units: "Отделы"
       teams: "Команды"
@@ -187,19 +187,28 @@ ru:
         high: "Высокая"
         normal: "Обычная"
         low: "Низкая"
-    quarters:
-      title: "Управление кварталами"
-      new: "Создать квартал"
+    assessment_periods:
+      filter_by_status: "Фильтр по статусу"
+      all_statuses: "Все"
+      confirm_delete: "Удалить период?"
+      kinds:
+        monthly: "Месяц"
+        quarterly: "Квартал"
+        semiannual: "Полугодие"
+        annual: "Год"
+        custom: "Произвольный"
+      title: "Управление периодами"
+      new: "Создать период"
       create: "Создать"
-      created: "Квартал успешно создан"
+      created: "Период успешно создан"
       edit: "Изменить"
       update: "Обновить"
-      updated: "Квартал успешно обновлён"
+      updated: "Период успешно обновлён"
       cancel: "Отмена"
       back: "Назад"
       show:
-        title: "Детали квартала"
-        info: "Информация о квартале"
+        title: "Детали периода"
+        info: "Информация о периоде"
         dates: "Период"
         evaluation: "Период оценки"
         status: "Статус"
@@ -210,21 +219,22 @@ ru:
         approved_ratings: "Утвержденные оценки"
         users_with_ratings: "Сотрудников с оценками"
       actions:
+        title: "Действия"
         activate: "Активировать"
         close: "Закрыть"
         archive: "Архивировать"
       delete: "Удалить"
-      activated: "Квартал активирован"
-      closed: "Квартал закрыт"
-      archived: "Квартал архивирован"
-      destroyed: "Квартал удалён"
+      activated: "Период активирован"
+      closed: "Период закрыт"
+      archived: "Период архивирован"
+      destroyed: "Период удалён"
       errors:
-        cannot_delete_non_draft: "Можно удалять только кварталы в статусе черновика"
-        cannot_edit_non_draft: "Можно редактировать только кварталы в статусе черновика"
-        not_draft: "Квартал должен быть в статусе черновика"
-        active_exists: "Уже существует активный квартал"
-        not_active: "Квартал должен быть в статусе активный"
-        not_closed: "Квартал должен быть в статусе закрыт"
+        cannot_delete_non_draft: "Можно удалять только периоды в статусе черновика"
+        cannot_edit_non_draft: "Можно редактировать только периоды в статусе черновика"
+        not_draft: "Период должен быть в статусе черновика"
+        active_exists: "Уже существует активный период"
+        not_active: "Период должен быть в статусе активный"
+        not_closed: "Период должен быть в статусе закрыт"
 
   teams:
     index:
@@ -266,9 +276,9 @@ ru:
       criticality:
         high: "Высокая"
         normal: "Обычная"
-      no_active_quarter:
-        title: "Нет активного квартала"
-        message: "Пожалуйста, создайте квартал в админке."
+      no_active_assessment_period:
+        title: "Нет активного периода"
+        message: "Пожалуйста, создайте период в админке."
   users:
     show:
       title: "Профиль пользователя"
@@ -367,9 +377,9 @@ ru:
         more_teams: "еще"
     show:
       title: "Дашборд юнита"
-      no_active_quarter:
-        title: "Нет активного квартала"
-        message: "Пожалуйста, создайте квартал в админке."
+      no_active_assessment_period:
+        title: "Нет активного периода"
+        message: "Пожалуйста, создайте период в админке."
       unit_details: "Детали юнита и руководство"
       unit: "Юнит"
       unit_lead: "Юнит‑лид"
@@ -388,7 +398,7 @@ ru:
       retry: "Повторить"
       no_data: "Нет исторических данных"
       close: "Закрыть"
-      axis_quarter: "Квартал"
+      axis_period: "Период"
       axis_coverage: "Coverage Index"
     maturity_index:
       label: "Maturity Index"
@@ -400,7 +410,7 @@ ru:
       retry: "Повторить"
       no_data: "Нет исторических данных"
       close: "Закрыть"
-      axis_quarter: "Квартал"
+      axis_period: "Период"
       axis_maturity: "Maturity Index"
     red_zones_card:
       label: "Red Zones"
@@ -419,7 +429,7 @@ ru:
       no_data: "Риски единоличной экспертизы не обнаружены"
     competency_dynamics:
       title: "Динамика компетенций"
-      description: "Изменение навыков относительно прошлого квартала"
+      description: "Изменение навыков относительно прошлого периода"
       no_data: "Нет данных о динамике компетенций"
     universality_index:
       title: "Индекс универсальности"
@@ -510,9 +520,9 @@ ru:
       rating: "Оценка"
       change: "Изменение"
       no_data: "Нет оценок для этой компетенции"
-      no_active_quarter:
-        title: "Нет активного квартала"
-        message: "Пожалуйста, создайте квартал в админке."
+      no_active_assessment_period:
+        title: "Нет активного периода"
+        message: "Пожалуйста, создайте период в админке."
       legend:
         expert: "Может учить других"
         proficient: "Свободно владеет"
@@ -523,9 +533,12 @@ ru:
     models:
       technology: "Competency"
     attributes:
-      quarter:
+      assessment_period:
+        name: "Название"
+        period_kind: "Тип периода"
+        calendar_year: "Год"
+        calendar_number: "Номер месяца, квартала или полугодия"
         year: "Год"
-        quarter_number: "Номер квартала"
         start_date: "Дата начала"
         end_date: "Дата окончания"
         evaluation_start_date: "Начало периода оценки"
@@ -544,17 +557,17 @@ ru:
           low: "Низкая"
     errors:
       models:
-        quarter:
+        assessment_period:
           attributes:
-            quarter_number:
-              taken: "уже существует для этого года"
             end_date:
               after_start_date: "должна быть позже даты начала"
             evaluation_start_date:
-              after_quarter_end: "должна быть не раньше даты окончания квартала"
+              after_assessment_period_end: "должна быть не раньше даты окончания периода"
             evaluation_end_date:
               after_eval_start: "должна быть позже даты начала оценки"
       messages:
+        overlap: "Периоды оценки не должны пересекаться"
+        invalid_calendar: "Даты должны соответствовать выбранному календарному периоду"
         too_long_evaluation_period: "период оценки не должен превышать 30 дней"
         team_already_has_lead: "В команде уже есть тимлид"
         team_lead_must_be_member: "должен быть участником команды"

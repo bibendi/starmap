@@ -89,13 +89,13 @@
             <div class="sidebar__section">
               <span class="sidebar__section-title"><%= t('admin.sidebar.sections.management') %></span>
             </div>
-            <% if policy([:admin, Quarter]).index? %>
-              <%= link_to admin_quarters_path,
-                  class: "sidebar__link #{current_page?(admin_quarters_path) || request.path.start_with?('/admin/quarters') ? 'sidebar__link--active' : ''}" do %>
+            <% if policy([:admin, AssessmentPeriod]).index? %>
+              <%= link_to admin_assessment_periods_path,
+                  class: "sidebar__link #{current_page?(admin_assessment_periods_path) || request.path.start_with?('/admin/assessment_periods') ? 'sidebar__link--active' : ''}" do %>
                 <svg class="sidebar__link-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <%= t('admin.sidebar.quarters') %>
+                <%= t('admin.sidebar.assessment_periods') %>
               <% end %>
             <% end %>
             <% if policy([:admin, Technology]).index? %>

@@ -34,7 +34,7 @@ en:
     sidebar:
       sections:
         management: "Management"
-      quarters: "Quarters"
+      assessment_periods: "Assessment periods"
       technologies: "Competencies"
       units: "Units"
       teams: "Teams"
@@ -216,19 +216,28 @@ en:
         high: "High"
         normal: "Normal"
         low: "Low"
-    quarters:
-      title: "Quarter Management"
-      new: "Create Quarter"
+    assessment_periods:
+      filter_by_status: "Filter by status"
+      all_statuses: "All"
+      confirm_delete: "Delete period?"
+      kinds:
+        monthly: "Monthly"
+        quarterly: "Quarterly"
+        semiannual: "Semiannual"
+        annual: "Annual"
+        custom: "Custom"
+      title: "Period Management"
+      new: "Create Period"
       create: "Create"
-      created: "Quarter created successfully"
+      created: "Period created successfully"
       edit: "Edit"
       update: "Update"
-      updated: "Quarter updated successfully"
+      updated: "Period updated successfully"
       cancel: "Cancel"
       back: "Back"
       show:
-        title: "Quarter Details"
-        info: "Quarter Information"
+        title: "Period Details"
+        info: "Period Information"
         dates: "Period"
         evaluation: "Evaluation Period"
         status: "Status"
@@ -239,22 +248,23 @@ en:
         approved_ratings: "Approved Ratings"
         users_with_ratings: "Users with Ratings"
       actions:
+        title: "Actions"
         activate: "Activate"
         close: "Close"
         archive: "Archive"
         edit: "Edit"
         delete: "Delete"
-      activated: "Quarter activated"
-      closed: "Quarter closed"
-      archived: "Quarter archived"
-      destroyed: "Quarter deleted"
+      activated: "Period activated"
+      closed: "Period closed"
+      archived: "Period archived"
+      destroyed: "Period deleted"
       errors:
-        cannot_delete_non_draft: "Only draft quarters can be deleted"
-        cannot_edit_non_draft: "Only draft quarters can be edited"
-        not_draft: "Quarter must be in draft status"
-        active_exists: "Active quarter already exists"
-        not_active: "Quarter must be in active status"
-        not_closed: "Quarter must be in closed status"
+        cannot_delete_non_draft: "Only draft periods can be deleted"
+        cannot_edit_non_draft: "Only draft periods can be edited"
+        not_draft: "Period must be in draft status"
+        active_exists: "Active period already exists"
+        not_active: "Period must be in active status"
+        not_closed: "Period must be in closed status"
 
   teams:
     index:
@@ -288,9 +298,9 @@ en:
       criticality:
         high: "High"
         normal: "Normal"
-      no_active_quarter:
-        title: "No active quarter"
-        message: "Please create a quarter in the admin panel."
+      no_active_assessment_period:
+        title: "No active period"
+        message: "Please create a period in the admin panel."
   users:
     show:
       title: "User Dashboard"
@@ -384,9 +394,9 @@ en:
         more_teams: "more"
     show:
       title: "Unit Dashboard"
-      no_active_quarter:
-        title: "No active quarter"
-        message: "Please create a quarter in the admin panel."
+      no_active_assessment_period:
+        title: "No active period"
+        message: "Please create a period in the admin panel."
       unit_details: "Unit details and leadership"
       unit: "Unit"
       unit_lead: "Unit Lead"
@@ -405,7 +415,7 @@ en:
       retry: "Retry"
       no_data: "No historical data available"
       close: "Close"
-      axis_quarter: "Quarter"
+      axis_period: "Period"
       axis_coverage: "Coverage Index"
     maturity_index:
       label: "Maturity Index"
@@ -417,7 +427,7 @@ en:
       retry: "Retry"
       no_data: "No historical data available"
       close: "Close"
-      axis_quarter: "Quarter"
+      axis_period: "Period"
       axis_maturity: "Maturity Index"
     red_zones_card:
       label: "Red Zones"
@@ -436,7 +446,7 @@ en:
       no_data: "No key person risks detected"
     competency_dynamics:
       title: "Competency Dynamics"
-      description: "Skill changes compared to previous quarter"
+      description: "Skill changes compared to previous period"
       no_data: "No competency dynamics data"
     universality_index:
       title: "Universality Index"
@@ -525,9 +535,9 @@ en:
       rating: "Rating"
       change: "Change"
       no_data: "No ratings for this competency"
-      no_active_quarter:
-        title: "No active quarter"
-        message: "Please create a quarter in the admin panel."
+      no_active_assessment_period:
+        title: "No active period"
+        message: "Please create a period in the admin panel."
       legend:
         expert: "Can teach others"
         proficient: "Proficient"
@@ -538,9 +548,12 @@ en:
     models:
       technology: "Competency"
     attributes:
-      quarter:
+      assessment_period:
+        name: "Name"
+        period_kind: "Period type"
+        calendar_year: "Year"
+        calendar_number: "Number within year"
         year: "Year"
-        quarter_number: "Quarter Number"
         start_date: "Start Date"
         end_date: "End Date"
         evaluation_start_date: "Evaluation Start Date"
@@ -559,17 +572,17 @@ en:
           low: "Low"
     errors:
       models:
-        quarter:
+        assessment_period:
           attributes:
-            quarter_number:
-              taken: "already exists for this year"
             end_date:
               after_start_date: "must be after start date"
             evaluation_start_date:
-              after_quarter_end: "must be on or after quarter end date"
+              after_assessment_period_end: "must be on or after period end date"
             evaluation_end_date:
               after_eval_start: "must be after evaluation start date"
       messages:
+        overlap: "Assessment periods must not overlap"
+        invalid_calendar: "Dates must match the selected calendar period"
         too_long_evaluation_period: "Evaluation period must not exceed 30 days"
         team_already_has_lead: "Team already has a team lead"
         team_lead_must_be_member: "must be a member of the team"

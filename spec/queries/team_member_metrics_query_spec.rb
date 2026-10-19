@@ -3,8 +3,8 @@
 require "rails_helper"
 
 RSpec.describe TeamMemberMetricsQuery do
-  let_it_be(:current_quarter) { create(:quarter, status: :active, is_current: true) }
-  let_it_be(:previous_quarter) { create(:quarter, :previous, :closed, relative_to: current_quarter) }
+  let_it_be(:current_assessment_period) { create(:assessment_period, status: :active, is_current: true) }
+  let_it_be(:previous_assessment_period) { create(:assessment_period, :previous, :closed, relative_to: current_assessment_period) }
   let_it_be(:team) { create(:team) }
   let_it_be(:user1) { create(:user, team: team) }
   let_it_be(:user2) { create(:user, team: team) }
@@ -21,14 +21,14 @@ RSpec.describe TeamMemberMetricsQuery do
   describe "#metrics" do
     context "with skill ratings" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user1, technology: technology2, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology3, quarter: current_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: user1, technology: technology2, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology3, assessment_period: current_assessment_period, rating: 1, team: team)
+        create(:skill_rating, user: user2, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
       end
 
       it "calculates competence level totals" do
-        metrics = described_class.new(team: team, user_ids: [user1.id, user2.id], quarter: current_quarter).metrics
+        metrics = described_class.new(team: team, user_ids: [user1.id, user2.id], assessment_period: current_assessment_period).metrics
         expect(metrics[user1.id][:competence_level][:total]).to eq(6)
         expect(metrics[user1.id][:competence_level][:high]).to eq(3)
         expect(metrics[user1.id][:competence_level][:normal]).to eq(2)
@@ -36,7 +36,7 @@ RSpec.describe TeamMemberMetricsQuery do
       end
 
       it "calculates universality counts" do
-        metrics = described_class.new(team: team, user_ids: [user1.id, user2.id], quarter: current_quarter).metrics
+        metrics = described_class.new(team: team, user_ids: [user1.id, user2.id], assessment_period: current_assessment_period).metrics
         expect(metrics[user1.id][:universality][:total]).to eq(2)
         expect(metrics[user1.id][:universality][:high]).to eq(1)
         expect(metrics[user1.id][:universality][:normal]).to eq(1)
@@ -44,21 +44,21 @@ RSpec.describe TeamMemberMetricsQuery do
       end
 
       it "calculates expertise concentration for unique experts" do
-        metrics = described_class.new(team: team, user_ids: [user1.id, user2.id], quarter: current_quarter).metrics
+        metrics = described_class.new(team: team, user_ids: [user1.id, user2.id], assessment_period: current_assessment_period).metrics
         expect(metrics[user2.id][:expertise_concentration][:total]).to eq(0)
       end
     end
 
-    context "with previous quarter data" do
+    context "with previous assessment_period data" do
       before do
-        create(:skill_rating, user: user1, technology: technology1, quarter: previous_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user1, technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user1, technology: technology2, quarter: previous_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user1, technology: technology2, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: previous_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user1, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: user1, technology: technology2, assessment_period: previous_assessment_period, rating: 1, team: team)
+        create(:skill_rating, user: user1, technology: technology2, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "calculates changes in metrics" do
-        metrics = described_class.new(team: team, user_ids: [user1.id], quarter: current_quarter).metrics
+        metrics = described_class.new(team: team, user_ids: [user1.id], assessment_period: current_assessment_period).metrics
         expect(metrics[user1.id][:competence_level][:total_change]).to eq(2)
         expect(metrics[user1.id][:competence_level][:high_change]).to eq(1)
         expect(metrics[user1.id][:competence_level][:normal_change]).to eq(1)
@@ -68,14 +68,14 @@ RSpec.describe TeamMemberMetricsQuery do
 
     context "with empty user ids" do
       it "returns empty hash" do
-        metrics = described_class.new(team: team, user_ids: [], quarter: current_quarter).metrics
+        metrics = described_class.new(team: team, user_ids: [], assessment_period: current_assessment_period).metrics
         expect(metrics).to be_empty
       end
     end
 
-    context "without current quarter" do
+    context "without current assessment_period" do
       it "returns empty hash" do
-        metrics = described_class.new(team: team, user_ids: [user1.id], quarter: nil).metrics
+        metrics = described_class.new(team: team, user_ids: [user1.id], assessment_period: nil).metrics
         expect(metrics).to be_empty
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe TeamMemberMetricsQuery do
           create(:skill_rating,
             user: user,
             technology: tech,
-            quarter: current_quarter,
+            assessment_period: current_assessment_period,
             rating: rand(1..3),
             team: team)
         end
@@ -111,7 +111,7 @@ RSpec.describe TeamMemberMetricsQuery do
 
     specify "#metrics performs constant number of queries" do
       user_ids = team.user_ids
-      expect { described_class.new(team: team, user_ids: user_ids, quarter: current_quarter).metrics }.to perform_constant_number_of_queries
+      expect { described_class.new(team: team, user_ids: user_ids, assessment_period: current_assessment_period).metrics }.to perform_constant_number_of_queries
     end
   end
 end

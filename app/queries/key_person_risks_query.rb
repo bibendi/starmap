@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 class KeyPersonRisksQuery
-  def initialize(teams:, quarter: Quarter.current)
+  def initialize(teams:, assessment_period: AssessmentPeriod.current)
     @teams = teams
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def count
-    return 0 unless @quarter
+    return 0 unless @assessment_period
 
     SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, team_id: team_ids)
+      .where(assessment_period: @assessment_period, team_id: team_ids)
       .group(:technology_id)
       .having("COUNT(DISTINCT user_id) = 1")
       .count
@@ -20,12 +20,12 @@ class KeyPersonRisksQuery
   end
 
   def details
-    return [] unless @quarter
+    return [] unless @assessment_period
 
     tech_ids_with_single_expert = SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, team_id: team_ids)
+      .where(assessment_period: @assessment_period, team_id: team_ids)
       .group(:technology_id)
       .having("COUNT(DISTINCT user_id) = 1")
       .pluck(:technology_id)
@@ -34,9 +34,9 @@ class KeyPersonRisksQuery
 
     SkillRating
       .preload(:technology, :user, :team)
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, team_id: team_ids, technology_id: tech_ids_with_single_expert)
+      .where(assessment_period: @assessment_period, team_id: team_ids, technology_id: tech_ids_with_single_expert)
       .map do |rating|
         {
           technology: rating.technology,

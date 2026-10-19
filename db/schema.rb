@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_25_173044) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_18_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "action_plans", force: :cascade do |t|
     t.boolean "active", default: true, null: false
+    t.bigint "assessment_period_id"
     t.bigint "assigned_to_id"
     t.date "completed_at"
     t.text "completion_notes"
@@ -25,18 +26,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_173044) do
     t.date "due_date"
     t.string "priority", default: "medium", null: false
     t.integer "progress_percentage", default: 0
-    t.bigint "quarter_id"
     t.string "status", default: "active", null: false
     t.bigint "technology_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["active"], name: "index_action_plans_on_active"
+    t.index ["assessment_period_id"], name: "index_action_plans_on_assessment_period_id"
     t.index ["assigned_to_id"], name: "index_action_plans_on_assigned_to_id"
     t.index ["created_by_id"], name: "index_action_plans_on_created_by_id"
     t.index ["due_date"], name: "index_action_plans_on_due_date"
     t.index ["priority"], name: "index_action_plans_on_priority"
-    t.index ["quarter_id"], name: "index_action_plans_on_quarter_id"
     t.index ["status"], name: "index_action_plans_on_status"
     t.index ["technology_id"], name: "index_action_plans_on_technology_id"
     t.index ["user_id"], name: "index_action_plans_on_user_id"
@@ -55,6 +55,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_173044) do
     t.index ["team_ids"], name: "index_api_clients_on_team_ids", using: :gin
   end
 
+  create_table "assessment_periods", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id"
+    t.text "description"
+    t.date "end_date", null: false
+    t.date "evaluation_end_date", null: false
+    t.date "evaluation_start_date", null: false
+    t.boolean "is_current", default: false, null: false
+    t.string "name", null: false
+    t.string "period_kind", default: "quarterly", null: false
+    t.date "start_date", null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_assessment_periods_on_created_by_id"
+    t.index ["end_date"], name: "index_assessment_periods_on_end_date"
+    t.index ["is_current"], name: "index_assessment_periods_on_is_current"
+    t.index ["is_current"], name: "one_current_assessment_period", unique: true, where: "is_current"
+    t.index ["start_date"], name: "index_assessment_periods_on_start_date"
+    t.index ["status"], name: "index_assessment_periods_on_status"
+    t.index ["status"], name: "one_active_assessment_period", unique: true, where: "((status)::text = 'active'::text)"
+    t.check_constraint "end_date > start_date AND evaluation_start_date >= end_date AND evaluation_end_date > evaluation_start_date", name: "assessment_period_dates"
+    t.check_constraint "period_kind::text = ANY (ARRAY['monthly'::character varying, 'quarterly'::character varying, 'semiannual'::character varying, 'annual'::character varying, 'custom'::character varying]::text[])", name: "assessment_period_kind"
+    t.exclusion_constraint "daterange(start_date, end_date, '[]'::text) WITH &&", using: :gist, name: "assessment_periods_no_overlap"
+  end
+
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -62,36 +87,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_173044) do
     t.index ["name"], name: "index_categories_on_name", unique: true
   end
 
-  create_table "quarters", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "created_by_id"
-    t.text "description"
-    t.date "end_date", null: false
-    t.date "evaluation_end_date"
-    t.date "evaluation_start_date"
-    t.boolean "is_current", default: false, null: false
-    t.string "name", null: false
-    t.integer "quarter_number", null: false
-    t.date "start_date", null: false
-    t.string "status", default: "active", null: false
-    t.datetime "updated_at", null: false
-    t.integer "year", null: false
-    t.index ["created_by_id"], name: "index_quarters_on_created_by_id"
-    t.index ["end_date"], name: "index_quarters_on_end_date"
-    t.index ["is_current"], name: "index_quarters_on_is_current"
-    t.index ["name", "year"], name: "index_quarters_on_name_and_year", unique: true
-    t.index ["start_date"], name: "index_quarters_on_start_date"
-    t.index ["status"], name: "index_quarters_on_status"
-    t.index ["year", "quarter_number"], name: "index_quarters_on_year_and_quarter_number", unique: true
-  end
-
   create_table "skill_ratings", force: :cascade do |t|
     t.datetime "approved_at"
     t.bigint "approved_by_id"
+    t.bigint "assessment_period_id", null: false
     t.text "comment"
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
-    t.bigint "quarter_id", null: false
     t.integer "rating", null: false
     t.string "status", default: "draft", null: false
     t.bigint "team_id", null: false
@@ -100,15 +102,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_173044) do
     t.bigint "updated_by_id"
     t.bigint "user_id", null: false
     t.index ["approved_by_id"], name: "index_skill_ratings_on_approved_by_id"
+    t.index ["assessment_period_id"], name: "index_skill_ratings_on_assessment_period_id"
     t.index ["created_by_id"], name: "index_skill_ratings_on_created_by_id"
-    t.index ["quarter_id"], name: "index_skill_ratings_on_quarter_id"
     t.index ["rating"], name: "index_skill_ratings_on_rating"
     t.index ["status"], name: "index_skill_ratings_on_status"
-    t.index ["team_id", "quarter_id"], name: "index_skill_ratings_on_team_id_and_quarter_id"
+    t.index ["team_id", "assessment_period_id"], name: "index_skill_ratings_on_team_id_and_assessment_period_id"
     t.index ["team_id"], name: "index_skill_ratings_on_team_id"
     t.index ["technology_id"], name: "index_skill_ratings_on_technology_id"
     t.index ["updated_by_id"], name: "index_skill_ratings_on_updated_by_id"
-    t.index ["user_id", "technology_id", "quarter_id"], name: "idx_on_user_id_technology_id_quarter_id_2dd6e152f0", unique: true
+    t.index ["user_id", "technology_id", "assessment_period_id"], name: "idx_on_user_id_technology_id_assessment_period_id_1a0c3ff8a5", unique: true
     t.index ["user_id"], name: "index_skill_ratings_on_user_id"
   end
 
@@ -210,13 +212,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_173044) do
     t.index ["team_id"], name: "index_users_on_team_id"
   end
 
-  add_foreign_key "action_plans", "quarters"
+  add_foreign_key "action_plans", "assessment_periods"
   add_foreign_key "action_plans", "technologies"
   add_foreign_key "action_plans", "users"
   add_foreign_key "action_plans", "users", column: "assigned_to_id"
   add_foreign_key "action_plans", "users", column: "created_by_id"
-  add_foreign_key "quarters", "users", column: "created_by_id"
-  add_foreign_key "skill_ratings", "quarters"
+  add_foreign_key "assessment_periods", "users", column: "created_by_id"
+  add_foreign_key "skill_ratings", "assessment_periods"
   add_foreign_key "skill_ratings", "teams"
   add_foreign_key "skill_ratings", "technologies"
   add_foreign_key "skill_ratings", "users"

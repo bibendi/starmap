@@ -7,7 +7,7 @@ class TeamMetricsTool < McpBaseTool
   input_schema(
     properties: {
       team_name: {type: "string", description: "The name of the team to query metrics for"},
-      quarter: {type: "string", description: "Quarter identifier in format 'YYYY QN' (e.g. '2026 Q1'). Defaults to the current active quarter."}
+      period_id: {type: "integer", description: "Assessment period ID. Defaults to the current assessment period."}
     },
     required: ["team_name"]
   )
@@ -19,41 +19,40 @@ class TeamMetricsTool < McpBaseTool
     open_world_hint: false
   )
 
-  def self.execute(team_name:, server_context:, quarter: nil)
+  def self.execute(team_name:, server_context:, period_id: nil)
     current_identity = server_context[:current_identity]
 
     team = Team.find_by(name: team_name)
     not_found!("Team '#{team_name}' not found") unless team
     authorize current_identity, team
 
-    resolved_quarter = resolve_quarter(quarter)
-    unless resolved_quarter
-      message = quarter ? "Quarter '#{quarter}' not found" : "No active quarter found. Specify a quarter parameter."
+    resolved_assessment_period = resolve_assessment_period(period_id)
+    unless resolved_assessment_period
+      message = period_id ? "Assessment period '#{period_id}' not found" : "No current assessment period found. Specify period_id."
       not_found!(message)
     end
 
-    text_response calculate_metrics(team, resolved_quarter).to_json
+    text_response calculate_metrics(team, resolved_assessment_period).to_json
   end
 
-  def self.resolve_quarter(quarter_param)
-    return Quarter.current if quarter_param.blank?
+  def self.resolve_assessment_period(period_id)
+    return AssessmentPeriod.current if period_id.nil?
+    return unless period_id.is_a?(Integer) && period_id.positive?
 
-    year, q = quarter_param.match(/^(\d{4})\s+Q(\d)$/)&.captures
-    return nil unless year && q
-
-    Quarter.find_by(year: year.to_i, quarter_number: q.to_i)
+    AssessmentPeriod.find_by(id: period_id)
   end
-  private_class_method :resolve_quarter
+  private_class_method :resolve_assessment_period
 
-  def self.calculate_metrics(team, quarter)
+  def self.calculate_metrics(team, assessment_period)
     teams = [team]
     {
       team: team.name,
-      quarter: quarter.full_name,
-      coverage_index: CoverageIndexQuery.new(teams:, quarter:).percentage,
-      maturity_index: MaturityIndexQuery.new(teams:, quarter:).value,
-      red_zones_count: RedZonesQuery.new(teams:, quarter:).count,
-      key_person_risks_count: KeyPersonRisksQuery.new(teams:, quarter:).count
+      period_id: assessment_period.id,
+      period_name: assessment_period.full_name,
+      coverage_index: CoverageIndexQuery.new(teams:, assessment_period:).percentage,
+      maturity_index: MaturityIndexQuery.new(teams:, assessment_period:).value,
+      red_zones_count: RedZonesQuery.new(teams:, assessment_period:).count,
+      key_person_risks_count: KeyPersonRisksQuery.new(teams:, assessment_period:).count
     }
   end
   private_class_method :calculate_metrics

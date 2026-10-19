@@ -11,13 +11,13 @@ RSpec.describe "Navigation menu", type: :request do
     context "when user is admin" do
       before do
         sign_in admin, scope: :user
-        get admin_quarters_path
+        get admin_assessment_periods_path
       end
 
       it "displays sidebar with admin navigation" do
         expect(response.body).to include("sidebar")
         expect(response.body).to include(I18n.t("admin.sidebar.sections.management"))
-        expect(response.body).to include(admin_quarters_path)
+        expect(response.body).to include(admin_assessment_periods_path)
       end
     end
 
@@ -28,7 +28,7 @@ RSpec.describe "Navigation menu", type: :request do
       end
 
       it "displays admin link in navigation" do
-        expect(response.body).to include(admin_quarters_path)
+        expect(response.body).to include(admin_assessment_periods_path)
         expect(response.body).not_to include(admin_technologies_path)
         expect(response.body).not_to include(admin_units_path)
         expect(response.body).not_to include(admin_users_path)
@@ -42,7 +42,7 @@ RSpec.describe "Navigation menu", type: :request do
       end
 
       it "does not display admin sidebar" do
-        expect(response.body).not_to include(admin_quarters_path)
+        expect(response.body).not_to include(admin_assessment_periods_path)
         expect(response.body).not_to include(admin_technologies_path)
         expect(response.body).not_to include(admin_units_path)
         expect(response.body).not_to include(admin_users_path)
@@ -52,7 +52,7 @@ RSpec.describe "Navigation menu", type: :request do
     context "when user is not signed in" do
       it "does not display admin sidebar" do
         get new_user_session_path
-        expect(response.body).not_to include(admin_quarters_path)
+        expect(response.body).not_to include(admin_assessment_periods_path)
         expect(response.body).not_to include(admin_technologies_path)
         expect(response.body).not_to include(admin_units_path)
         expect(response.body).not_to include(admin_users_path)

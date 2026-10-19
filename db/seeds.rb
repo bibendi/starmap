@@ -171,7 +171,7 @@ team_settings.each do |team, settings|
   end
 end
 
-Rails.logger.debug "Creating quarters..."
+Rails.logger.debug "Creating assessment_periods..."
 
 now = Date.current
 current_q_num = ((now.month - 1) / 3) + 1
@@ -199,32 +199,32 @@ prev_end = Date.new(prev_year, quarter_end_month.call(prev_q_num), -1)
 prevprev_start = Date.new(prevprev_year, quarter_start_month.call(prevprev_q_num), 1)
 prevprev_end = Date.new(prevprev_year, quarter_end_month.call(prevprev_q_num), -1)
 
-active_quarter = Quarter.find_or_create_by!(
-  year: prev_year,
-  quarter_number: prev_q_num
-) do |quarter|
-  quarter.name = "#{prev_year} Q#{prev_q_num}"
-  quarter.start_date = prev_start
-  quarter.end_date = prev_end
-  quarter.status = "active"
-  quarter.description = "Quarter #{prev_q_num} #{prev_year}"
-  quarter.is_current = true
-  quarter.evaluation_start_date = prev_end
-  quarter.evaluation_end_date = prev_end + 90.days
+active_assessment_period = AssessmentPeriod.find_or_create_by!(
+  start_date: prev_start,
+  end_date: prev_end
+) do |period|
+  period.name = "#{prev_year} Q#{prev_q_num}"
+  period.start_date = prev_start
+  period.end_date = prev_end
+  period.status = "active"
+  period.description = "AssessmentPeriod #{prev_q_num} #{prev_year}"
+  period.is_current = true
+  period.evaluation_start_date = prev_end
+  period.evaluation_end_date = prev_end + 90.days
 end
 
-previous_quarter = Quarter.find_or_create_by!(
-  year: prevprev_year,
-  quarter_number: prevprev_q_num
-) do |quarter|
-  quarter.name = "#{prevprev_year} Q#{prevprev_q_num}"
-  quarter.start_date = prevprev_start
-  quarter.end_date = prevprev_end
-  quarter.status = "closed"
-  quarter.description = "Quarter #{prevprev_q_num} #{prevprev_year}"
-  quarter.is_current = false
-  quarter.evaluation_start_date = prevprev_end
-  quarter.evaluation_end_date = prevprev_end + 14.days
+previous_assessment_period = AssessmentPeriod.find_or_create_by!(
+  start_date: prevprev_start,
+  end_date: prevprev_end
+) do |period|
+  period.name = "#{prevprev_year} Q#{prevprev_q_num}"
+  period.start_date = prevprev_start
+  period.end_date = prevprev_end
+  period.status = "closed"
+  period.description = "AssessmentPeriod #{prevprev_q_num} #{prevprev_year}"
+  period.is_current = false
+  period.evaluation_start_date = prevprev_end
+  period.evaluation_end_date = prevprev_end + 14.days
 end
 
 Rails.logger.debug "Creating test users..."
@@ -432,7 +432,7 @@ end
 
 Rails.logger.debug "Creating sample skill ratings..."
 
-# Create sample skill ratings for current quarter
+# Create sample skill ratings for current period
 
 # Define skill levels for each user (0-3 scale)
 # Admin and unit lead are excluded as they don't have team_id
@@ -518,7 +518,7 @@ teamlead_skills.each do |user_id, skills|
     SkillRating.find_or_create_by!(
       user_id: user_id,
       technology_id: tech_id,
-      quarter_id: active_quarter.id
+      assessment_period_id: active_assessment_period.id
     ) do |rating|
       rating.rating = rating_level
       rating.status = "approved"
@@ -536,7 +536,7 @@ engineer_skills.each do |email, skills|
     SkillRating.find_or_create_by!(
       user_id: user.id,
       technology_id: tech_id,
-      quarter_id: active_quarter.id
+      assessment_period_id: active_assessment_period.id
     ) do |rating|
       rating.team_id = user.team_id
       rating.rating = rating_level
@@ -547,8 +547,8 @@ engineer_skills.each do |email, skills|
   end
 end
 
-# Create skill ratings for previous quarter (Q3) to show dynamics
-Rails.logger.debug "Creating previous quarter skill ratings for dynamics..."
+# Create skill ratings for previous period (Q3) to show dynamics
+Rails.logger.debug "Creating previous period skill ratings for dynamics..."
 
 previous_teamlead_skills = {
   backend_team_lead.id => {
@@ -632,7 +632,7 @@ previous_teamlead_skills.each do |user_id, skills|
     SkillRating.find_or_create_by!(
       user_id: user_id,
       technology_id: tech_id,
-      quarter_id: previous_quarter.id
+      assessment_period_id: previous_assessment_period.id
     ) do |rating|
       rating.rating = rating_level
       rating.status = "approved"
@@ -652,7 +652,7 @@ previous_engineer_skills.each do |email, skills|
     SkillRating.find_or_create_by!(
       user_id: user.id,
       technology_id: tech_id,
-      quarter_id: previous_quarter.id
+      assessment_period_id: previous_assessment_period.id
     ) do |rating|
       rating.team_id = user.team_id
       rating.rating = rating_level

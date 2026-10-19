@@ -18,29 +18,29 @@ class TeamsController < ApplicationController
       .sort_by(&:name)
     @technology_counts = technology_counts_by_criticality
 
-    red_zones_query = RedZonesQuery.new(teams: [@team], quarter: @current_quarter)
+    red_zones_query = RedZonesQuery.new(teams: [@team], assessment_period: @current_assessment_period)
     @red_zones_count = red_zones_query.count
     @red_zones_data = red_zones_query.details
 
-    @coverage_index = CoverageIndexQuery.new(teams: [@team], quarter: @current_quarter).percentage
-    @maturity_index = MaturityIndexQuery.new(teams: [@team], quarter: @current_quarter).value
+    @coverage_index = CoverageIndexQuery.new(teams: [@team], assessment_period: @current_assessment_period).percentage
+    @maturity_index = MaturityIndexQuery.new(teams: [@team], assessment_period: @current_assessment_period).value
 
-    key_person_risks_query = KeyPersonRisksQuery.new(teams: [@team], quarter: @current_quarter)
+    key_person_risks_query = KeyPersonRisksQuery.new(teams: [@team], assessment_period: @current_assessment_period)
     @key_person_risks_count = key_person_risks_query.count
     @key_person_risks_data = key_person_risks_query.details
 
     @competency_dynamics = CompetencyDynamicsQuery.new(
-      team: @team, user_ids: @team_members.map(&:id), quarter: @current_quarter
+      team: @team, user_ids: @team_members.map(&:id), assessment_period: @current_assessment_period
     ).data
 
-    @universality_index = UniversalityIndexQuery.new(team: @team, quarter: @current_quarter).data
+    @universality_index = UniversalityIndexQuery.new(team: @team, assessment_period: @current_assessment_period).data
 
     @team_member_metrics = TeamMemberMetricsQuery.new(
-      team: @team, user_ids: @team_members.map(&:id), quarter: @current_quarter
+      team: @team, user_ids: @team_members.map(&:id), assessment_period: @current_assessment_period
     ).metrics
 
     skill_matrix_query = TeamSkillMatrixQuery.new(
-      team: @team, technologies: @technologies, user_ids: @team_members.map(&:id), quarter: @current_quarter
+      team: @team, technologies: @technologies, user_ids: @team_members.map(&:id), assessment_period: @current_assessment_period
     )
     @bus_factor = skill_matrix_query.bus_factor
     @skill_matrix = skill_matrix_query.skill_matrix
@@ -62,7 +62,7 @@ class TeamsController < ApplicationController
   end
 
   def set_team_context
-    @current_quarter = Quarter.current
+    @current_assessment_period = AssessmentPeriod.current
     @team_members = sorted_team_members
   end
 

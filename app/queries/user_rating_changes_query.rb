@@ -1,28 +1,28 @@
 # frozen_string_literal: true
 
 class UserRatingChangesQuery
-  def initialize(user:, quarter:)
+  def initialize(user:, assessment_period:)
     @user = user
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def changes_by_technology
-    return {} unless @quarter
+    return {} unless @assessment_period
 
-    previous_quarter = @quarter.previous_quarter
-    return {} unless previous_quarter
+    previous_assessment_period = @assessment_period.previous_assessment_period
+    return {} unless previous_assessment_period
 
     previous_ratings = SkillRating
-      .visible_for_quarter(previous_quarter)
+      .visible_for_assessment_period(previous_assessment_period)
       .by_user(@user)
-      .by_quarter(previous_quarter)
+      .by_assessment_period(previous_assessment_period)
       .pluck(:technology_id, :rating)
       .to_h
 
     current_ratings = SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .by_user(@user)
-      .by_quarter(@quarter)
+      .by_assessment_period(@assessment_period)
       .pluck(:technology_id, :rating)
       .to_h
 

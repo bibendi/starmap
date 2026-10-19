@@ -4,9 +4,9 @@
        <div class="page-header__container">
          <div class="page-header__content">
            <h1 class="page-title"><%= t('units.show.title') %></h1>
-           <% if @current_quarter %>
+           <% if @current_assessment_period %>
              <span class="badge badge--primary">
-               <%= @current_quarter.name %>
+               <%= @current_assessment_period.name %>
              </span>
            <% end %>
          </div>
@@ -14,7 +14,7 @@
      </div>
 
       <main class="page-main">
-        <% if @current_quarter %>
+        <% if @current_assessment_period %>
           <div class="card mb-8">
              <div class="card__body">
                <div class="flex items-center justify-between gap-8">
@@ -69,7 +69,7 @@
              </div>
              <div class="alert__content">
                 <p class="alert__text alert__text--warning">
-                  <%= t('units.show.no_active_quarter.message') %>
+                  <%= t('units.show.no_active_assessment_period.message') %>
                 </p>
              </div>
            </div>

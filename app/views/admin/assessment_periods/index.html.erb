@@ -1,0 +1,81 @@
+<div class="page-header">
+  <div class="page-header__container">
+    <div class="page-header__content">
+      <h1 class="page-title"><%= t("admin.assessment_periods.title") %></h1>
+      <% if policy([:admin, AssessmentPeriod]).new? %>
+        <%= link_to t("admin.assessment_periods.new"), new_admin_assessment_period_path, class: "btn btn--primary" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<main class="page-main">
+  <div class="card">
+    <div class="card__body">
+      <%= form_tag admin_assessment_periods_path, method: :get, class: "mb-6" do %>
+        <div class="field field--inline">
+          <%= label_tag :status, t("admin.assessment_periods.filter_by_status", default: "Фильтр по статусу"), class: "label" %>
+          <%= select_tag :status,
+              options_for_select([[t("admin.assessment_periods.all_statuses", default: "Все"), ""]] + AssessmentPeriod.statuses.keys.map { |s| [t("activerecord.attributes.assessment_period.statuses.#{s}", default: s.humanize), s] }, params[:status]),
+              class: "input",
+              onchange: "this.form.submit()" %>
+        </div>
+      <% end %>
+
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="table__header-cell"><%= t("activerecord.attributes.assessment_period.name") %></th>
+              <th class="table__header-cell"><%= t("admin.assessment_periods.show.status") %></th>
+              <th class="table__header-cell"><%= t("admin.assessment_periods.show.dates") %></th>
+              <th class="table__header-cell"><%= t("admin.assessment_periods.actions.title", default: "Действия") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @assessment_periods.each do |assessment_period| %>
+              <tr>
+                <td class="table__cell">
+                  <%= link_to assessment_period.name, admin_assessment_period_path(assessment_period), class: "link" %>
+                </td>
+                <td class="table__cell">
+                  <% badge_class = case assessment_period.status
+                    when 'active' then 'badge--success'
+                    when 'closed' then 'badge--warning'
+                    when 'archived' then 'badge--danger'
+                    else 'badge--secondary'
+                  end %>
+                  <span class="badge <%= badge_class %>">
+                    <%= t("activerecord.attributes.assessment_period.statuses.#{assessment_period.status}", default: assessment_period.status) %>
+                  </span>
+                </td>
+                <td class="table__cell"><%= l(assessment_period.start_date, format: :short) %> - <%= l(assessment_period.end_date, format: :short) %></td>
+                <td class="table__cell">
+                  <div class="flex items-center gap-2">
+                    <% if assessment_period.draft? && policy([:admin, assessment_period]).activate? %>
+                      <%= button_to t("admin.assessment_periods.actions.activate"), activate_admin_assessment_period_path(assessment_period), method: :post, class: "btn btn--small btn--primary" %>
+                    <% end %>
+
+                    <% if assessment_period.active? && policy([:admin, assessment_period]).close? %>
+                      <%= button_to t("admin.assessment_periods.actions.close"), close_admin_assessment_period_path(assessment_period), method: :post, class: "btn btn--small btn--warning" %>
+                    <% end %>
+
+                    <% if assessment_period.closed? && policy([:admin, assessment_period]).archive? %>
+                      <%= button_to t("admin.assessment_periods.actions.archive"), archive_admin_assessment_period_path(assessment_period), method: :post, class: "btn btn--small btn--danger" %>
+                    <% end %>
+
+                    <% if assessment_period.draft? && policy([:admin, assessment_period]).destroy? %>
+                      <%= button_to t("admin.assessment_periods.actions.delete"), admin_assessment_period_path(assessment_period), method: :delete, data: {confirm: t("admin.assessment_periods.confirm_delete", default: "Удалить период?")}, class: "btn btn--small btn--danger" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= paginate @assessment_periods %>
+    </div>
+  </div>
+</main>

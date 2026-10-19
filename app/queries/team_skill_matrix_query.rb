@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
 class TeamSkillMatrixQuery
-  def initialize(team:, technologies:, user_ids:, quarter: Quarter.current)
+  def initialize(team:, technologies:, user_ids:, assessment_period: AssessmentPeriod.current)
     @team = team
     @technologies = technologies
     @user_ids = user_ids
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def bus_factor
-    return {} if @quarter.nil?
+    return {} if @assessment_period.nil?
 
     team_technologies_by_id = @team.team_technologies.active.index_by(&:technology_id)
-    expert_counts = expert_counts_by_technology_and_quarter
-    previous_quarter = @quarter.previous_quarter
+    expert_counts = expert_counts_by_technology_and_assessment_period
+    previous_assessment_period = @assessment_period.previous_assessment_period
 
     @technologies.each_with_object({}) do |tech, bus_factors|
       team_tech = team_technologies_by_id[tech.id]
-      expert_count = expert_counts.dig(tech.id, @quarter.id) || 0
+      expert_count = expert_counts.dig(tech.id, @assessment_period.id) || 0
       target_experts = team_tech&.target_experts || 0
 
       risk_level = if expert_count == 0
@@ -35,8 +35,8 @@ class TeamSkillMatrixQuery
         criticality: team_tech&.criticality || "normal"
       }
 
-      if previous_quarter
-        previous_expert_count = expert_counts.dig(tech.id, previous_quarter.id) || 0
+      if previous_assessment_period
+        previous_expert_count = expert_counts.dig(tech.id, previous_assessment_period.id) || 0
         bus_factor_data[:previous_count] = previous_expert_count
         bus_factor_data[:change] = expert_count - previous_expert_count
       end
@@ -46,12 +46,12 @@ class TeamSkillMatrixQuery
   end
 
   def raw_ratings
-    return {} if @quarter.nil?
+    return {} if @assessment_period.nil?
 
     SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .where(
-        quarter: @quarter,
+        assessment_period: @assessment_period,
         team_id: @team.id,
         technology_id: @technologies.map(&:id),
         user_id: @user_ids
@@ -64,7 +64,7 @@ class TeamSkillMatrixQuery
   end
 
   def skill_matrix
-    return {} if @quarter.nil?
+    return {} if @assessment_period.nil?
 
     ratings = raw_ratings
 
@@ -81,31 +81,31 @@ class TeamSkillMatrixQuery
   end
 
   def rating_dynamics
-    return {} if @quarter.nil?
+    return {} if @assessment_period.nil?
 
-    previous_quarter = @quarter.previous_quarter
-    return {} unless previous_quarter
+    previous_assessment_period = @assessment_period.previous_assessment_period
+    return {} unless previous_assessment_period
 
     ratings_by_tech_user = SkillRating
-      .visible_for_quarters([@quarter, previous_quarter])
+      .visible_for_assessment_periods([@assessment_period, previous_assessment_period])
       .where(
-        quarter: [@quarter, previous_quarter],
+        assessment_period: [@assessment_period, previous_assessment_period],
         team_id: @team.id,
         technology_id: @technologies.map(&:id),
         user_id: @user_ids
       )
-      .pluck(:technology_id, :user_id, :quarter_id, :rating)
-      .each_with_object({}) do |(tech_id, user_id, quarter_id, rating), hash|
+      .pluck(:technology_id, :user_id, :assessment_period_id, :rating)
+      .each_with_object({}) do |(tech_id, user_id, assessment_period_id, rating), hash|
         hash[tech_id] ||= {}
         hash[tech_id][user_id] ||= {}
-        hash[tech_id][user_id][quarter_id] = rating
+        hash[tech_id][user_id][assessment_period_id] = rating
       end
 
     dynamics = {}
     @technologies.each do |tech|
       @user_ids.each do |user_id|
-        current_rating = ratings_by_tech_user.dig(tech.id, user_id, @quarter.id) || 0
-        previous_rating = ratings_by_tech_user.dig(tech.id, user_id, previous_quarter.id) || 0
+        current_rating = ratings_by_tech_user.dig(tech.id, user_id, @assessment_period.id) || 0
+        previous_rating = ratings_by_tech_user.dig(tech.id, user_id, previous_assessment_period.id) || 0
 
         change = current_rating - previous_rating
         next if change == 0
@@ -119,23 +119,23 @@ class TeamSkillMatrixQuery
 
   private
 
-  def expert_counts_by_technology_and_quarter
-    quarters = [@quarter]
-    quarters << @quarter.previous_quarter if @quarter.previous_quarter
+  def expert_counts_by_technology_and_assessment_period
+    assessment_periods = [@assessment_period]
+    assessment_periods << @assessment_period.previous_assessment_period if @assessment_period.previous_assessment_period
 
     SkillRating
-      .visible_for_quarters(quarters)
+      .visible_for_assessment_periods(assessment_periods)
       .expert_ratings
       .where(
-        quarter: quarters,
+        assessment_period: assessment_periods,
         team_id: @team.id,
         technology_id: @technologies.map(&:id)
       )
-      .group(:technology_id, :quarter_id)
+      .group(:technology_id, :assessment_period_id)
       .count
-      .each_with_object({}) { |((tech_id, quarter_id), count), hash|
+      .each_with_object({}) { |((tech_id, assessment_period_id), count), hash|
         hash[tech_id] ||= {}
-        hash[tech_id][quarter_id] = count
+        hash[tech_id][assessment_period_id] = count
       }
   end
 end

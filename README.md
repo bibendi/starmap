@@ -135,16 +135,18 @@ Every rating answers the question: *"What can I practically do with this technol
 | **2** | Can independently pick up a mid-complexity task and ship it to production |
 | **3** | Can explain architectural decisions, do code review, and mentor others |
 
-### Quarterly Cycle
+### Assessment Cycle
 
-Starmap evaluates competencies **retrospectively** — after a quarter ends, not while it's in progress. The process repeats every quarter:
+Periods can be monthly, quarterly, semiannual, annual or custom. They form one non-overlapping timeline; evaluation windows are separate.
 
-1. **Quarter creation** — an admin creates a new quarter (e.g. "2026 Q1") after it has ended, sets the evaluation window dates
-2. **Activation & self-assessment** — the admin activates the quarter; previous quarter's ratings are copied as a starting point. Engineers then rate themselves asynchronously across team technologies during the evaluation window
+Starmap evaluates competencies **retrospectively** — after a period ends, not while it's in progress. The process repeats every assessment_period:
+
+1. **Period creation** — an admin creates a new period (e.g. "2026 Q1") after it has ended, sets the evaluation window dates
+2. **Activation & self-assessment** — the admin activates the period; previous period's ratings are copied as a starting point. Engineers then rate themselves asynchronously across team technologies during the evaluation window
 3. **1-on-1 dialogue** — team lead and engineer discuss ratings, sync on levels, and build a development plan
-4. **Close** — the admin closes the quarter; all remaining draft/submitted ratings are auto-approved. The quarter becomes read-only
+4. **Close** — the admin closes the period; all remaining draft/submitted ratings are auto-approved. The period becomes read-only
 
-Quarter lifecycle: `draft` → `active` → `closed` → `archived`
+AssessmentPeriod lifecycle: `draft` → `active` → `closed` → `archived`
 
 ### User Roles
 
@@ -153,7 +155,7 @@ Quarter lifecycle: `draft` → `active` → `closed` → `archived`
 | **Engineer** | Self-assessment, personal dashboard, action plans |
 | **Team Lead** | Team competency matrix, approve ratings, team planning |
 | **Unit Lead** | Unit-level metrics, risk reports, strategic development |
-| **Admin** | User/technology management, quarter lifecycle, system settings |
+| **Admin** | User/technology management, period lifecycle, system settings |
 
 ## Metrics
 
@@ -170,7 +172,7 @@ Four summary metrics give a quick overview:
 
 ### Individual Growth
 
-- **Competency Dynamics** — answers "Is this engineer growing?" Shows rating change per person compared to the previous quarter. A starting point for 1-on-1 career discussions
+- **Competency Dynamics** — answers "Is this engineer growing?" Shows rating change per person compared to the previous period. A starting point for 1-on-1 career discussions
 - **Universality Index** — answers "Is this person a specialist or a generalist?" Counts how many technologies someone is proficient in. Helps spot T-shaped contributors vs. deep specialists
 - **Expertise Concentration** — answers "Is this person overloaded with unique knowledge?" Counts technologies where someone is the only expert. A decrease is good — it means knowledge is being shared
 
@@ -240,8 +242,8 @@ Define custom metrics in `config/initializers/yabeda.rb`:
 ```ruby
 Yabeda.configure do
   group :starmap do
-    counter :quarter_activations_total,
-            comment: "Total number of quarter activations",
+    counter :assessment_period_activations_total,
+            comment: "Total number of period activations",
             tags: [:unit_id]
 
     gauge :skill_ratings_pending,

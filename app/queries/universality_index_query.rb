@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 class UniversalityIndexQuery
-  def initialize(team:, quarter: Quarter.current)
+  def initialize(team:, assessment_period: AssessmentPeriod.current)
     @team = team
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def data
-    return {} unless @quarter
+    return {} unless @assessment_period
 
     SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, team_id: @team.id)
+      .where(assessment_period: @assessment_period, team_id: @team.id)
       .group(:user_id)
       .count
   end

@@ -1,5 +1,5 @@
-# Policy for admin quarters management
-class Admin::QuarterPolicy < Admin::BasePolicy
+# Policy for admin assessment_periods management
+class Admin::AssessmentPeriodPolicy < Admin::BasePolicy
   def index?
     can_manage? || unit_lead?
   end

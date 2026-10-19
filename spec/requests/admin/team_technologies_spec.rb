@@ -306,7 +306,7 @@ RSpec.describe "Admin::TeamTechnologies", type: :request do
 
       it "archives technology even when skill ratings exist" do
         tt = create(:team_technology, team: team, technology: technology)
-        create(:skill_rating, team: team, technology: technology, user: create(:engineer, team: team), quarter: create(:quarter))
+        create(:skill_rating, team: team, technology: technology, user: create(:engineer, team: team), assessment_period: create(:assessment_period))
 
         expect {
           delete admin_team_team_technology_path(team, tt)

@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
 class CoverageIndexQuery
-  def initialize(teams:, quarter: Quarter.current)
+  def initialize(teams:, assessment_period: AssessmentPeriod.current)
     @teams = teams
-    @quarter = quarter
+    @assessment_period = assessment_period
   end
 
   def percentage
     team_technologies = TeamTechnology.includes(:technology).active.where(team_id: team_ids)
     return 0 if team_technologies.empty?
-    return 0 unless @quarter
+    return 0 unless @assessment_period
 
     expert_counts = SkillRating
-      .visible_for_quarter(@quarter)
+      .visible_for_assessment_period(@assessment_period)
       .expert_ratings
-      .where(quarter: @quarter, team_id: team_ids)
+      .where(assessment_period: @assessment_period, team_id: team_ids)
       .group(:team_id, :technology_id)
       .count
       .transform_keys { |k| "#{k[0]}-#{k[1]}" }

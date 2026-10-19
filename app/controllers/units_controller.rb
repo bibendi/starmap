@@ -10,18 +10,18 @@ class UnitsController < ApplicationController
   end
 
   def show
-    red_zones_query = RedZonesQuery.new(teams: @teams, quarter: @current_quarter)
+    red_zones_query = RedZonesQuery.new(teams: @teams, assessment_period: @current_assessment_period)
     @red_zones_count = red_zones_query.count
     @red_zones_data = red_zones_query.details
 
-    @coverage_index = CoverageIndexQuery.new(teams: @teams, quarter: @current_quarter).percentage
-    @maturity_index = MaturityIndexQuery.new(teams: @teams, quarter: @current_quarter).value
+    @coverage_index = CoverageIndexQuery.new(teams: @teams, assessment_period: @current_assessment_period).percentage
+    @maturity_index = MaturityIndexQuery.new(teams: @teams, assessment_period: @current_assessment_period).value
 
-    key_person_risks_query = KeyPersonRisksQuery.new(teams: @teams, quarter: @current_quarter)
+    key_person_risks_query = KeyPersonRisksQuery.new(teams: @teams, assessment_period: @current_assessment_period)
     @key_person_risks_count = key_person_risks_query.count
     @key_person_risks_data = key_person_risks_query.details
 
-    @technologies_data = UnitTechnologyTreemapQuery.new(teams: @teams, quarter: @current_quarter).data
+    @technologies_data = UnitTechnologyTreemapQuery.new(teams: @teams, assessment_period: @current_assessment_period).data
   end
 
   private
@@ -38,7 +38,7 @@ class UnitsController < ApplicationController
   end
 
   def set_unit_context
-    @current_quarter = Quarter.current
+    @current_assessment_period = AssessmentPeriod.current
     @teams = @unit.teams.includes(:team_lead, :users, :team_technologies)
   end
 end

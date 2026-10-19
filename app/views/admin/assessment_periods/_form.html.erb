@@ -1,0 +1,46 @@
+<%= form_with model: [:admin, assessment_period], local: true, class: "form--vertical",
+              data: { controller: "assessment-period-form", assessment_period_form_today_value: Date.current.iso8601 } do |f| %>
+  <% if assessment_period.errors.any? %>
+    <div class="alert alert--error" role="alert">
+      <ul><% assessment_period.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="form-field">
+    <%= f.label :period_kind, class: "form-label" %>
+    <%= f.select :period_kind, AssessmentPeriod.period_kinds.keys.map { |kind| [t("admin.assessment_periods.kinds.#{kind}"), kind] }, {},
+                 class: "form-input", data: { testid: "period-kind", action: "change->assessment-period-form#changeKind" } %>
+  </div>
+
+  <div data-period-section="calendar" class="form-field">
+    <%= f.label :calendar_year, class: "form-label" %>
+    <%= f.number_field :calendar_year, min: 2001, class: "form-input", data: { testid: "calendar-year" } %>
+  </div>
+  <div data-period-section="number" class="form-field">
+    <%= f.label :calendar_number, class: "form-label" %>
+    <%= f.number_field :calendar_number, min: 1, max: 12, class: "form-input", data: { testid: "calendar-number" } %>
+  </div>
+  <div data-period-section="custom" class="form-field">
+    <%= f.label :start_date, class: "form-label" %>
+    <%= f.date_field :start_date, class: "form-input", data: { testid: "start-date" } %>
+    <%= f.label :end_date, class: "form-label" %>
+    <%= f.date_field :end_date, class: "form-input", data: { testid: "end-date" } %>
+  </div>
+
+  <div class="form-field">
+    <%= f.label :evaluation_start_date, class: "form-label" %>
+    <%= f.date_field :evaluation_start_date, required: true, class: "form-input" %>
+  </div>
+  <div class="form-field">
+    <%= f.label :evaluation_end_date, class: "form-label" %>
+    <%= f.date_field :evaluation_end_date, required: true, class: "form-input" %>
+  </div>
+  <div class="form-field">
+    <%= f.label :description, class: "form-label" %>
+    <%= f.text_area :description, rows: 3, class: "form-input" %>
+  </div>
+  <div class="form-submit">
+    <%= f.submit t(assessment_period.persisted? ? "admin.assessment_periods.update" : "admin.assessment_periods.create"), class: "btn btn--primary" %>
+    <%= link_to t("admin.assessment_periods.cancel"), admin_assessment_periods_path, class: "btn btn--secondary" %>
+  </div>
+<% end %>

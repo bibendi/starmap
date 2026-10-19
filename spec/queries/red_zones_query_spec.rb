@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe RedZonesQuery do
-  let_it_be(:current_quarter) { create(:quarter, status: :active) }
+  let_it_be(:current_assessment_period) { create(:assessment_period, status: :active) }
   let_it_be(:team) { create(:team) }
   let_it_be(:team2) { create(:team) }
   let_it_be(:user) { create(:user, team: team) }
@@ -19,10 +19,10 @@ RSpec.describe RedZonesQuery do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
         create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: user, technology: technology2, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology2, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "returns 0 red zones" do
@@ -34,9 +34,9 @@ RSpec.describe RedZonesQuery do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
         create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology2, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 1, team: team)
+        create(:skill_rating, user: user, technology: technology2, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology2, assessment_period: current_assessment_period, rating: 3, team: team)
       end
 
       it "returns 1 red zone" do
@@ -55,7 +55,7 @@ RSpec.describe RedZonesQuery do
     context "when technology has low criticality" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "low")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "does not count low criticality technologies" do
@@ -63,10 +63,10 @@ RSpec.describe RedZonesQuery do
       end
     end
 
-    context "when there is no current quarter" do
+    context "when there is no current assessment_period" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        Quarter.destroy_all
+        AssessmentPeriod.destroy_all
       end
 
       it "returns 0 red zones" do
@@ -77,7 +77,7 @@ RSpec.describe RedZonesQuery do
     context "with custom target_experts" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 1)
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
         create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
       end
 
@@ -92,9 +92,9 @@ RSpec.describe RedZonesQuery do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
         create(:team_technology, team: team2, technology: technology1, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: create(:user, team: team), technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user_in_team2_for_multi, technology: technology1, quarter: current_quarter, rating: 1, team: team2)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: create(:user, team: team), technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: user_in_team2_for_multi, technology: technology1, assessment_period: current_assessment_period, rating: 1, team: team2)
       end
 
       it "counts red zones per team-technology combination" do
@@ -108,10 +108,10 @@ RSpec.describe RedZonesQuery do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
         create(:team_technology, team: team, technology: technology2, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user, technology: technology2, quarter: current_quarter, rating: 3, team: team)
-        create(:skill_rating, user: user3, technology: technology2, quarter: current_quarter, rating: 2, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: user, technology: technology2, assessment_period: current_assessment_period, rating: 3, team: team)
+        create(:skill_rating, user: user3, technology: technology2, assessment_period: current_assessment_period, rating: 2, team: team)
       end
 
       it "returns empty array" do
@@ -122,8 +122,8 @@ RSpec.describe RedZonesQuery do
     context "when there are no red zones" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 2, team: team)
-        create(:skill_rating, user: user2, technology: technology1, quarter: current_quarter, rating: 3, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 2, team: team)
+        create(:skill_rating, user: user2, technology: technology1, assessment_period: current_assessment_period, rating: 3, team: team)
       end
 
       it "returns empty array" do
@@ -131,10 +131,10 @@ RSpec.describe RedZonesQuery do
       end
     end
 
-    context "when there is no current quarter" do
+    context "when there is no current assessment_period" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2)
-        Quarter.destroy_all
+        AssessmentPeriod.destroy_all
       end
 
       it "returns empty array" do
@@ -145,7 +145,7 @@ RSpec.describe RedZonesQuery do
     context "when there are red zones" do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 1, team: team)
       end
 
       it "returns red zones with correct attributes" do
@@ -165,8 +165,8 @@ RSpec.describe RedZonesQuery do
       before do
         create(:team_technology, team: team, technology: technology1, target_experts: 2, criticality: "high")
         create(:team_technology, team: team2, technology: technology1, target_experts: 2, criticality: "normal")
-        create(:skill_rating, user: user, technology: technology1, quarter: current_quarter, rating: 1, team: team)
-        create(:skill_rating, user: user_in_team2, technology: technology1, quarter: current_quarter, rating: 1, team: team2)
+        create(:skill_rating, user: user, technology: technology1, assessment_period: current_assessment_period, rating: 1, team: team)
+        create(:skill_rating, user: user_in_team2, technology: technology1, assessment_period: current_assessment_period, rating: 1, team: team2)
       end
 
       it "returns red zones for each team" do
@@ -198,7 +198,7 @@ RSpec.describe RedZonesQuery do
           create(:skill_rating,
             user: user,
             technology: tech,
-            quarter: current_quarter,
+            assessment_period: current_assessment_period,
             rating: rand(1..3),
             team: team)
         end
@@ -206,11 +206,11 @@ RSpec.describe RedZonesQuery do
     end
 
     specify "#count performs constant number of queries" do
-      expect { described_class.new(teams: [team], quarter: current_quarter).count }.to perform_constant_number_of_queries
+      expect { described_class.new(teams: [team], assessment_period: current_assessment_period).count }.to perform_constant_number_of_queries
     end
 
     specify "#details performs constant number of queries" do
-      expect { described_class.new(teams: [team], quarter: current_quarter).details }.to perform_constant_number_of_queries
+      expect { described_class.new(teams: [team], assessment_period: current_assessment_period).details }.to perform_constant_number_of_queries
     end
   end
 end
