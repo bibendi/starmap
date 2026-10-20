@@ -38,7 +38,7 @@ class McpController < ApplicationController
     MCP::Server.new(
       name: "starmap",
       version: "1.0.0",
-      tools: [TeamMetricsTool],
+      tools: [TeamMetricsTool, AssessmentPeriodsTool],
       server_context: {current_identity: current_identity}
     )
   end

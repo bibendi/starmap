@@ -7,7 +7,7 @@ class TeamMetricsTool < McpBaseTool
   input_schema(
     properties: {
       team_name: {type: "string", description: "The name of the team to query metrics for"},
-      period_id: {type: "integer", description: "Assessment period ID. Defaults to the current assessment period."}
+      period_id: {type: "integer", description: "Assessment period ID from assessment_periods. Defaults to the current assessment period."}
     },
     required: ["team_name"]
   )
@@ -28,7 +28,7 @@ class TeamMetricsTool < McpBaseTool
 
     resolved_assessment_period = resolve_assessment_period(period_id)
     unless resolved_assessment_period
-      message = period_id ? "Assessment period '#{period_id}' not found" : "No current assessment period found. Specify period_id."
+      message = period_id ? "Assessment period '#{period_id}' not found" : "No current assessment period found. Call assessment_periods to discover IDs, then specify period_id."
       not_found!(message)
     end
 

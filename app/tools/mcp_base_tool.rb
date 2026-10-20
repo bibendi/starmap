@@ -23,7 +23,8 @@ class McpBaseTool < MCP::Tool
       return if policy.public_send("#{query}?")
 
       display_name = record.respond_to?(:name) ? record.name : record.id
-      raise ForbiddenError, "You do not have permission to view #{record.class.name.downcase} '#{display_name}'"
+      resource_name = record.is_a?(Class) ? record.name : record.class.name
+      raise ForbiddenError, "You do not have permission to view #{resource_name.downcase} '#{display_name}'"
     end
 
     def not_found!(message)

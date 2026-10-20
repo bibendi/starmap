@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.1.0] - 2026-10-20
+
+### Added
+
+- Read-only MCP `assessment_periods` tool listing all assessment periods with dates, status, and current flag, so clients can discover IDs for historical team metrics even when no current period is assigned
+- MCP usage guide covering tool parameters, responses, access rules, and period discovery
+
+### Changed
+
+- Point `team_metrics` period selection hints and missing-current-period errors to `assessment_periods`
+
+## [1.0.0] - 2026-10-19
 
 ### Changed
 

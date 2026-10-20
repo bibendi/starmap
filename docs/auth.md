@@ -180,7 +180,15 @@ Registered as `:user_token` in Warden (required from `config/initializers/devise
 3. `OidcTokenValidator` resolves identity — User or ApiClient — based on JWT claims (`email` present → User, `email` absent → ApiClient by `azp`)
 4. `current_identity` (User or ApiClient) is passed to MCP tools via `server_context[:current_identity]`
 
-**ApiClient policy routing**: `McpBaseTool#authorize` checks identity type — `ApiClient` routes to `ApiClient::TeamPolicy`, `User` routes to `TeamPolicy`.
+**Policy routing**: `McpBaseTool#authorize` checks identity type — `ApiClient` uses
+policies under `ApiClient::`, while `User` uses standard Pundit policies.
+
+**Authorization**: Each tool authorizes its resource and action through Pundit.
+Authentication does not grant access to every resource; policies enforce permissions
+and resource scope independently. Missing or invalid authentication returns HTTP 401.
+A policy denial returns an MCP tool error without protected data.
+
+See [MCP usage](mcp.md) for tool contracts and request examples.
 
 **OAuth discovery endpoints** (for automated client configuration):
 - `GET /.well-known/oauth-authorization-server` (RFC 8414) — proxies Keycloak OIDC metadata
